@@ -1,0 +1,350 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+
+{% if current_user.is_authenticated %}
+
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">仪表盘</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ info['user']}} </h3>
+
+                <p>用户数</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-bag"></i>
+              </div>
+              <a href="{{ url_for('admin.views.users.index_view')}}" class="small-box-footer">详情 <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ info['task']}}<sup style="font-size: 20px"></sup></h3>
+
+                <p>任务数</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="{{ url_for('admin.views.tasks.index_view') }}" class="small-box-footer">详情 <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>{{ info['new_user']}}</h3>
+
+                <p>新用户数</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>
+              <a href="{{ url_for('admin.views.userinfo.index_view')}}" class="small-box-footer">详情 <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ info['log'] }}</h3>
+
+                <p>访问量</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ url_for('admin.views.logs.index_view') }}" class="small-box-footer">详情 <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <section class="col-lg-7 connectedSortable">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
+              <div class="card-header d-flex p-0">
+                <h3 class="card-title p-3">
+                  <i class="fas fa-chart-pie mr-1"></i>
+                  访问数据统计
+                </h3>
+                <ul class="nav nav-pills ml-auto p-2">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#revenue-chart" data-toggle="tab">访问量</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#sales-chart" data-toggle="tab">请求类型</a>
+                  </li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content p-0">
+                  <!-- Morris chart - Sales -->
+                  <div class="chart tab-pane active" id="revenue-chart"
+                       style="position: relative; height: 300px;">
+                      <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>                         
+                   </div>
+                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
+                    <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>                         
+                  </div>  
+                </div>
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- TO DO List -->
+            <div class="card">
+              <div class="card-header" id="todo-pagination">
+                <h3 class="card-title">
+                  <i class="ion ion-clipboard mr-1"></i>
+                  待办列表
+                </h3>
+
+                <div class="card-tools" >
+                  <ul class="pagination pagination-sm">
+                  </ul>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body" id="todo-listjs">
+                <ul class="todo-list">
+                  <li data-id="1" data-sort="1">
+                    <!-- drag handle -->
+                    <span class="handle">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <!-- checkbox -->
+                    <div  class="icheck-primary d-inline ml-2">
+                      <input class="todo-name todo-value todo-id todo-checked" type="checkbox" value="" name="todo1" id="">
+                      <label class="todo-for" for=""></label>
+                    </div>
+                    <!-- todo text -->
+                    <span class="text">Design a nice theme</span>
+                    <!-- Emphasis label -->
+                    <small class="badge"><i class="far fa-clock"></i> 2 mins</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <i class="fas fa-edit"></i>
+                      <i class="fas fa-trash"></i>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <button type="button" data-toggle="modal" data-target="#modal-default" class="btn btn-info float-right"><i class="fas fa-plus"></i>新增待办</button>
+              </div>
+            </div>
+                <div class="modal fade" id="modal-default">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title">新建待办</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <form role="form" id="todoForm" novalidate>
+                        <div class="modal-body">
+                          <div class="form-group" style="display:none">
+                            <label for="todoId">Todo ID</label>
+                            <input type="text" class="form-control" id="todoId" name="todoId">
+                          </div>
+                          <div class="form-group">
+                            <label for="todoMessage">内容
+                              <strong style="color: red">&#42;</strong>
+                            </label>
+                            <input type="text" class="form-control" id="todoMessage" name="todoMessage" placeholder="Enter Message" required>
+                            <div class="invalid-feedback">
+                              Please provider a message.
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="dueDate">到期时间
+                              <strong style="color: red">&#42;</strong>
+                            </label>
+                            <input type="text" class="form-control" id="dueDate" name="todoDue" required>
+                            <div class="invalid-feedback">
+                              The due date is required.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                          <button type="button" class="btn btn-primary" id="saveTodo">保存</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /.modal-content -->
+                  </div>
+                  <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+            <!-- /.card -->
+          </section>
+          <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-5 connectedSortable">
+
+            <!-- solid sales graph -->
+            <div class="card bg-gradient-info">
+              <div class="card-header border-0">
+                <h3 class="card-title">
+                  <i class="fas fa-th mr-1"></i>
+                  任务统计
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas class="chart" id="line-chart" style="height: 250px;"></canvas>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer bg-transparent">
+                <div class="row">
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="{{ task_success }}" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">任务成功率</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="{{ task_run }}" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">任务运行率</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="{{ task_fail }}" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">任务失败率</div>
+                  </div>
+                  <!-- ./col -->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+                <!-- quick email widget -->
+                <div class="card">
+                  <div class="card-header">
+
+                    <h3 class="card-title">
+                      <i class="fa fa-envelope"></i>
+                      便捷邮件
+                    </h3>
+                    <!-- tools box -->
+                    <div class="card-tools">
+                      <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- /. tools -->
+                  <div class="card-body">
+                    <form action="#" method="post" id="emailForm">
+                      <div class="form-group">
+                        <input type="email" class="form-control" name="emailto" placeholder="收件人">
+                      </div>
+                      <div class="form-group">
+                        <input type="text" class="form-control" name="subject" placeholder="主题">
+                      </div>
+                      <div>
+                        <textarea class="textarea" placeholder="请输入正文" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="card-footer clearfix">
+                    <button type="button" class="btn btn-info float-right" id="sendEmail">
+                      <i class="fa fa-arrow-circle-right"></i>Send</button>
+
+                  </div>
+                </div>
+          </section>
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  
+{% else %}
+
+<center>
+    <section class="content" style="color: white">
+        <div class="col-sm-12">
+            <h1>Flask-Admin example</h1>
+            <p class="lead">
+                Authentication
+            </p>
+            <p>
+                This example shows how you can use Flask-Admin in an admin template, <br> here I used AdminLTE and <a href="https://pythonhosted.org/Flask-Security/index.html" target="_blank">Flask-Security</a> for authentication.
+            </p>
+            {% if not current_user.is_authenticated %}
+            <p>You can register as a regular user, or log in as a superuser with the following credentials: <br><br>
+
+                email: <b>admin</b> <br>
+                password: <b>admin</b> <br>
+                <br>
+                <p>
+                    <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+                </p>
+                {% endif %}
+                <br>
+                <p>
+                    <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> Back</a>
+                </p>
+            </div>
+        </section>
+    </center>
+
+    <br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br>
+ {% endif %}
+
+  {% endblock body %}

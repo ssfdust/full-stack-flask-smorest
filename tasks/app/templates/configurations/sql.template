@@ -1,0 +1,3 @@
+CREATE ROLE "{{ db_username }}" WITH ENCRYPTED PASSWORD '{{ db_password }}';
+CREATE DATABASE "{{ db_name }}";
+GRANT ALL PRIVILEGES ON DATABASE "{{ db_name }}" to "{{ db_username }}";

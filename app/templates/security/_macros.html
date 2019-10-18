@@ -1,0 +1,37 @@
+{% macro render_field_with_errors(field) %}
+
+<div class="input-group mb-3">
+    {{ field(placeholder=field.label.text, class_='form-control', **kwargs)|safe }}
+      <div class="input-group-append">
+        <div class="input-group-text">
+         {% if field.name == 'email' %}
+          <span class="fas fa-envelope"></span>
+        {% endif %}
+         {% if field.name == 'password' %}
+           <span class="fas fa-lock"></span>
+         {% endif %}
+         {% if field.name == 'password_confirm' %}
+           <span class="fas fa-lock"></span>
+         {% endif %}
+        </div>
+      </div>
+    {% if field.errors %}
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro render_field(field) %}
+<p>{{ field(class_='form-control', **kwargs)|safe }}</p>
+{% endmacro %}
+
+{% macro render_checkbox_field(field) -%}
+<div class="icheck-primary">
+    {{ field(type='checkbox', **kwargs) }} 
+    <label for="remember">
+     {{ field.label }}
+    </label>
+    <!-- <label>
+       -     {{ field(type='checkbox', **kwargs) }}
+       - </label> -->
+</div>
+{%- endmacro %}

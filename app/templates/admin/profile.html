@@ -1,0 +1,201 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+
+{% if current_user.is_authenticated %}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>个人详情</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{{ url_for('admin.index')}}">首页</a></li>
+          <li class="breadcrumb-item active">个人详情</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3">
+
+        <!-- Profile Image -->
+        <div class="card card-primary card-outline">
+          <div class="card-body box-profile">
+            <div class="text-center small-box img-circle" style="width:100px;margin:0 auto;">
+                <img id="profile-img" class="usr-avator profile-user-img img-fluid img-circle"
+                                      
+                                                            src="{{ url_for('admin.views.storages.storage_file', file_id=current_user.userinfo.avator_id) }}"
+                                                            alt="User profile picture">
+                <div class="overlay" style="opacity:0;" data-toggle="tooltip" title="点击修改头像" id="avator-overlay">
+                    <p class="white-text"><b>修改头像</b></p>
+                </div>
+                <form id="form_face" enctype="multipart/form-data" style="width:auto;">
+                    <input type="file" name="fileToUpload" id="fileToUpload" style="display:none;">
+                </form>
+            </div>
+
+            <h3 class="profile-username text-center">
+              {{ current_user.nickname }}
+            </h3>
+
+            <p class="text-muted text-center">
+            {% if current_user.roles %} {{ current_user.roles[0].name }} {% endif %}
+            </p>
+
+            <ul class="list-group list-group-unbordered mb-3">
+              <li class="list-group-item">
+                <b>邮箱</b> <a class="float-right">{{ current_user.email }}</a>
+              </li>
+              <li class="list-group-item">
+                <b>用户名</b> <a class="float-right">{{ current_user.username }}</a>
+              </li>
+              <li class="list-group-item">
+                <b>性别</b> <a class="float-right">{{ current_user.userinfo.sex_label }}</a>
+              </li>
+              <li class="list-group-item">
+                <b>年龄</b> <a class="float-right">{{ current_user.userinfo.age if current_user.userinfo.age else '未填写' }}</a>
+              </li>
+            </ul>
+
+            <a href="#" class="btn btn-warning btn-block" data-toggle="modal" data-target="#modal-default"><b>修改密码</b></a>
+          </div>
+          <!-- /.card-body -->
+          <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">修改密码</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form id="passwdForm" role="form" oninput='confirmed.setCustomValidity(passwd.value != confirmed.value ? "Passwords do not match." : "")'>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="currentPassword">当前密码
+                          <strong style="color: red">&#42;</strong>
+                      </label>
+                      <input type="password" class="form-control" id="currentPassword" required name="oldpasswd" placeholder="请输入当前密码">
+                    </div>
+                    <div class="form-group">
+                      <label for="newPassword">新密码
+                          <strong style="color: red">&#42;</strong>
+                      </label>
+                      <input type="password" class="form-control" id="newPassword" required name="passwd" placeholder="请输入新密码">
+                    </div>
+                    <div class="form-group">
+                      <label for="confirmedPassword">确认新密码
+                          <strong style="color: red">&#42;</strong>
+                      </label>
+                      <input type="password" class="form-control" id="confirmedPassword" name="confirmed" placeholder="请再次输入新密码">
+                    </div>
+                  </div>
+                </form>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  <button type="button" id="savePassword" class="btn btn-primary">保存</button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+        </div>
+        <!-- /.card -->
+
+      </div>
+      <!-- /.col -->
+      <div class="col-md-9">
+        <div class="card">
+          <div class="card-header p-2">
+            <ul class="nav nav-pills">
+              <li class="nav-item"><a class="nav-link active" href="#settings" data-toggle="tab">设置</a></li>
+            </ul>
+          </div><!-- /.card-header -->
+          <div class="card-body">
+            <div class="tab-content">
+              <div class="tab-pane active" id="settings">
+                <form class="form-horizontal" action="{{url_for('admin.views.profile.index')}}" method="POST">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label">用户名</label>
+                        <input type="text" name="username" class="form-control" id="inputName" placeholder="{{ current_user.username }}" disabled>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputEmail" class="col-sm-2 control-label">邮箱</label>
+                        <input type="email" name="email" class="form-control" id="inputEmail" placeholder="{{current_user.email}}" disabled>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">姓</label>
+                        <input type="text" name="first_name" class="form-control" id="inputName" placeholder="{{ current_user.userinfo.first_name }}">
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">名</label>
+                        <input type="text" name="last_name" class="form-control" id="inputName" placeholder="{{ current_user.userinfo.last_name }}">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputSkills" class="col-sm-2 control-label">年龄</label>
+                        <input type="text" name="age" class="form-control" id="inputSkills" placeholder="{{ current_user.userinfo.age if current_user.userinfo.age else '未填写'}}">
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="inputName2" class="col-sm-2 control-label">性别</label>
+                        <select id="inputName2" name="sex" class="form-control">
+                          <option value="1" {{"selected" if current_user.userinfo.sex == 1 else ""}}>男</option>
+                          <option value="2" {{"selected" if current_user.userinfo.sex == 2 else ""}}>女</option>
+                          {% if not current_user.userinfo.sex %}
+                          <option value="" {{"selected" if not current_user.userinfo.sex else ""}}>未填写</option>
+                          {% endif %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-danger">提交</button>
+                </div>
+              </div>
+                </form>
+            </div>
+            <!-- /.tab-pane -->
+          </div>
+          <!-- /.tab-content -->
+        </div><!-- /.card-body -->
+      </div>
+      <!-- /.nav-tabs-custom -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+<!-- /.content -->
+{%- endif -%}
+
+{% endblock body %}

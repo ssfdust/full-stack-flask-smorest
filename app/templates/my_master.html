@@ -1,0 +1,34 @@
+{% extends 'admin/base.html' %}
+
+{% block access_control %}
+{% if current_user.is_authenticated %}
+<!-- User Account: style can be found in dropdown.less -->
+      <li class="nav-item dropdown user-menu">
+        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+          <img src="{{ url_for('admin.views.storages.storage_file', file_id=current_user.userinfo.avator_id) }}" class="usr-avator user-image img-circle elevation-2" alt="User Image">
+          <span class="d-none d-md-inline">
+               {{ current_user.nickname }}
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <!-- User image -->
+          <li class="user-header bg-primary">
+            <img src="{{ url_for('admin.views.storages.storage_file', file_id=current_user.userinfo.avator_id) }}" class="usr-avator img-circle elevation-2" alt="User Image">
+
+            <p>
+       {{ current_user.nickname }}
+       {% if current_user.roles %} {{ current_user.roles[0].name }} {% endif %}
+            <small>加入于 {{ current_user.created.humanize(locale='en') }}</small>
+            </p>
+          </li>
+          <!-- Menu Footer-->
+          <li class="user-footer">
+            <a href="{{ url_for('admin.views.profile.index') }}" class="btn btn-default btn-flat">档案</a>
+            <a href="{{ url_for('security.logout') }}" class="btn btn-default btn-flat float-right">登出</a>
+          </li>
+        </ul>
+      </li>
+
+
+    {% endif %}
+    {% endblock %}

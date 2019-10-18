@@ -1,0 +1,76 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  {% block navlinks %}
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+              <h1>{{ admin_view.name }} 详情</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                {{ layout.menu_breadcrumbs() }}
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ return_url }}">{{ _gettext('List') }}</a>
+                            </li>
+                            {%- if admin_view.can_create -%}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+                            </li>
+                            {%- endif -%}
+                            {%- if admin_view.can_edit -%}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+                            </li>
+                            {%- endif -%}
+                            <li class="active nav-item">
+                                <a class="nav-link active" href="javascript:void(0)">{{ _gettext('Details') }}</a>
+                            </li>
+                        </ul>
+                        {% endblock %}
+
+                        {% block details_search %}
+                        <div class="input-group fa_filter_container col-lg-6">
+                            <span class="input-group-addon">{{ _gettext('Filter') }}</span>
+                            <input id="fa_filter" type="text" class="form-control">
+                        </div>
+                        {% endblock %}
+
+                        {% block details_table %}
+                        <table class="table table-hover table-bordered searchable">
+                            {% for c, name in details_columns %}
+                            <tr>
+                                <td>
+                                    <b>{{ name }}</b>
+                                </td>
+                                <td>
+                                    {{ get_value(model, c) }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+{% endblock %}

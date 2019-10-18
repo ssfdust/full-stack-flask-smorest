@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Copyright {{ year }} {{ author }}
+# Author: {{ author }}
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+    app.modules.{{ module_name }}.resource
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    {{ module_title }}的资源模块
+"""
+
+from flask.views import MethodView
+from flask_jwt_extended import current_user
+from loguru import logger
+
+from app.extensions.api.decorators import paginate
+from app.extensions.marshal.bases import BaseMsgSchema, BaseIntListSchema
+from app.modules.auth import PERMISSIONS
+from app.modules.auth.decorators import doc_login_required, permission_required
+
+from . import blp, models, params, schemas
+
+
+@blp.route('/options')
+class {{ model_name }}ListView(MethodView):
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Query)
+    @blp.response(schemas.{{ model_name }}ListSchema)
+    def get(self, **kwargs):
+        '''
+        获取所有{{ module_title }}选项信息
+        '''
+        query = models.{{ model_name }}.query
+
+        items = query.all()
+
+        return {'data': items}
+
+
+@blp.route('')
+class {{ model_name }}View(MethodView):
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Query)
+    @blp.response(schemas.{{ model_name }}PageSchema)
+    @paginate()
+    def get(self, **kwargs):
+        '''
+        获取所有{{ module_title }}信息——分页
+        '''
+        query = models.{{ model_name }}.query
+
+        return query
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Add)
+    @blp.arguments(params.{{ model_name }}Param)
+    @blp.response(schemas.{{ model_name }}ItemSchema)
+    def post(self, {{ model_name.lower() }}, **kwargs):
+        '''
+        新增{{ module_title }}信息
+        '''
+        {{ model_name.lower() }}.save()
+        logger.info(f"{current_user.username}新增了{{ module_title }}{{ '{' + model_name.lower() + '}' }}")
+
+        return {'data': {{ model_name.lower() }}}
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Delete)
+    @blp.arguments(BaseIntListSchema, as_kwargs=True)
+    @blp.response(BaseMsgSchema)
+    def delete(self, lst, **kwargs):
+        '''
+        批量删除{{ module_title }}
+        -------------------------------
+        :param lst: list 包含id列表的字典
+        '''
+
+        models.{{ model_name }}.delete_by_ids(lst['lst'])
+        logger.info(f"{current_user.username}删除了{{ module_title }}{lst}")
+
+        return
+
+
+@blp.route('/<int:{{ model_name.lower() }}_id>',
+           parameters=[
+               {'in': 'path', 'name': '{{ model_name.lower() }}_id', 'description': '{{ module_title }}id'}
+           ])
+class {{ model_name }}ItemView(MethodView):
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Edit)
+    @blp.arguments(params.{{ model_name }}Param)
+    @blp.response(schemas.{{ model_name }}ItemSchema)
+    def put(self, {{ model_name.lower() }}, {{ model_name.lower() }}_id, **kwargs):
+        '''
+        更新{{ module_title }}
+        '''
+
+        {{ model_name.lower() }} = models.{{ model_name }}.update_by_id({{ model_name.lower() }}_id,
+                                                                        params.{{ model_name }}Param,
+                                                                        {{ model_name.lower() }})
+        logger.info(f"{current_user.username}更新了{{ module_title }}{{ '{' + model_name.lower() + '.id}' }}")
+
+        return {'data': {{ model_name.lower() }}}
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Delete)
+    @blp.response(BaseMsgSchema)
+    def delete(self, {{ model_name.lower() }}_id, **kwargs):
+        '''
+        删除{{ module_title }}
+        '''
+        models.{{ model_name }}.delete_by_id({{ model_name.lower() }}_id)
+        logger.info(f"{current_user.username}删除了{{ module_title }}{{ '{' + model_name.lower() + '_id}' }}")
+
+        return
+
+    @doc_login_required
+    @permission_required(PERMISSIONS.{{ model_name }}Query)
+    @blp.response(schemas.{{ model_name }}ItemSchema)
+    def get(self, {{ model_name.lower() }}_id, **kwargs):
+        '''
+        获取单条{{ module_title }}
+        '''
+        {{ model_name.lower() }} = models.{{ model_name }}.get_by_id({{ model_name.lower() }}_id)
+
+        return {'data': {{ model_name.lower() }}}

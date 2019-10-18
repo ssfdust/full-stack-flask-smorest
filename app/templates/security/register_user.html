@@ -1,0 +1,33 @@
+{% extends 'admin/master.html' %}
+{% from "security/_macros.html" import render_field_with_errors, render_field %}
+{% include "security/_messages.html" %}
+{% block body %}
+{{ super() }}
+<br><br><br><br>
+<div class="register-box">
+  <div class="register-logo">
+    <a href="../../index2.html"><b>Admin</b>LTE</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body register-card-body">
+      <p class="login-box-msg">Register a new membership</p>
+
+      <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
+                {{ register_user_form.hidden_tag() }}
+                {{ render_field_with_errors(register_user_form.email) }}
+                {{ render_field_with_errors(register_user_form.password) }}
+                {% if register_user_form.password_confirm %}
+                {{ render_field_with_errors(register_user_form.password_confirm) }}
+                {% endif %}
+            {{ render_field(register_user_form.submit, class="float-right btn btn-primary btn-block btn-flat") }}
+          <!-- /.col -->
+      </form>
+
+      <a href="{{ url_for('security.login') }}" class="text-center">I already have a membership</a>
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+<br><br><br><br><br><br>
+{% endblock body %}

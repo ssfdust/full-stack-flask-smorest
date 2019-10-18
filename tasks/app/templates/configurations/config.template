@@ -1,0 +1,55 @@
+OPENAPI_VERSION = '3.0.2'
+OPENAPI_REDOC_PATH = 'redoc'
+OPENAPI_REDOC_VERSION = 'next'
+OPENAPI_SWAGGER_UI_PATH = 'swagger'
+OPENAPI_SWAGGER_UI_VERSION = '3.23.5'
+OPENAPI_URL_PREFIX = 'doc'
+MODULE_BASE_PREFIX = '{{ base_prefix }}'
+
+SQLALCHEMY_DATABASE_URI = '{{ db_url }}'
+SQLALCHEMY_TRACK_MODIFICATIONS = false
+
+SECRET_KEY = '{{ secret_key }}'
+JWT_SECRET_KEY = '{{ jwt_secret_key }}'
+JWT_BLACKLIST_ENABLED = true
+JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+JWT_TOKEN_LOCATION = ['headers', 'query_string']
+JWT_QUERY_STRING_NAME = 'token'
+
+SECURITY_LOGIN_URL = '/admin/login'
+SECURITY_LOGOUT_URL = '/admin/logout'
+SECURITY_POST_LOGIN_VIEW = '/admin/'
+SECURITY_POST_LOGOUT_VIEW = '/admin/'
+SECURITY_REGISTER_URL = '/admin/register'
+SECURITY_REGISTERABLE = true
+SECURITY_PASSWORD_SALT = '{{ passwd_salt }}'
+BABEL_DEFAULT_LOCALE = '{{ locale }}'
+BABEL_DEFAULT_TIMEZONE = '{{ timezone }}'
+
+MAIL_SERVER = '{{ mail_server }}'
+MAIL_PORT = {{ mail_port }}
+MAIL_USE_SSL = true
+MAIL_USERNAME = '{{ mail_username }}'
+MAIL_DEFAULT_SENDER = '{{ mail_sender }}'
+MAIL_PASSWORD = '{{ mail_passwd }}'
+
+CELERY_MONGODB_SCHEDULER_COLLECTION = '{{ schedule_collection }}'
+CELERY_RESULT_BACKEND = 'app.extensions.celerybackend:MongoBackend'
+CELERY_BROKER_URL = "{{ broker_url }}"
+CELERY_IMPORTS = ["app.backtasks"]
+CELERY_TASK_SERIALIZER = "bson"
+CELERY_ACCEPT_CONTENT = ["bson", "json"]
+CELERY_EVENT_SERIALIZER = "bson"
+CELERY_RESULT_SERIALIZER = "bson"
+
+SERVER_NAME = '{{ server_name }}'
+PREFERRED_URL_SCHEME = 'http'
+
+[MONGODB_SETTINGS]
+    db = '{{ mongo_db }}'
+    username = '{{ mongo_user }}'
+    password = '{{ mongo_passwd }}'
+    host = '{{ mongo_host }}'
+    authentication_source = '{{ mongo_db }}'
+    port = {{ mongo_port }}
+    connect = false
