@@ -35,9 +35,14 @@ def init_models(Sample):
 
 class TestArrowDateTimeType(object):
 
+    def test_python_type(self, session, Sample):
+        from app.extensions.sqla.types import ArrowType
+        from datetime import datetime
+        ArrowType().python_type == datetime
+
     def test_parameter_processing(self, session, Sample):
         sample = Sample(
-            created_at=arrow.get(datetime(2000, 11, 1))
+            created_at=datetime(2000, 11, 1)
         )
 
         session.add(sample)
@@ -45,6 +50,26 @@ class TestArrowDateTimeType(object):
 
         sample = session.query(Sample).first()
         assert sample.created_at.datetime
+
+    def test_tuple(self, session, Sample):
+        sample = Sample(
+            created_at=(1994, 9, 11)
+        )
+        session.add(sample)
+        session.commit()
+
+        sample = session.query(Sample).first()
+        assert sample.created_at.format('YYYY-MM-DD') == '1994-09-11'
+
+    def test_none(self, session, Sample):
+        sample = Sample(
+            created_at=None
+        )
+        session.add(sample)
+        session.commit()
+
+        sample = session.query(Sample).first()
+        assert sample.created_at is None
 
     def test_string_coercion(self, session, Sample):
         sample = Sample(

@@ -25,7 +25,8 @@
     id, deleted, modified, created为系统默认字段
 """
 
-from sqlalchemy.exc import IntegrityError, DataError
+import psycopg2
+import sqlalchemy as sa
 from .sqla import DuplicateEntry, CharsTooLong
 import arrow
 
@@ -127,9 +128,10 @@ class CRUDMixin(object):
             k for k, v in schema.fields.items() if not v.dump_only
         ]
 
-        for field in loadable_fields:
-            set_attribute(self, field, get_attribute(instance, field))
-            del_attribute(instance, field)
+        with db.session.no_autoflush:
+            for field in loadable_fields:
+                set_attribute(self, field, get_attribute(instance, field))
+                del_attribute(instance, field)
 
         db.session.expunge(instance)
 
@@ -141,11 +143,13 @@ class CRUDMixin(object):
 
         try:
             db.session.commit()
-        except IntegrityError as e:
-            code = e.orig.args[0]
-            if code == 1062:
-                raise DuplicateEntry(e.orig.args[1])
-        except DataError as e:
-            code = e.orig.args[0]
-            if code == 1406:
-                raise CharsTooLong(e.orig.args[1])
+        except sa.exc.IntegrityError as e:
+            if isinstance(e.orig, psycopg2.errors.UniqueViolation):
+                # except psycopg2.errors.UniqueViolation:
+                db.session.rollback()
+                raise DuplicateEntry(str(e))
+        except sa.exc.DataError as e:
+            if isinstance(e.orig, psycopg2.errors.StringDataRightTruncation):
+                # except psycopg2.errors.UniqueViolation:
+                db.session.rollback()
+                raise CharsTooLong(str(e))

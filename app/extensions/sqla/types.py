@@ -109,9 +109,7 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
 
         :return                 arrow.Arrow             Arrow时间
         """
-        if value is None:
-            return None
-        elif isinstance(value, six.string_types):
+        if isinstance(value, six.string_types):
             value = arrow.get(value)
         elif isinstance(value, Iterable):
             value = arrow.get(*value)

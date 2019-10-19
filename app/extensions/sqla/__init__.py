@@ -116,7 +116,6 @@ class SurrogatePK(object):
         ):
             with db.session.no_autoflush:
                 return cls.query.get_or_404(int(id))
-        return None
 
     @classmethod
     def delete_by_id(cls, id, commit=True):
