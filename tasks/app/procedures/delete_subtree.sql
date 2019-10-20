@@ -9,6 +9,7 @@
 --------------------------------------------
 
 DROP FUNCTION IF EXISTS delete_subtree(VARCHAR, INTEGER);
+DROP FUNCTION IF EXISTS soft_delete_subtree(VARCHAR, INTEGER);
 
 CREATE FUNCTION delete_subtree(table_name VARCHAR, id INTEGER)
 RETURNS VOID

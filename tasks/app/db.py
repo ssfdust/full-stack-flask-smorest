@@ -44,7 +44,7 @@ def add_closure_table_procedure(context):
     """
     导入闭包表所需要的存储过程
     """
-    from app import app
+    from app.app import app
     from pathlib import Path
 
     log.info("正在导入闭包表...")
@@ -104,7 +104,7 @@ def dropdb(context):
     """
     删除数据库
     """
-    from app import db
+    from app.extensions import db
     db.drop_all()
 
 
@@ -113,5 +113,5 @@ def initdb(context):
     """
     初始化数据库
     """
-    from app import db
+    from app.extensions import db
     db.create_all()

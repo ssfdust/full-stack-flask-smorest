@@ -35,8 +35,8 @@
     >>> app.config.from_toml('/path/to/toml_file')
 """
 
-import errno
 import os
+import toml
 
 from flask._compat import iteritems
 from flask.config import Config as FlaskConfig
@@ -60,42 +60,14 @@ class Config(FlaskConfig):
         app.config = self
         return self
 
-    def _get_environment(self, env, config):
-        """返回包
-        Return a dictionary containing the top level values updated with
-        those from the environment.
-
-        :param env: 环境变量名称
-        :param config: 配置映射
-        :return: 字典集
-        """
-        # Get the top level keys
-        defaults = {k: v for k, v in iteritems(config) if k != 'environments'}
-
-        try:
-            defaults.update(config['environments'][env])
-            return defaults
-        except KeyError:
-            msg = 'Unable to find %s environment in configuration file' % env
-            raise ConfigError(msg)
-
-    def from_toml(self, filename, silent=False, environment=None):
+    def from_toml(self, filename, environment=None):
         """Updates the values in the config from a TOML file. This function
         behaves as if the TOML object was a dictionary and passed to the
         :meth:`from_mapping` function.
         :param filename: the filename of the JSON file.  This can either be an
                          absolute filename or a filename relative to the
                          root path.
-        :param silent: set to ``True`` if you want silent failure for missing
-                       files.
         """
-        try:
-            import toml
-        except ImportError as e:
-            if silent:
-                return False
-            e.strerror = 'Unable to load toml, is the packaged installed?'
-            raise
 
         # Prepeend the root path is we don't have an absolute path
         filename = (os.path.join(self.root_path, filename)
@@ -106,13 +78,8 @@ class Config(FlaskConfig):
             with open(filename) as toml_file:
                 obj = toml.load(toml_file)
         except IOError as e:
-            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
-                return False
             e.strerror = 'Unable to load configuration file (%s)' % e.strerror
             raise
-
-        env = self._get_environment(environment, obj) if environment else obj
-        obj.update(env)
 
         return self.from_mapping(obj)
 

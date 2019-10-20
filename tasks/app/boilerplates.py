@@ -9,6 +9,7 @@ import re
 import os
 import datetime
 import toml
+from pathlib import Path
 
 from invoke import task
 
@@ -124,6 +125,9 @@ def generate_config(context):
     config = {}
 
     setted_default = False
+    if not os.path.exists(CONFIG_PATH):
+        configdir = Path(CONFIG_PATH).parent
+        os.mkdir(configdir)
 
     for config_type in CONFIG_TYPES:
         log.info(f"正在为{config_type}环境设置配置....")

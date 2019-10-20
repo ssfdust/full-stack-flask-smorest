@@ -71,7 +71,7 @@ class UserFactory(object):
         """
         处理组关系
         """
-        from app import db
+        from app.extensions import db
 
         state = db.inspect(self.user)
         groups_hist = state.attrs.groups.history

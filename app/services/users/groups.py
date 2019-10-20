@@ -37,7 +37,7 @@ class GroupFactory(object):
         """
         检查是否被软删除，并执行软删除
         """
-        from app import db
+        from app.extensions import db
         state = db.inspect(self.group)
         if state.attrs.deleted.history.has_changes() and self.group.deleted:
             self.delete_group()
