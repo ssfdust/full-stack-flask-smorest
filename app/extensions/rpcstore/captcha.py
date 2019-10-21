@@ -17,6 +17,7 @@ from . import AMQPStore
 import random
 import string
 
+
 class CaptchaStore(AMQPStore):
 
     def __init__(self, token):

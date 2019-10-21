@@ -19,9 +19,8 @@ from kombu import Exchange, Queue
 class AMQPStore(object):
 
     def __init__(self, key, value=None, exchange=None, expires=None,
-                 requeue=False, limit=999, routing_key=None, auto_delete=False):
+                 limit=999, routing_key=None, auto_delete=False):
         self.key = key
-        self.requeue = requeue
         self.limit = limit
         self.value = value
         self.values = []

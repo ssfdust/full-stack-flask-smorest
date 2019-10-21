@@ -24,9 +24,9 @@
     包含flask和celery实例
 """
 
-from .factory import create_app, AVAILABLE_MODULES
+from .factory import create_app, ENABLED_MODULES
 from .extensions.celery import celery_ext
 
-app = create_app(AVAILABLE_MODULES)
+app = create_app(ENABLED_MODULES)
 
 celery = celery_ext.get_celery_app()

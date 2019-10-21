@@ -40,8 +40,8 @@ CONFIG_MAPPGING = {
     'testing': 'app/config/testing.toml'
 }
 
-AVAILABLE_MODULES = ['auth', 'users', 'storages',
-                     'menus', 'todolist']
+ENABLED_MODULES = ['auth', 'users', 'storages',
+                   'menus', 'todolist']
 
 # 注册Admin模块
 register.init()
