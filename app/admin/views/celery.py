@@ -23,6 +23,34 @@ celery的管理模块
 
 from ..formaters import json_formatter, line_formatter
 from .bases import AuthMongView
+from flask_admin.model.fields import AjaxSelectField
+from flask_admin.model.ajax import AjaxModelLoader
+
+
+class TaskAjaxLoader(AjaxModelLoader):
+
+    def __init__(self, name, **options):
+        super().__init__(name, options)
+
+    def format(self, model):
+        return (model, model)
+
+    def get_one(self, pk):
+        for name in self._task_list:
+            if pk == name:
+                return name
+
+    @property
+    def _task_list(self):
+        from celery.task.control import inspect
+        from itertools import chain
+
+        i = inspect()
+        i.registered_tasks()
+        return set(chain.from_iterable(i.registered_tasks().values()))
+
+    def get_list(self, query, offset=0, limit=10):
+        return self._task_list
 
 
 class CeleryScheduleView(AuthMongView):
@@ -32,6 +60,7 @@ class CeleryScheduleView(AuthMongView):
     用以创建调度任务，支持两种格式一是Crontab，
     二是Interval，两种方式只能选择一种。
     """
+    from app.extensions.mongobeat.models import PeriodicTask
 
     can_create = True
     can_edit = True
@@ -45,6 +74,17 @@ class CeleryScheduleView(AuthMongView):
     column_default_sort = []
     column_filters = ['name']
     can_view_details = True
+    form_overrides = {
+        'task': AjaxSelectField
+    }
+    form_args = {
+        'task': {
+            'loader': TaskAjaxLoader('task')
+        }
+    }
+    form_ajax_refs = {
+        'task': TaskAjaxLoader('task')
+    }
 
     def _scheduleinfo(view, context, model, name):
         """调度信息展示"""

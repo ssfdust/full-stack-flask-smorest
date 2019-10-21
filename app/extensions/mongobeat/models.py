@@ -49,33 +49,36 @@ PERIODS = ('days', 'hours', 'minutes', 'seconds', 'microseconds')
 
 
 class PeriodicTask(DynamicDocument):
-    """周期任务的ORM"""
+    """
+    周期任务的ORM
+
+    :attr name: 定时名称
+    :attr task: 任务名称
+    :attr interval: 定时
+    :attr crontab: crontab
+    :attr args: 参数
+    :attr kwargs: 键值参数
+    :attr queue: 队列
+    :attr no_changes: nochanges
+    :attr exchange: AMPQ的交换器
+    :attr routing_key: AMPQ路由
+    :attr soft_time_limit: 软时间限制
+    :attr expires: 过期时间
+    :attr start_after: 在某时间后运行
+    :attr enabled: 启用
+    :attr last_run_at: 最后运行时间
+    :attr total_run_count: 总计运行次数
+    :attr max_run_count: 最大运行次数
+    :attr date_changed: 改变日期
+    :attr description: 描述
+    :attr run_immediately: 立刻运行
+    """
 
     meta = {'collection': get_periodic_task_collection(),
             'allow_inheritance': True}
 
     class Interval(EmbeddedDocument):
         """
-        :attr name: 定时名称
-        :attr task: 任务名称
-        :attr interval: 定时
-        :attr crontab: crontab
-        :attr args: 参数
-        :attr kwargs: 键值参数
-        :attr queue: 队列
-        :attr no_changes: nochanges
-        :attr exchange: AMPQ的交换器
-        :attr routing_key: AMPQ路由
-        :attr soft_time_limit: 软时间限制
-        :attr expires: 过期时间
-        :attr start_after: 在某时间后运行
-        :attr enabled: 启用
-        :attr last_run_at: 最后运行时间
-        :attr total_run_count: 总计运行次数
-        :attr max_run_count: 最大运行次数
-        :attr date_changed: 改变日期
-        :attr description: 描述
-        :attr run_immediately: 立刻运行
         """
 
         meta = {'allow_inheritance': True}
