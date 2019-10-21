@@ -12,3 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+"""
+    app.extensions.mongobeat
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    MongoBeat拓展
+
+    源码来自：https://github.com/zmap/celerybeat-mongo
+
+    一部分做了汉化，还有修改了源码
+"""

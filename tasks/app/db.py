@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 @task
 def create_pg_db_and_user(context, with_password=False, su_passwd=None,
-                          config_types=['development', 'testing']):
+                          config_types=[]):
     """
     根据配置新建postgresql数据库以及用户
     """
@@ -22,20 +22,26 @@ def create_pg_db_and_user(context, with_password=False, su_passwd=None,
 
     if su_passwd is None:
         su_passwd = getpass.getpass('sudo password:')
+    if len(config_types) == 0:
+        config_types = ['development', 'testing']
     for config_type in config_types:
         with open(f'cmds/{config_type}_createpg.sh') as f:
             part = f.read()
+        log.info(f"正在为{config_type}配置创建rdb")
         context.sudo(f"bash -c 'psql postgres <<< $(echo {part})'", user='postgres', password=su_passwd)
 
 
 @task
 def create_mg_db_and_user(context, admin='admin', passwd='admin',
-                          config_types=['development', 'testing']):
+                          config_types=[]):
     """
     根据配置新建mongodb数据库以及用户
     """
+    if len(config_types) == 0:
+        config_types = ['development', 'testing']
     for config_type in config_types:
         command = f"mongo -u {admin} -p{passwd} < cmds/{config_type}_mongodb.txt"
+        log.info(f"正在为{config_type}配置创建rdb")
         context.run(command, echo=True, pty=True)
 
 

@@ -114,6 +114,7 @@ class UserModelView(AuthModelView):
 
         super().on_model_change(form, model, is_created)
 
+
 class UserInfoModelView(AuthModelView):
     """
     用户信息管理
@@ -146,12 +147,14 @@ class UserInfoModelView(AuthModelView):
         'sex': _sex_label
     }
 
+
 class RoleModelView(AuthModelView):
     """用户角色管理"""
 
     column_searchable_list = ['name']
     column_editable_list = ['user_default', 'group_default']
     column_editable_list += AuthModelView.column_editable_list
+
 
 class PermissionModelView(AuthModelView):
     """用户权限管理
@@ -165,6 +168,7 @@ class PermissionModelView(AuthModelView):
             'disabled': True
         },
     }
+
 
 class GroupModelView(AuthModelView):
     """

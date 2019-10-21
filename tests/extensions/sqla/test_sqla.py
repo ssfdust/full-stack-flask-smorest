@@ -5,6 +5,7 @@ from werkzeug.exceptions import NotFound
 from app.extensions.sqla import Model, SurrogatePK
 from marshmallow import Schema, fields
 
+
 class TestSqla():
 
     def test_soft_delete(self, app, db):

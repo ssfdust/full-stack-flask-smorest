@@ -106,11 +106,6 @@
       <!-- Notifications Dropdown Menu -->
               {% block access_control %}
               {% endblock %}
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -229,8 +224,6 @@
 <script src="{{ url_for('static', filename="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js") }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ url_for('static', filename="js/adminlte.min.js") }}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{ url_for('static', filename="js/demo.js") }}"></script>
 {% if admin_view.name=="首页" %}
 <script src="https://cdn.bootcss.com/paginationjs/2.1.4/pagination.min.js"></script>
 <!-- SweetAlert2 -->

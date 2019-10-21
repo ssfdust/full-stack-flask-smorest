@@ -73,25 +73,21 @@ def create_app(modules, config_name='development'):
     logger.info(f"Server Started. Server name: {app.config['SERVER_NAME']}")
 
     app.config['CELERY_MONGODB_SCHEDULER_URL'] = mongon_opts_str(app.config['MONGODB_SETTINGS'])
+    app.config['ENABLED_MODULES'] = modules
+
     init_app(app)
 
     # 只能在__init__.py中使用migrate
     # https://github.com/miguelgrinberg/Flask-Migrate/issues/196#issuecomment-381381242
     Migrate(app, db)
-    register_modules(app, modules)
+    register_modules(app)
 
     return app
 
 
-def register_modules(app, module_names):
+def register_modules(app):
     """
     注册模块
-
-    :param              app: Flask                  Flask实例
-    :param              module_names: list          启用的模块
-
-    ```module_names``` 启用的模块名列表，模块名必须在app.modules
-    下存在，将会按照顺序导入模块。
 
     为Flask实例注册项目的主要模块
     """
@@ -100,4 +96,4 @@ def register_modules(app, module_names):
 
     socketio.init_module()
     processor.init_processor()
-    modules.init_app(app, module_names)
+    modules.init_app(app)

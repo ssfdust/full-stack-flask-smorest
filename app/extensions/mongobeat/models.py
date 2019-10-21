@@ -19,20 +19,25 @@
 # use this file except in compliance with the License. You may obtain a copy
 # of the License at http://www.apache.org/licenses/LICENSE-2.0
 
+"""
+    app.extensions.mongobeat
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    MongoBeat的ORM模块
+"""
 
 import datetime
 
 import celery.schedules
 from celery import current_app
-#  from mongoengine import *
 from mongoengine import (
-    BooleanField, DateTimeField, DictField, DynamicDocument, EmbeddedDocument,
-    EmbeddedDocumentField, IntField, ListField, StringField, ValidationError,
-    DynamicField
+    BooleanField, DateTimeField, DictField, DynamicDocument, DynamicField,
+    EmbeddedDocument, EmbeddedDocumentField, IntField, ListField, StringField
 )
 
 
 def get_periodic_task_collection():
+    """获取表名"""
     if hasattr(current_app.conf, "CELERY_MONGODB_SCHEDULER_COLLECTION") \
             and current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION:
         return current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION
@@ -44,16 +49,39 @@ PERIODS = ('days', 'hours', 'minutes', 'seconds', 'microseconds')
 
 
 class PeriodicTask(DynamicDocument):
-    """mongo database model that represents a periodic task"""
+    """周期任务的ORM"""
 
     meta = {'collection': get_periodic_task_collection(),
             'allow_inheritance': True}
 
     class Interval(EmbeddedDocument):
+        """
+        :attr name: 定时名称
+        :attr task: 任务名称
+        :attr interval: 定时
+        :attr crontab: crontab
+        :attr args: 参数
+        :attr kwargs: 键值参数
+        :attr queue: 队列
+        :attr no_changes: nochanges
+        :attr exchange: AMPQ的交换器
+        :attr routing_key: AMPQ路由
+        :attr soft_time_limit: 软时间限制
+        :attr expires: 过期时间
+        :attr start_after: 在某时间后运行
+        :attr enabled: 启用
+        :attr last_run_at: 最后运行时间
+        :attr total_run_count: 总计运行次数
+        :attr max_run_count: 最大运行次数
+        :attr date_changed: 改变日期
+        :attr description: 描述
+        :attr run_immediately: 立刻运行
+        """
+
         meta = {'allow_inheritance': True}
 
-        every = IntField(min_value=0, default=0, required=True)
-        period = StringField(choices=PERIODS)
+        every = IntField(min_value=0, default=0, required=True, verbose_name='周期')
+        period = StringField(choices=PERIODS, verbose_name='每')
 
         @property
         def schedule(self):
@@ -69,13 +97,15 @@ class PeriodicTask(DynamicDocument):
             return 'every {0.every} {0.period}'.format(self)
 
     class Crontab(EmbeddedDocument):
+        """
+        """
         meta = {'allow_inheritance': True}
 
-        minute = StringField(default='*', required=True)
-        hour = StringField(default='*', required=True)
-        day_of_week = StringField(default='*', required=True)
-        day_of_month = StringField(default='*', required=True)
-        month_of_year = StringField(default='*', required=True)
+        minute = StringField(default='*', required=True, verbose_name='分钟')
+        hour = StringField(default='*', required=True, verbose_name='小时')
+        day_of_week = StringField(default='*', required=True, verbose_name='周')
+        day_of_month = StringField(default='*', required=True, verbose_name='日')
+        month_of_year = StringField(default='*', required=True, verbose_name='月')
 
         @property
         def schedule(self):
@@ -89,51 +119,49 @@ class PeriodicTask(DynamicDocument):
             def rfield(f):
                 return f and str(f).replace(' ', '') or '*'
 
-            return '{0} {1} {2} {3} {4} (m/h/d/dM/MY)'.format(
+            return '{0} {1} {2} {3} {4} (分/时/周/日/月)'.format(
                 rfield(self.minute), rfield(self.hour), rfield(self.day_of_week),
                 rfield(self.day_of_month), rfield(self.month_of_year),
             )
 
-    name = StringField(unique=True)
-    task = StringField(required=True)
+    name = StringField(unique=True, verbose_name='定时名称')
+    task = StringField(required=True, verbose_name='任务名称')
 
-    interval = EmbeddedDocumentField(Interval)
-    crontab = EmbeddedDocumentField(Crontab)
+    args = ListField(DynamicField(), verbose_name='参数')
+    kwargs = DictField(verbose_name='键值参数')
 
-    args = ListField(DynamicField())
-    kwargs = DictField()
+    queue = StringField(verbose_name='队列')
+    exchange = StringField(verbose_name='AMPQ的交换器')
+    routing_key = StringField(verbose_name='AMPQ路由')
+    soft_time_limit = IntField(verbose_name='软时间限制')
 
-    queue = StringField()
-    exchange = StringField()
-    routing_key = StringField()
-    soft_time_limit = IntField()
+    expires = DateTimeField(verbose_name='过期时间')
+    start_after = DateTimeField(verbose_name='在某时间后运行')
+    enabled = BooleanField(default=False, verbose_name='启用')
 
-    expires = DateTimeField()
-    start_after = DateTimeField()
-    enabled = BooleanField(default=False)
+    last_run_at = DateTimeField(verbose_name='最后运行时间')
 
-    last_run_at = DateTimeField()
+    total_run_count = IntField(min_value=0, default=0, verbose_name='总计运行次数')
+    max_run_count = IntField(min_value=0, default=0, verbose_name='最大运行次数')
 
-    total_run_count = IntField(min_value=0, default=0)
-    max_run_count = IntField(min_value=0, default=0)
+    date_changed = DateTimeField(verbose_name='改变日期')
+    description = StringField(verbose_name='描述')
 
-    date_changed = DateTimeField()
-    description = StringField()
+    run_immediately = BooleanField(verbose_name='立刻运行')
 
-    run_immediately = BooleanField()
+    type = StringField(required=True, verbose_name='类型', choices=['crontab', 'interval'])
+    interval = EmbeddedDocumentField(Interval, verbose_name='定时')
+    crontab = EmbeddedDocumentField(Crontab, verbose_name='周期')
 
     # objects = managers.PeriodicTaskManager()
     no_changes = False
 
     def clean(self):
-        """validation by mongoengine to ensure that you only have
-        an interval or crontab schedule, but not both simultaneously"""
-        if self.interval and self.crontab:
-            msg = 'Cannot define both interval and crontab schedule.'
-            raise ValidationError(msg)
-        if not (self.interval or self.crontab):
-            msg = 'Must defined either interval or crontab schedule.'
-            raise ValidationError(msg)
+        """透过MongoEngine验证interval和crontab不是同时存在"""
+        if self.type == 'crontab':
+            self.interval = None
+        else:
+            self.crontab = None
 
     @property
     def schedule(self):

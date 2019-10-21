@@ -19,6 +19,13 @@
 # use this file except in compliance with the License. You may obtain a copy
 # of the License at http://www.apache.org/licenses/LICENSE-2.0
 
+"""
+    app.mongobeat.schedulers
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    调度模块
+"""
+
 import mongoengine
 import traceback
 import datetime

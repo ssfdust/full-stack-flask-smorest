@@ -1,7 +1,6 @@
 $('#fa_modal_window').on('shown.bs.modal', function () {
-  // do something…
-    var beattype = $('label[for=type').parent();
-    var crontab = $('label[for=crontab]').parent();
+    var beattype = $('label[for=type').parent().parent();
+    var crontab = $('label[for=crontab]').parent().parent();
     var interval = $('label[for=interval]').parent();
     var form = $('form[role=form]');
     var formarr = form.serializeArray();
@@ -11,13 +10,16 @@ $('#fa_modal_window').on('shown.bs.modal', function () {
             curtype = formarr[i]['value'];
         }
     }
+    interval.remove();
+    crontab.remove();
     if (curtype === 'crontab'){
-        interval.remove();
+        crontab.insertAfter(beattype);
     } else {
-        crontab.remove();
-    }
+        interval.insertAfter(beattype);
+    };
     $('select#type').change(function(data) {
-        if (data.val === 'crontab'){
+        var val = data.currentTarget.value;
+        if (val === 'crontab'){
             interval.remove();
             crontab.insertAfter(beattype);
         } else {

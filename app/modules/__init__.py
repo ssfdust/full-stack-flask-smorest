@@ -26,17 +26,13 @@
 """
 
 
-def init_app(app, module_names):
+def init_app(app):
     """
-    引入模块
-
-    :param              app: Flask                  Flask实例
-    :param              module_names: list          启用的模块
-
-    ```module_names``` 启用的模块列表，模块名必须在app.modules下存在，
-    将会按照顺序导入模块。
+    初始化模块
     """
     from importlib import import_module
+
+    module_names = app.config['ENABLED_MODULES']
 
     for module_name in module_names:
         module = import_module(f'.modules.{module_name}', 'app')

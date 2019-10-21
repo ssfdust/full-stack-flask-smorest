@@ -7,6 +7,7 @@ import pytest
 import mongoengine as db
 from app.extensions.mongo.fields import ArrowField
 import arrow
+from datetime import datetime
 
 
 def faketimezone():
@@ -23,6 +24,32 @@ class TestArrowField():
         with pytest.raises(db.errors.ValidationError):
             md = Sample(created="")
             md.save()
+
+    def test_arrow_from_string(self, database, monkeypatch):
+        import flask_babel
+        monkeypatch.setattr(flask_babel, "get_timezone", faketimezone)
+
+        class Sample(db.Document):
+            created = ArrowField()
+
+        md = Sample(created="1571632399")
+        md.save()
+
+        assert isinstance(md.created, arrow.Arrow)
+        assert md.created.format('YYYY-MM-DD') == '2019-10-21'
+
+    def test_arrow_from_dt(self, database, monkeypatch):
+        import flask_babel
+        monkeypatch.setattr(flask_babel, "get_timezone", faketimezone)
+
+        class Sample(db.Document):
+            created = ArrowField()
+
+        md = Sample(created=datetime(1993, 8, 17))
+        md.save()
+
+        assert isinstance(md.created, arrow.Arrow)
+        assert md.created.format('YYYY-MM-DD') == '1993-08-17'
 
     def test_arrow_from_whitespace_string(self, database):
         class Sample(db.Document):
