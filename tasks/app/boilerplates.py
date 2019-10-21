@@ -257,10 +257,8 @@ def crud_module(context, module_name='', module_name_singular='',
         loader=jinja2.FileSystemLoader('tasks/app/templates/crud_module')
     )
 
-    # 从pyproject中获取author
-    pyproject = toml.load('pyproject.toml')
-    authors = pyproject['tool']['poetry']['authors']
-    author = authors[0] if authors else ''
+    # 从.AUTHOR中获取author
+    author = load_author()
 
     for template_file in (
         '__init__',
@@ -335,3 +333,19 @@ def permissions_adder(context, model_name='', module_title=''):
 
     log.info("新权限文件 `%s` 生成成功.\n", 'app/modules/auth/permissions.new.py')
     log.info("请编辑后替换旧权限文件，并执行`invoke app.db.update-app-permissions`")
+
+
+def load_author():
+    """从.AUTHOR中获取作者信息"""
+    try:
+        author = toml.load('.AUTHOR')
+        author = "{AUTHOR} {EMAIL}".format(**author)
+    except FileNotFoundError:
+        log.warning("未找到.AUTHOR文件，即将新建...")
+        author_name = input('请输入作者名：')
+        email = input('请输入作者邮箱：')
+        author = f"{author_name} {email}"
+        with open('.AUTHOR', 'w') as f:
+            toml.dump({'AUTHOR': author_name, 'EMAIL': email}, f)
+
+    return author
