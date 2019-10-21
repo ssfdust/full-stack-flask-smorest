@@ -8,7 +8,6 @@ import string
 import re
 import os
 import datetime
-import toml
 from pathlib import Path
 
 from invoke import task
@@ -337,6 +336,11 @@ def permissions_adder(context, model_name='', module_title=''):
 
 def load_author():
     """从.AUTHOR中获取作者信息"""
+    try:
+        import toml
+    except ImportError:
+        log.critical("缺少toml模块，请通过`pip install toml`安装")
+        return
     try:
         author = toml.load('.AUTHOR')
         author = "{AUTHOR} {EMAIL}".format(**author)

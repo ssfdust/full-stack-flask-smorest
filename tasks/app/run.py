@@ -5,8 +5,11 @@
 """
 
 from invoke import task
+import logging
 
-@task
+log = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+@task(default=True)
 def server(context,
            host='127.0.0.1',
            port=8000,
@@ -30,43 +33,5 @@ def server(context,
         if debug:
             command += ' --debug'
         if use_reloader:
-            command += ' --reloader'
+            command += ' --use-reloader'
         context.run(command, pty=pty)
-
-@task
-def status(context):
-    """
-    查询运行状态
-    """
-    command = "supervisorctl status"
-    context.run(command)
-
-@task
-def logs(context,
-         process='gunicorn'):
-    """
-    打印Supervord日志
-    默认: gunicorn
-    """
-    command = f"supervisorctl fg {process}"
-    context.run(command)
-
-@task
-def shutdown(context):
-    """
-    关闭supervord
-    """
-    command = "supervisorctl shutdown"
-    context.run(command)
-
-@task(default=True)
-def daemon(context):
-    """
-    从supervord启动多服务.
-    """
-    from pathlib import Path
-    log_path = Path('logs')
-    if not log_path.exists():
-        log_path.mkdir()
-    command = "supervisord"
-    context.run(command)

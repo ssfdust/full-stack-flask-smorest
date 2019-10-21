@@ -21,7 +21,7 @@
 """
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField
-from flask_admin.form.fields import DateTimeField
+from flask_admin.form.fields import DateTimeField, Select2Field
 from flask_admin.form.upload import FileUploadInput
 
 
@@ -50,3 +50,35 @@ class JustUploadField(StringField):
     """
 
     widget = FileUploadInput()
+
+
+class TaskSelect2Field(Select2Field):
+    """
+    Celery任务选择器
+    """
+
+    _task_list = None
+
+    def __new__(cls, *args, **kw):
+        return super(TaskSelect2Field, cls).__new__(cls, *args, **kw)
+
+    @classmethod
+    def get_task_list(cls):
+        from celery.task.control import inspect
+        from itertools import chain
+
+        if cls._task_list is None:
+            i = inspect()
+            i.registered_tasks()
+            cls._task_list = set(chain.from_iterable(i.registered_tasks().values()))
+        return cls._task_list
+
+    @property
+    def task_list(self):
+        if self._task_list is None:
+            self.get_task_list()
+        return self._task_list
+
+    def iter_choices(self):
+        for key in self.task_list:
+            yield (key, key, key == self.data)

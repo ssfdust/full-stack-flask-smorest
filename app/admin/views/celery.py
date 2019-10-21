@@ -23,34 +23,7 @@ celery的管理模块
 
 from ..formaters import json_formatter, line_formatter
 from .bases import AuthMongView
-from flask_admin.model.fields import AjaxSelectField
-from flask_admin.model.ajax import AjaxModelLoader
-
-
-class TaskAjaxLoader(AjaxModelLoader):
-
-    def __init__(self, name, **options):
-        super().__init__(name, options)
-
-    def format(self, model):
-        return (model, model)
-
-    def get_one(self, pk):
-        for name in self._task_list:
-            if pk == name:
-                return name
-
-    @property
-    def _task_list(self):
-        from celery.task.control import inspect
-        from itertools import chain
-
-        i = inspect()
-        i.registered_tasks()
-        return set(chain.from_iterable(i.registered_tasks().values()))
-
-    def get_list(self, query, offset=0, limit=10):
-        return self._task_list
+from ..forms import TaskSelect2Field
 
 
 class CeleryScheduleView(AuthMongView):
@@ -75,15 +48,7 @@ class CeleryScheduleView(AuthMongView):
     column_filters = ['name']
     can_view_details = True
     form_overrides = {
-        'task': AjaxSelectField
-    }
-    form_args = {
-        'task': {
-            'loader': TaskAjaxLoader('task')
-        }
-    }
-    form_ajax_refs = {
-        'task': TaskAjaxLoader('task')
+        'task': TaskSelect2Field
     }
 
     def _scheduleinfo(view, context, model, name):

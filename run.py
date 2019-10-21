@@ -35,7 +35,7 @@ def main():
                         help='设置服务器默认IP(默认：0.0.0.0)')
     parser.add_argument('-d', '--debug', action='store_true', default=False,
                         help='开启DEBUG模式 (默认: 关闭')
-    parser.add_argument('-r', '--reloader', action='store_true', default=False,
+    parser.add_argument('-r', '--use-reloader', action='store_true', default=False,
                         help='开启重加载模式 (默认: 关闭)')
     parser.add_argument('-p', '--port', action='store',
                         type=int, default=8000,
@@ -46,7 +46,7 @@ def main():
     from app.extensions import socketio
 
     socketio.run(app, host=args.host, debug=args.debug,
-                 use_reloader=args.reloader, port=args.port)
+                 use_reloader=args.use_reloader, port=args.port)
 
 
 if __name__ == '__main__':
