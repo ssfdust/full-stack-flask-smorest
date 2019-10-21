@@ -73,7 +73,6 @@ class Progress(AMQPStore):
         super().__init__(
             key='celery_progress',
             value=None,
-            requeue=False,
             routing_key='celery',
             exchange='celery_progress',
             expires=3600*24
