@@ -52,11 +52,6 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
         """
         处理数据到数据库
 
-        :param              value: Arrow                Arrow时间
-        :param              dialect: Sqla.dialect       SQLA的dialect
-
-        :return             datetime                    DB-API的datetime类型
-
         1. 替换UTC的时区为当当前时区，后转为当前时区
         2. 转换非UTC时区的时间为当前时区
         """
@@ -71,12 +66,7 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
 
     def process_result_value(self, value, dialect):
         """
-        渲染内联的支持
-
-        :param              value: Arrow                Arrow时间
-        :param              dialect: Sqla.dialect       SQLA的dialect
-
-        :return             arrow.Arrow                 本地时间
+        从数据库中将时间转为arrow类型
         """
         from flask_babel import get_timezone
         if value:
@@ -86,11 +76,6 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
     def process_literal_param(self, value, dialect):
         """
         渲染内联的支持
-
-        :param              value: Arrow                Arrow时间
-        :param              dialect: Sqla.dialect       SQLA的dialect
-
-        :return             str                         渲染的值
         """
         from flask_babel import get_timezone
 
@@ -102,14 +87,10 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
         return utc_val.format('YYYY-MM-DD HH:mm:ss')
 
     def _coerce(self, value):
-        """
-        预处理
-
-        :param                  value: object           未知类型的可以转换值
-
-        :return                 arrow.Arrow             Arrow时间
-        """
-        if isinstance(value, six.string_types):
+        """ 预处理 """
+        if value is None:
+            return None
+        elif isinstance(value, six.string_types):
             value = arrow.get(value)
         elif isinstance(value, Iterable):
             value = arrow.get(*value)

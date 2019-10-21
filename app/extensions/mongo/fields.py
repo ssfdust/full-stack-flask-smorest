@@ -34,6 +34,10 @@ import arrow
 
 
 class ArrowField(BaseField):
+    """
+    自定义ArrowType，支持arrow类型
+    同时处理UTC时间
+    """
 
     def validate(self, value):
         new_value = self.to_mongo(value)
@@ -41,6 +45,12 @@ class ArrowField(BaseField):
             self.error(u'cannot parse date "%s" type: %s' % (value, type(value)))
 
     def to_mongo(self, value):
+        """
+        处理数据到数据库
+
+        1. 替换UTC的时区为当当前时区，后转为当前时区
+        2. 转换非UTC时区的时间为当前时区
+        """
         from flask_babel import get_timezone
         if value:
             val = self._coerce(value)
@@ -51,6 +61,7 @@ class ArrowField(BaseField):
         return value
 
     def _coerce(self, value):
+        """ 预处理 """
         if value is None:
             return None
         elif isinstance(value, six.string_types):
@@ -62,6 +73,9 @@ class ArrowField(BaseField):
         return value
 
     def to_python(self, value):
+        """
+        从数据库中将时间转为arrow类型
+        """
         from flask_babel import get_timezone
         if value:
             return arrow.get(value).to(str(get_timezone()))
