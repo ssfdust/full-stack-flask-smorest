@@ -15,7 +15,7 @@ class TestSqla():
 
         db.create_all()
         last = None
-        for i in range(10):
+        for _ in range(10):
             last = SoftDelete.create()
 
         assert SoftDelete.query.count() == 10

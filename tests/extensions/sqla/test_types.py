@@ -37,8 +37,7 @@ class TestArrowDateTimeType(object):
 
     def test_python_type(self, session, Sample):
         from app.extensions.sqla.types import ArrowType
-        from datetime import datetime
-        ArrowType().python_type == datetime
+        assert ArrowType().python_type == datetime
 
     def test_parameter_processing(self, session, Sample):
         sample = Sample(

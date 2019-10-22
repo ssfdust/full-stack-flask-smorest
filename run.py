@@ -18,11 +18,10 @@
 """
 
 from eventlet import monkey_patch
+import sys
 
 monkey_patch()
 
-from loguru import logger  # noqa
-import sys  # noqa
 
 def main():
     """

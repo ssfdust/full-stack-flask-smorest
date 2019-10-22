@@ -138,7 +138,7 @@ def count_last_week_method_requests():
     }
     colors = []
 
-    for k, v in results.items():
+    for k, _ in results.items():
         if k in methods:
             results[k] = int(results[k])
             colors.append(methods[k])

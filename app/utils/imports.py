@@ -22,7 +22,7 @@ def import_submodules(context: dict, root_module: str, path: str):
     >>> import_submodules(locals(), __name__, __path__)
     """
     modules = {}
-    for loader, module_name, is_pkg in pkgutil.walk_packages(path, root_module + "."):
+    for loader, module_name, _ in pkgutil.walk_packages(path, root_module + "."):
         # this causes a Runtime error with model conflicts
         # module = loader.find_module(module_name).load_module(module_name)
         module = __import__(module_name, globals(), locals(), ["__name__"])
