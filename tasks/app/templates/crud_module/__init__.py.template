@@ -20,6 +20,8 @@
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     {{ module_title }}模块
+
+    {{ description }}
 """
 
 from flask_smorest import Blueprint
