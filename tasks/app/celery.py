@@ -3,7 +3,9 @@ Celery相关的Invoke模块
 """
 from invoke import task
 
-@task(default=True)
+
+@task(default=True,
+      help={'level': '日志等级，默认：INFO'})
 def start(context, level="INFO"):
     """
     启动Celery服务
@@ -12,6 +14,7 @@ def start(context, level="INFO"):
         celery --app=app.app:celery worker -l {level} -E -P eventlet
     """
     context.run(command, pty=True)
+
 
 @task
 def beat(context):

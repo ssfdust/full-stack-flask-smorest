@@ -14,6 +14,10 @@ from invoke import task
 
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+BACKUP_PERMISSIONS_FILE = 'app/modules/auth/permissions.bak.py'
+NEW_PERMISSIONS_FILE = 'app/modules/auth/permissions.new.py'
+PERMISSIONS_FILE = 'app/modules/auth/permissions.py'
+
 CONFIG_PATH = 'app/config/{config}.toml'
 NGINX_PATH = 'deploy/nginx/flask.conf'
 MONGO_PATH = 'cmds/{config}_mongodb.txt'
@@ -195,7 +199,14 @@ def generate_config(context):
     log.info("配置文件生成完毕.")
 
 
-@task
+@task(
+    help={
+        'module_name': '模块名称',
+        'module_title': '模块标题（注释用）',
+        'module_name_singular': '模块单例名',
+        'description': '模块描述'
+    }
+)
 def crud_module(context, module_name='', module_name_singular='',
                 module_title='', description=''):
     # pylint: disable=unused-argument
@@ -298,8 +309,47 @@ def crud_module(context, module_name='', module_name_singular='',
 
     log.info("模块 `%s` 创建成功.", module_name)
 
+    log.info("请在app/factory.py中的ENABLED_MODULES中添加新模块以激活。")
 
-@task
+
+@task(
+    help={'revert': '还原'}
+)
+def apply_changes(context, revert=False):
+    """
+    应用新模块的权限
+    """
+    import shutil
+    import os
+
+    if os.path.exists(BACKUP_PERMISSIONS_FILE) and not revert:
+        os.remove(BACKUP_PERMISSIONS_FILE)
+    if os.path.exists(NEW_PERMISSIONS_FILE) and revert:
+        os.remove(NEW_PERMISSIONS_FILE)
+    if not revert:
+        orders = [
+            [PERMISSIONS_FILE, BACKUP_PERMISSIONS_FILE],
+            [NEW_PERMISSIONS_FILE, PERMISSIONS_FILE]
+        ]
+    else:
+        orders = [
+            [PERMISSIONS_FILE, NEW_PERMISSIONS_FILE],
+            [BACKUP_PERMISSIONS_FILE, PERMISSIONS_FILE]
+        ]
+    for orig, dst in orders:
+        if os.path.exists(orig):
+            log.info(f"移动{orig}到{dst}")
+            shutil.move(orig, dst)
+        else:
+            log.critical(f"{orig}不存在应用失败")
+            return
+    log.info("应用完毕")
+
+
+@task(
+    help={'model_name': '模块ORM名',
+          'module_title': '模块名'}
+)
 def permissions_adder(context, model_name='', module_title=''):
     # pylint: disable=unused-argument
     """

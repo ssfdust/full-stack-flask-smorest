@@ -5,14 +5,12 @@ Shell相关的Invoke模块
 
 from invoke import task
 
+
 @task
-def enter(context, install_dependencies=False):
+def enter(context):
     """
     进入IPython的开发shell，类似于flask shell
     """
-    if install_dependencies:
-        context.invoke_execute(context, 'app.dependencies.install')
-
     from app import app
     from IPython.terminal.ipapp import load_default_config
     from traitlets.config.loader import Config

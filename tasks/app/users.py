@@ -5,8 +5,11 @@
 
 from ._utils import app_context_task
 
-@app_context_task(help={'username': "qwe",
-                        'email': "qwe@qq.com"})
+
+@app_context_task(help={'username': "用户名",
+                        'email': "用户邮箱",
+                        'is-admin': '管理员权限（默认：是）',
+                        'is-active': '启用（默认：是）'})
 def create_user(context,
                 username,
                 email,

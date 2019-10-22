@@ -5,15 +5,20 @@ Invoke的相关配置内容
 
 from invoke import Collection
 
-from . import boilerplates, dependencies, env, run, users, celery, db, manager
+from . import (
+    boilerplates, celery, db, dependencies, env, init, manager, run, tests,
+    users
+)
 
 namespace = Collection(
     dependencies,
     celery,
-    db,
+    init,
     env,
     run,
     users,
     boilerplates,
     manager,
+    tests,
+    db,
 )

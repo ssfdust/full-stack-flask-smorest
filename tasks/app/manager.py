@@ -9,6 +9,7 @@ import logging
 
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+
 @task
 def status(context):
     """
@@ -17,7 +18,8 @@ def status(context):
     command = "supervisorctl status"
     context.run(command)
 
-@task
+
+@task(help={'program': 'supervisord.conf中定义的program名'})
 def start(context, program):
     """
     运行服务
@@ -25,7 +27,8 @@ def start(context, program):
     command = f"supervisorctl start {program}"
     context.run(command)
 
-@task
+
+@task(help={'program': 'supervisord.conf中定义的program名'})
 def stop(context, program):
     """
     停止服务
@@ -33,7 +36,8 @@ def stop(context, program):
     command = f"supervisorctl stop {program}"
     context.run(command)
 
-@task
+
+@task(help={'program': 'supervisord.conf中定义的program名'})
 def restart(context, program):
     """
     重启服务
@@ -41,15 +45,17 @@ def restart(context, program):
     command = f"supervisorctl restart {program}"
     context.run(command)
 
-@task
+
+@task(help={'program': 'supervisord.conf中定义的program名'})
 def logs(context,
-         process='gunicorn'):
+         program='gunicorn'):
     """
     打印Supervord日志
     默认: gunicorn
     """
-    command = f"supervisorctl fg {process}"
+    command = f"supervisorctl fg {program}"
     context.run(command)
+
 
 @task
 def shutdown(context):
@@ -58,6 +64,7 @@ def shutdown(context):
     """
     command = "supervisorctl shutdown"
     context.run(command)
+
 
 @task(default=True)
 def daemon(context):
