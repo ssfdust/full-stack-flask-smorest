@@ -21,10 +21,6 @@ try:
 except ImportError:
     import mongoengine as db
     setattr(db, "ArrowField", db.DateTimeField)
-try:
-    from app.utils.local import localnow
-except ImportError:
-    localnow = None
 
 
 class Tasks(db.Document):

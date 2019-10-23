@@ -320,7 +320,6 @@ def apply_changes(context, revert=False):
     应用新模块的权限
     """
     import shutil
-    import os
 
     if os.path.exists(BACKUP_PERMISSIONS_FILE) and not revert:
         os.remove(BACKUP_PERMISSIONS_FILE)

@@ -101,43 +101,6 @@ class LoginView(MethodView):
             logger.error(f"{args['email']} 登录密码错误")
             abort(403, "密码错误")
 
-    @blp.arguments(params.EmailParam, location="query")
-    @blp.response(code=404, description='用户不存在')
-    @blp.response(schemas.UserViewPostSchema, description='登录成功')
-    def get(self, args):
-        """
-        根据用户Email获取token
-
-        只在开发时使用方便获取token,
-        <br>默认用户名:wisdom@zero.any.else
-        """
-        user = models.User.get_by_email(args['email'])
-
-        if user is None:
-            logger.warning(f"{args['email']} 不存在")
-            abort(404, "用户不存在")
-        else:
-            logger.info(f"为{args['email']}生成token")
-            # 生成jwt
-            access_token = create_access_token(identity=args['email'])
-            refresh_token = create_refresh_token(identity=args['email'])
-
-            # 将token加入数据库
-            add_token_to_database(access_token, app.config['JWT_IDENTITY_CLAIM'])
-            add_token_to_database(refresh_token, app.config['JWT_IDENTITY_CLAIM'])
-
-            logger.info(f"{args['email']} 登录成功")
-
-            # 组装data
-            data = {
-                'tokens': {
-                    'refresh_token': refresh_token,
-                    'access_token': access_token
-                }
-            }
-            return {'code': 0, 'msg': 'success',
-                    'data': data}
-
 
 @blp.route('/captcha')
 class CaptchaView(MethodView):

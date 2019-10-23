@@ -89,11 +89,14 @@ class Progress(AMQPStore):
         self._get_info()
         for i in self._results:
             if i == task_id:
-                return self._results[i]
+                ret = self._results[i]
+                break
         else:
-            return {
+            ret = {
                 'percent': '0'
             }
+
+        return ret
 
 
 def _get_completed_progress():

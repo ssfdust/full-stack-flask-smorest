@@ -84,7 +84,7 @@ class AuthMongView(mong.ModelView):
 
         for n, f in self._get_model_fields():
             if type(f) in SORTABLE_FIELDS:
-                if self.column_display_pk or type(f) != mongoengine.ObjectIdField:
+                if self.column_display_pk or not isinstance(f, mongoengine.ObjectIdField):
                     columns[n] = f
 
         return columns
