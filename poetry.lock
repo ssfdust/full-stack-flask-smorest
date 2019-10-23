@@ -133,18 +133,6 @@ version = "1.4"
 
 [[package]]
 category = "main"
-description = "BSON codec for Python"
-name = "bson"
-optional = false
-python-versions = "*"
-version = "0.5.8"
-
-[package.dependencies]
-python-dateutil = ">=2.4.0"
-six = ">=1.9.0"
-
-[[package]]
-category = "main"
 description = "A captcha library that generates audio and image CAPTCHAs."
 name = "captcha"
 optional = false
@@ -314,6 +302,7 @@ azure = ["azure-storage-blob"]
 reference = "58c384d4d5397431fc6850f414f932630a0d98af"
 type = "git"
 url = "https://github.com/flask-admin/flask-admin.git"
+
 [[package]]
 category = "main"
 description = "Adds i18n/l10n support to Flask applications"
@@ -1230,7 +1219,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "c24ac2941125169250de68298212fd41be8472456f96365308665d75a41a15e4"
+content-hash = "808a1cebe0689b7ac5c75818977531580428a258a5b779868c247611a65691d0"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1293,9 +1282,6 @@ billiard = [
 ]
 blinker = [
     {file = "blinker-1.4.tar.gz", hash = "sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6"},
-]
-bson = [
-    {file = "bson-0.5.8.tar.gz", hash = "sha256:13fb1e5486a611374a06177663c2ab878f0c192c8fc8765a63dfef86859006c9"},
 ]
 captcha = [
     {file = "captcha-0.3-py3-none-any.whl", hash = "sha256:1671f194da3b535fc12f6b0eb349195c7b28a6641381b2c07e31d04aa92fb6fc"},
