@@ -5,7 +5,7 @@ $("#fa_modal_window").on("shown.bs.modal", function () {
     var form = $("form[role=form]");
     var formarr = form.serializeArray();
     var curtype = "";
-    for (i=0;i < formarr.length;i++){
+    for (let i=0;i < formarr.length;i++){
         if (formarr[i].name === "type") {
             curtype = formarr[i].value;
         }
@@ -27,4 +27,4 @@ $("#fa_modal_window").on("shown.bs.modal", function () {
             interval.insertAfter(beattype);
         }
     });
-})
+});
