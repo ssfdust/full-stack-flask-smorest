@@ -6,15 +6,14 @@
 from ._utils import app_context_task
 
 
-@app_context_task(help={'username': "用户名",
-                        'email': "用户邮箱",
-                        'is-admin': '管理员权限（默认：是）',
-                        'is-active': '启用（默认：是）'})
-def create_user(context,
-                username,
-                email,
-                is_admin=True,
-                is_active=True):
+@app_context_task(
+    help={
+        'username': "用户名",
+        'email': "用户邮箱",
+        'is-admin': '管理员权限（默认：是）',
+        'is-active': '启用（默认：是）'
+    })
+def create_user(context, username, email, is_admin=True, is_active=True):
     """
     新建用户
     """
@@ -30,26 +29,27 @@ def create_user(context,
         username=username,
         password=encrypt_password(password),
         email=email,
-        active=is_active
-    )
+        active=is_active)
     if is_admin:
         su_role = Role.get_by_name(ROLES.SuperUser)
         new_user.roles.append(su_role)
-        avator = Storages(name='AdminAvator.jpg',
-                          storetype='avator',
-                          saved=True,
-                          filetype='image/jpeg',
-                          path='default/AdminAvator.jpg',
-                          uid=1,
-                          )
+        avator = Storages(
+            name='AdminAvator.jpg',
+            storetype='avator',
+            saved=True,
+            filetype='image/jpeg',
+            path='default/AdminAvator.jpg',
+            uid=1,
+        )
     else:
         role = Role.get_by_name(ROLES.User)
         new_user.roles.append(role)
-        avator = Storages(name='DefaultAvator.jpg',
-                          storetype='avator',
-                          saved=True,
-                          filetype='image/jpeg',
-                          path='default/DefaultAvator.jpg',
-                          uid=1,
-                          )
+        avator = Storages(
+            name='DefaultAvator.jpg',
+            storetype='avator',
+            saved=True,
+            filetype='image/jpeg',
+            path='default/DefaultAvator.jpg',
+            uid=1,
+        )
     UserInfo(user=new_user, avator=avator).save()

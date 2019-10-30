@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.auth.params
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,7 +58,8 @@ class PasswdParam(ma.Schema):
     """
 
     password = fields.Str(required=True, allow_none=False, description='密码')
-    confirm_password = fields.Str(required=True, allow_none=False, description='确认密码')
+    confirm_password = fields.Str(
+        required=True, allow_none=False, description='确认密码')
 
 
 class EmailParam(ma.Schema):

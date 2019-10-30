@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.security
     ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -22,10 +21,10 @@
     Flask-Security初始化
 """
 
-from flask_security import Security
-from app.modules.auth.models import User, Role
-from flask_security import SQLAlchemyUserDatastore
-from ..sqla import db
+from flask_security import Security, SQLAlchemyUserDatastore
+
+from app.extensions.sqla import db
+from app.modules.auth.models import Role, User
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(datastore=user_datastore)

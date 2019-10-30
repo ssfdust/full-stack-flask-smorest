@@ -16,9 +16,11 @@
 import arrow
 import uuid
 
+
 def mongon_opts_str(opts):
     url = "mongodb://{username}:{password}@{host}:{port}/{db}".format(**opts)
     return url
+
 
 def celery_worker_formatter(worker_info):
     '''

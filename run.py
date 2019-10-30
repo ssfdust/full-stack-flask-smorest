@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 运行服务器
 """
@@ -30,22 +29,55 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='运行Web服务器主程序脚本')
-    parser.add_argument('-b', '--host', type=str, action='store', default='0.0.0.0',
-                        help='设置服务器默认IP(默认：0.0.0.0)')
-    parser.add_argument('-d', '--debug', action='store_true', default=False,
-                        help='开启DEBUG模式 (默认: 关闭')
-    parser.add_argument('-r', '--use-reloader', action='store_true', default=False,
-                        help='开启重加载模式 (默认: 关闭)')
-    parser.add_argument('-p', '--port', action='store',
-                        type=int, default=8000,
-                        help='设置Web服务器开放端口(默认: 8000)')
+    parser.add_argument(
+        '-a',
+        '--admin',
+        action='store_true',
+        default=False,
+        help='从admin启动(默认：否)')
+    parser.add_argument(
+        '-b',
+        '--host',
+        type=str,
+        action='store',
+        default='0.0.0.0',
+        help='设置服务器默认IP(默认：0.0.0.0)')
+    parser.add_argument(
+        '-d',
+        '--debug',
+        action='store_true',
+        default=False,
+        help='开启DEBUG模式 (默认: 关闭')
+    parser.add_argument(
+        '-r',
+        '--use-reloader',
+        action='store_true',
+        default=False,
+        help='开启重加载模式 (默认: 关闭)')
+    parser.add_argument(
+        '-p',
+        '--port',
+        action='store',
+        type=int,
+        default=8000,
+        help='设置Web服务器开放端口(默认: 8000)')
     args = parser.parse_args()
 
-    from app.app import app
+    if not args.admin:
+        from app.app import app
+    else:
+        from admin.app import app
+
     from app.extensions import socketio
 
-    socketio.run(app, host=args.host, debug=args.debug,
-                 use_reloader=args.use_reloader, port=args.port)
+    socketio.init_app(app)
+
+    socketio.run(
+        app,
+        host=args.host,
+        debug=args.debug,
+        use_reloader=args.use_reloader,
+        port=args.port)
 
 
 if __name__ == '__main__':

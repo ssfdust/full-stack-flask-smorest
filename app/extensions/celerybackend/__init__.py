@@ -12,14 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.celerybackend
     ~~~~~~~~~~~~~~~~~~~~~~
 
     自定义Celery后台
 """
-
 
 from celery.backends.mongodb import MongoBackend as BaseMongoBackend
 from datetime import datetime
@@ -32,8 +30,13 @@ import mongoengine
 
 class MongoBackend(BaseMongoBackend):
 
-    def _store_result(self, task_id, result, state,
-                      traceback=None, request=None, **kwargs):
+    def _store_result(self,
+                      task_id,
+                      result,
+                      state,
+                      traceback=None,
+                      request=None,
+                      **kwargs):
         """保存任务的结果与状态"""
         meta = {
             '_id': UUIDLegacy(uuid.UUID(task_id)),
@@ -42,16 +45,15 @@ class MongoBackend(BaseMongoBackend):
             'date_done': datetime.utcnow(),
             'traceback': self.encode(str(traceback)),
             'checked': False,
-            'children': self.encode(
-                self.current_task_children(request),
-            ),
+            'children': self.encode(self.current_task_children(request),),
         }
         if request and getattr(request, 'parent_id', None):
             meta['parent_id'] = request.parent_id
 
         try:
             self.collection.update_one({'_id': UUIDLegacy(uuid.UUID(task_id))},
-                                       {'$set': meta}, upsert=True)
+                                       {'$set': meta},
+                                       upsert=True)
         except InvalidDocument as exc:
             raise EncodeError(exc)
 

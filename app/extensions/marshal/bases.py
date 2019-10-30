@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.marshal.bases
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,8 +27,8 @@
     }
 """
 
-
 from marshmallow import Schema, fields
+
 
 class BaseMsgSchema(Schema):
     """基本消息格式"""
@@ -37,10 +36,12 @@ class BaseMsgSchema(Schema):
     msg = fields.Str(description='消息', default='success')
     code = fields.Int(description='状态码', default='0')
 
+
 class BaseIntListSchema(Schema):
     """基本json列表格式"""
 
     lst = fields.List(fields.Int, missing=[], description='数字列表')
+
 
 class LinkMetaSchema(Schema):
     """基本分页链接格式"""
@@ -49,6 +50,7 @@ class LinkMetaSchema(Schema):
     prev = fields.Str(description='前一页url')
     first = fields.Str(description='首页url')
     last = fields.Str(description='尾页url')
+
 
 class PageMetaSchema(Schema):
     """基本分页页码格式"""
@@ -59,12 +61,14 @@ class PageMetaSchema(Schema):
     pages = fields.Integer(description='总页数')
     links = fields.Nested(LinkMetaSchema)
 
+
 class BasePageSchema(Schema):
     """基本分页格式"""
 
     msg = fields.Str(description='消息', default='success')
     meta = fields.Nested(PageMetaSchema, description="分页Meta信息")
     code = fields.Int(description='状态码', default='0')
+
 
 class UploadField(fields.Field):
     """文件提交栏，复用Field类型"""

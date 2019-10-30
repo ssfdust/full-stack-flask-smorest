@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def handle_avator(args, storage):
     from modules.users.schemas import UserInfoSchema
 

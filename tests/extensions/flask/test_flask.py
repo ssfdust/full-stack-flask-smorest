@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-
 """测试自定义的Flask"""
 
 import tempfile
 import pytest
 
 from pathlib import Path
+
 
 class TestFlask():
 
@@ -51,10 +51,10 @@ class TestFlask():
     def test_get_namespace(self):
         from app.extensions.flask.config import Config
         config = Config()
-        config.from_mapping({
-            'TEST_A': 1,
-            'TEST_B': 2,
-            'EAT_C': 3
-        })
+        config.from_mapping({'TEST_A': 1, 'TEST_B': 2, 'EAT_C': 3})
         assert config.get_namespace('TEST_') == {'a': 1, 'b': 2}
-        assert config.get_namespace('TEST_', trim_namespace=False) == {'test_a': 1, 'test_b': 2}
+        assert config.get_namespace(
+            'TEST_', trim_namespace=False) == {
+                'test_a': 1,
+                'test_b': 2
+            }

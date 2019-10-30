@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """测试基本类型"""
+
 
 class TestBasesMaClass():
 

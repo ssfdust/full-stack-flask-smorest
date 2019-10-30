@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.sqla
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,16 +26,14 @@
     核心部分从一个flask-restful项目中摘录出来，现在已经找不到了
 """
 
-from .sqla import SQLAlchemy
 from .mixin import CRUDMixin
+from .db_instance import db
 from flask_sqlalchemy import BaseQuery
 
 try:
     from app.utils.local import localnow
 except ImportError:
     localnow = None
-
-db = SQLAlchemy()
 
 
 class QueryWithSoftDelete(BaseQuery):
@@ -53,15 +50,18 @@ class QueryWithSoftDelete(BaseQuery):
         obj._with_deleted = kwargs.pop('_with_deleted', False)
         if len(args) > 0:
             super(QueryWithSoftDelete, obj).__init__(*args, **kwargs)
-            return obj.filter_by(deleted=False) if not obj._with_deleted else obj
+            return obj.filter_by(
+                deleted=False) if not obj._with_deleted else obj
         return obj
 
     def __init__(self, *args, **kwargs):
         pass
 
     def with_deleted(self):
-        return self.__class__(db.class_mapper(self._mapper_zero().class_),
-                              session=db.session(), _with_deleted=True)
+        return self.__class__(
+            db.class_mapper(self._mapper_zero().class_),
+            session=db.session(),
+            _with_deleted=True)
 
     def _get(self, *args, **kwargs):
         """提供原本的get方法"""
@@ -84,6 +84,7 @@ class Model(CRUDMixin, db.Model):
 
 # https://speakerdeck.com/zzzeek/building-the-app
 
+
 class SurrogatePK(object):
     """
     数据库表栏目模板
@@ -94,14 +95,40 @@ class SurrogatePK(object):
     :attr           created: Arrow      创建时间
     """
 
-    id = db.Column(db.Integer, primary_key=True, info={'marshmallow': {'dump_only': True}})
-    deleted = db.Column(db.Boolean, nullable=False, doc='已删除', default=False, info={'marshmallow': {'dump_only': True}})
-    modified = db.Column(db.ArrowType(True), nullable=False, doc='修改时间',
-                         default=localnow,
-                         info={'marshmallow': {'format': '%Y-%m-%d %H:%M:%S', 'dump_only': True}})
-    created = db.Column(db.ArrowType(True), nullable=False, doc='创建时间',
-                        default=localnow,
-                        info={'marshmallow': {'format': '%Y-%m-%d %H:%M:%S', 'dump_only': True}})
+    id = db.Column(
+        db.Integer, primary_key=True, info={'marshmallow': {
+            'dump_only': True
+        }})
+    deleted = db.Column(
+        db.Boolean,
+        nullable=False,
+        doc='已删除',
+        default=False,
+        info={'marshmallow': {
+            'dump_only': True
+        }})
+    modified = db.Column(
+        db.ArrowType(True),
+        nullable=False,
+        doc='修改时间',
+        default=localnow,
+        info={
+            'marshmallow': {
+                'format': '%Y-%m-%d %H:%M:%S',
+                'dump_only': True
+            }
+        })
+    created = db.Column(
+        db.ArrowType(True),
+        nullable=False,
+        doc='创建时间',
+        default=localnow,
+        info={
+            'marshmallow': {
+                'format': '%Y-%m-%d %H:%M:%S',
+                'dump_only': True
+            }
+        })
 
     @classmethod
     def get_by_id(cls, id):
@@ -111,9 +138,8 @@ class SurrogatePK(object):
         from . import db
 
         if any(
-            (isinstance(id, str) and id.isdigit(),
-             isinstance(id, (int, float))),
-        ):
+            (isinstance(id, str) and id.isdigit(), isinstance(id,
+                                                              (int, float))),):
             with db.session.no_autoflush:
                 return cls.query.get_or_404(int(id))
 

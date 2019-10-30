@@ -35,10 +35,11 @@ class StoragesTokenBasedView(MethodView):
         '''
         storage = models.Storages.get_by_id(file_id)
 
-        return send_file(storage.store.stream,
-                         attachment_filename=storage.name,
-                         mimetype=storage.store.content_type,
-                         as_attachment=False)
+        return send_file(
+            storage.store.stream,
+            attachment_filename=storage.name,
+            mimetype=storage.store.content_type,
+            as_attachment=False)
 
     @upload_handler
     @doc_login_required
@@ -69,6 +70,7 @@ class StoragesTokenBasedView(MethodView):
 
         return {'code': 0, 'msg': 'success'}
 
+
 @blp.route('/token_based/upload')
 class UploadTokenBasedView(MethodView):
 
@@ -86,5 +88,4 @@ class UploadTokenBasedView(MethodView):
         logger.info(extra_args)
         storage = models.Storages.create(**args)
 
-        return {'code': 0, 'msg': 'success',
-                'file_id': storage.id}
+        return {'code': 0, 'msg': 'success', 'file_id': storage.id}

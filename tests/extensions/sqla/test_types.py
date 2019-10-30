@@ -25,6 +25,7 @@ def Sample(Base, monkeypatch):
         created_at = sa.Column(ArrowType)
         published_at = sa.Column(ArrowType(timezone=True))
         published_at_dt = sa.Column(sa.DateTime(timezone=True))
+
     return Sample
 
 
@@ -40,9 +41,7 @@ class TestArrowDateTimeType(object):
         assert ArrowType().python_type == datetime
 
     def test_parameter_processing(self, session, Sample):
-        sample = Sample(
-            created_at=datetime(2000, 11, 1)
-        )
+        sample = Sample(created_at=datetime(2000, 11, 1))
 
         session.add(sample)
         session.commit()
@@ -51,9 +50,7 @@ class TestArrowDateTimeType(object):
         assert sample.created_at.datetime
 
     def test_tuple(self, session, Sample):
-        sample = Sample(
-            created_at=(1994, 9, 11)
-        )
+        sample = Sample(created_at=(1994, 9, 11))
         session.add(sample)
         session.commit()
 
@@ -61,9 +58,7 @@ class TestArrowDateTimeType(object):
         assert sample.created_at.format('YYYY-MM-DD') == '1994-09-11'
 
     def test_none(self, session, Sample):
-        sample = Sample(
-            created_at=None
-        )
+        sample = Sample(created_at=None)
         session.add(sample)
         session.commit()
 
@@ -71,9 +66,7 @@ class TestArrowDateTimeType(object):
         assert sample.created_at is None
 
     def test_string_coercion(self, session, Sample):
-        sample = Sample(
-            created_at='1367900664'
-        )
+        sample = Sample(created_at='1367900664')
         session.add(sample)
         session.commit()
         assert sample.created_at.year == 2013
@@ -105,9 +98,7 @@ class TestArrowDateTimeType(object):
         compiled = clause.compile(compile_kwargs={"literal_binds": True})
         assert str(compiled) == 'sample.created_at > 2015-01-01 01:00:00'
 
-        sample = Sample(
-            created_at=time
-        )
+        sample = Sample(created_at=time)
 
         session.add(sample)
         session.commit()

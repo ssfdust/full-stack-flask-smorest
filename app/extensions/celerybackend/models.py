@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 try:
     from app.extensions import mongo as db
 except ImportError:

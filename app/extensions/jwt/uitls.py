@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from flask_jwt_extended import decode_token
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -43,7 +42,8 @@ def is_token_revoked(decoded_token):
         return True
 
 
-def add_token_to_database(encoded_token, identity_claim, custom_token_type=None):
+def add_token_to_database(encoded_token, identity_claim,
+                          custom_token_type=None):
     """
     将新的Token解码后加入到数据库
 
@@ -53,7 +53,8 @@ def add_token_to_database(encoded_token, identity_claim, custom_token_type=None)
     from .models import TokenBlackList
     decoded_token = decode_token(encoded_token)
     jti = decoded_token['jti']
-    token_type = decoded_token['type'] if not custom_token_type else custom_token_type
+    token_type = decoded_token[
+        'type'] if not custom_token_type else custom_token_type
     user_identity = decoded_token[identity_claim]
     expires = _epoch_utc_to_arrow(decoded_token['exp'])
     revoked = False
@@ -62,8 +63,7 @@ def add_token_to_database(encoded_token, identity_claim, custom_token_type=None)
         token_type=token_type,
         user_identity=user_identity,
         expires=expires,
-        revoked=revoked
-    )
+        revoked=revoked)
 
 
 def revoke_token(raw_jwt):
@@ -75,11 +75,12 @@ def revoke_token(raw_jwt):
     user = raw_jwt['identity']
     jti = raw_jwt['jti']
     try:
-        TokenBlackList.query.filter_by(user_identity=user,
-                                       token_type='refresh',
-                                       ).update({'revoked': True})
-        token = TokenBlackList.query.filter_by(user_identity=user,
-                                               jti=jti).one()
+        TokenBlackList.query.filter_by(
+            user_identity=user,
+            token_type='refresh',
+        ).update({'revoked': True})
+        token = TokenBlackList.query.filter_by(
+            user_identity=user, jti=jti).one()
         token.update(revoked=True)
     except NoResultFound:
         pass

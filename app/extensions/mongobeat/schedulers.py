@@ -18,7 +18,6 @@
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy
 # of the License at http://www.apache.org/licenses/LICENSE-2.0
-
 """
     app.mongobeat.schedulers
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +77,7 @@ class MongoScheduleEntry(ScheduleEntry):
 
     def is_due(self):
         if not self._task.enabled:
-            return False, 5.0   # 5 second delay for re-enable.
+            return False, 5.0  # 5 second delay for re-enable.
         if hasattr(self._task, 'start_after') and self._task.start_after:
             if datetime.datetime.now() < self._task.start_after:
                 return False, 5.0
@@ -94,8 +93,11 @@ class MongoScheduleEntry(ScheduleEntry):
     def __repr__(self):
         return (u'<{0} ({1} {2}(*{3}, **{4}) {{5}})>'.format(
             self.__class__.__name__,
-            self.name, self.task, self.args,
-            self.kwargs, self.schedule,
+            self.name,
+            self.task,
+            self.args,
+            self.kwargs,
+            self.schedule,
         ))
 
     def reserve(self, entry):
@@ -136,23 +138,25 @@ class MongoScheduler(Scheduler):
             except mongoengine.MongoEngineConnectionError:
                 pass
 
-            get_logger(__name__).info("backend scheduler using %s/%s:%s",
-                                      current_app.conf.CELERY_MONGODB_SCHEDULER_URL,
-                                      db, self.Model._get_collection().name)
+            get_logger(__name__).info(
+                "backend scheduler using %s/%s:%s",
+                current_app.conf.CELERY_MONGODB_SCHEDULER_URL, db,
+                self.Model._get_collection().name)
         else:
             try:
                 self._mongo = mongoengine.connect(db)
             except mongoengine.MongoEngineConnectionError:
                 pass
             get_logger(__name__).info("backend scheduler using %s/%s:%s",
-                                      "mongodb://localhost",
-                                      db, self.Model._get_collection().name)
+                                      "mongodb://localhost", db,
+                                      self.Model._get_collection().name)
 
         self._schedule = {}
         self._last_updated = None
         Scheduler.__init__(self, *args, **kwargs)
-        self.max_interval = (kwargs.get('max_interval') or
-                             self.app.conf.CELERYBEAT_MAX_LOOP_INTERVAL or 5)
+        self.max_interval = (
+            kwargs.get('max_interval') or
+            self.app.conf.CELERYBEAT_MAX_LOOP_INTERVAL or 5)
 
     def setup_schedule(self):
         pass
@@ -162,7 +166,8 @@ class MongoScheduler(Scheduler):
         from the backend database"""
         if not self._last_updated:
             return True
-        return self._last_updated + self.UPDATE_INTERVAL < datetime.datetime.now()
+        return self._last_updated + self.UPDATE_INTERVAL < datetime.datetime.now(
+        )
 
     def get_from_database(self):
         self.sync()

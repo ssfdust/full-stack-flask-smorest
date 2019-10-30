@@ -47,8 +47,7 @@ def restart(context, program):
 
 
 @task(help={'program': 'supervisord.conf中定义的program名'})
-def logs(context,
-         program='gunicorn'):
+def logs(context, program='gunicorn'):
     """
     打印Supervord日志
     默认: gunicorn

@@ -24,30 +24,30 @@ def init():
     from flask_security.utils import encrypt_password
     from app.utils import local
 
-    su_permission = Permission.create(name='SuperPriviledge',
-                                      description='超级用户权限')
-    user_permission = Permission.create(name='UserPriviledge',
-                                        description='普通用户权限')
-    su_role = Role.create(name='SuperUser',
-                          description='超级用户角色')
-    user_role = Role.create(name='User',
-                            description='用户角色')
+    su_permission = Permission.create(
+        name='SuperPriviledge', description='超级用户权限')
+    user_permission = Permission.create(
+        name='UserPriviledge', description='普通用户权限')
+    su_role = Role.create(name='SuperUser', description='超级用户角色')
+    user_role = Role.create(name='User', description='用户角色')
     user_role.permissions.append(user_permission)
     su_role.permissions.append(su_permission)
 
     # create super user
-    root = User.create(username='wisdom',
-                       password=encrypt_password('zerotoany'),
-                       email='wisdom@zero.any.else',
-                       active=True,
-                       confirmed_at=local.localnow())
-    avator = Storages(name='AdminAvator.jpg',
-                      storetype='avator',
-                      saved=True,
-                      filetype='image/jpeg',
-                      path='default/AdminAvator.jpg',
-                      uid=1,
-                      )
+    root = User.create(
+        username='wisdom',
+        password=encrypt_password('zerotoany'),
+        email='wisdom@zero.any.else',
+        active=True,
+        confirmed_at=local.localnow())
+    avator = Storages(
+        name='AdminAvator.jpg',
+        storetype='avator',
+        saved=True,
+        filetype='image/jpeg',
+        path='default/AdminAvator.jpg',
+        uid=1,
+    )
     UserInfo.create(user=root, avator=avator)
     root.roles.append(su_role)
     root.save()
@@ -72,8 +72,8 @@ def update_permissions():
             try:
                 permit = Permission.query.filter_by(name=permission).one()
             except NoResultFound:
-                permit = Permission(name=permission,
-                                    description=permission).save(False)
+                permit = Permission(
+                    name=permission, description=permission).save(False)
             if permit not in role.permissions:
                 role.permissions.append(permit)
 

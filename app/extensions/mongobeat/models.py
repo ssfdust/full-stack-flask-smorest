@@ -18,7 +18,6 @@
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy
 # of the License at http://www.apache.org/licenses/LICENSE-2.0
-
 """
     app.extensions.mongobeat
     ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,10 +29,10 @@ import datetime
 
 import celery.schedules
 from celery import current_app
-from mongoengine import (
-    BooleanField, DateTimeField, DictField, DynamicDocument, DynamicField,
-    EmbeddedDocument, EmbeddedDocumentField, IntField, ListField, StringField
-)
+from mongoengine import (BooleanField, DateTimeField, DictField,
+                         DynamicDocument, DynamicField, EmbeddedDocument,
+                         EmbeddedDocumentField, IntField, ListField,
+                         StringField)
 
 
 def get_periodic_task_collection():
@@ -74,8 +73,10 @@ class PeriodicTask(DynamicDocument):
     :attr run_immediately: 立刻运行
     """
 
-    meta = {'collection': get_periodic_task_collection(),
-            'allow_inheritance': True}
+    meta = {
+        'collection': get_periodic_task_collection(),
+        'allow_inheritance': True
+    }
 
     class Interval(EmbeddedDocument):
         """
@@ -83,12 +84,14 @@ class PeriodicTask(DynamicDocument):
 
         meta = {'allow_inheritance': True}
 
-        every = IntField(min_value=0, default=0, required=True, verbose_name='周期')
+        every = IntField(
+            min_value=0, default=0, required=True, verbose_name='周期')
         period = StringField(choices=PERIODS, verbose_name='每')
 
         @property
         def schedule(self):
-            return celery.schedules.schedule(datetime.timedelta(**{self.period: self.every}))
+            return celery.schedules.schedule(
+                datetime.timedelta(**{self.period: self.every}))
 
         @property
         def period_singular(self):
@@ -108,23 +111,29 @@ class PeriodicTask(DynamicDocument):
         hour = StringField(default='*', required=True, verbose_name='小时')
         day_of_week = StringField(default='*', required=True, verbose_name='周')
         day_of_month = StringField(default='*', required=True, verbose_name='日')
-        month_of_year = StringField(default='*', required=True, verbose_name='月')
+        month_of_year = StringField(
+            default='*', required=True, verbose_name='月')
 
         @property
         def schedule(self):
-            return celery.schedules.crontab(minute=self.minute,
-                                            hour=self.hour,
-                                            day_of_week=self.day_of_week,
-                                            day_of_month=self.day_of_month,
-                                            month_of_year=self.month_of_year)
+            return celery.schedules.crontab(
+                minute=self.minute,
+                hour=self.hour,
+                day_of_week=self.day_of_week,
+                day_of_month=self.day_of_month,
+                month_of_year=self.month_of_year)
 
         def __str__(self):
+
             def rfield(f):
                 return f and str(f).replace(' ', '') or '*'
 
             return '{0} {1} {2} {3} {4} (分/时/周/日/月)'.format(
-                rfield(self.minute), rfield(self.hour), rfield(self.day_of_week),
-                rfield(self.day_of_month), rfield(self.month_of_year),
+                rfield(self.minute),
+                rfield(self.hour),
+                rfield(self.day_of_week),
+                rfield(self.day_of_month),
+                rfield(self.month_of_year),
             )
 
     name = StringField(unique=True, verbose_name='定时名称')
@@ -152,7 +161,8 @@ class PeriodicTask(DynamicDocument):
 
     run_immediately = BooleanField(verbose_name='立刻运行')
 
-    type = StringField(required=True, verbose_name='类型', choices=['crontab', 'interval'])
+    type = StringField(
+        required=True, verbose_name='类型', choices=['crontab', 'interval'])
     interval = EmbeddedDocumentField(Interval, verbose_name='定时')
     crontab = EmbeddedDocumentField(Crontab, verbose_name='周期')
 

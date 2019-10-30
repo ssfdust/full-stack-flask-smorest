@@ -71,16 +71,15 @@ class GroupFactory(object):
             deleted_sql = db.delete(roles_users).where(
                 db.and_(
                     roles_users.c.role_id.in_([r.id for r in self.group.roles]),
-                    roles_users.c.user_id.in_([u.id for u in self.deleted_users])
-                )
-            )
+                    roles_users.c.user_id.in_(
+                        [u.id for u in self.deleted_users])))
             db.session.execute(deleted_sql)
 
         if self.added_users:
-            producted_added_rv = [{'role_id': r.id,
-                                   'user_id': u.id}
-                                  for r, u in product(self.group.roles,
-                                                      self.added_users)]
+            producted_added_rv = [{
+                'role_id': r.id,
+                'user_id': u.id
+            } for r, u in product(self.group.roles, self.added_users)]
             added_sql = db.insert(roles_users, producted_added_rv)
             db.session.execute(added_sql)
 
@@ -94,6 +93,7 @@ class GroupFactory(object):
         from app.modules.users.models import db
         from app.utils.db import ClosureTable
 
+        db.session.add(self.group)
         # 设置默认角色
         self.group.setup_roles()
 

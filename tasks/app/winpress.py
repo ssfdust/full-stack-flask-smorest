@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 https://stackoverflow.com/questions/13564851/how-to-generate-keyboard-events-in-python/13615802#13615802
 """

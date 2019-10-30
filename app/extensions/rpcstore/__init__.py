@@ -12,14 +12,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+    app.extensions.rpcstore
+    ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    rabbitMQ存储模块
+"""
 
 from kombu import Exchange, Queue
 
 
 class AMQPStore(object):
+    """
+    存储器
 
-    def __init__(self, key, value=None, exchange=None, expires=None,
-                 limit=999, routing_key=None, auto_delete=False):
+    :param value: 值
+    :param exchange: 交换机名
+    :param expires: 过期时长
+    :param limit: 最大限制
+    :parma routing_key: 路由名
+    :param auto_delete: 是否自动删除
+    """
+
+    def __init__(self,
+                 key,
+                 value=None,
+                 exchange=None,
+                 expires=None,
+                 limit=999,
+                 routing_key=None,
+                 auto_delete=False):
         self.key = key
         self.limit = limit
         self.value = value
@@ -30,11 +52,19 @@ class AMQPStore(object):
         if not routing_key:
             routing_key = key
         self.routing_key = routing_key
-        self.queue = Queue(self.key, self.exchange, durable=True,
-                           routing_key=self.routing_key, auto_delete=auto_delete,
-                           expires=expires)
+        self.queue = Queue(
+            self.key,
+            self.exchange,
+            durable=True,
+            routing_key=self.routing_key,
+            auto_delete=auto_delete,
+            expires=expires)
 
     def save(self, expiration=None):
+        """ 保存
+
+        :param expiration 过期时间
+        """
         from kombu import Connection
         from flask import current_app
         from kombu.pools import producers
@@ -51,16 +81,18 @@ class AMQPStore(object):
                 retry=True,
                 declare=[self.queue],
                 delivery_mode=2,
-                expiration=expiration
-            )
+                expiration=expiration)
 
         return self.value
 
     def reload(self, no_ack=False):
+        """
+        重载数值
+        """
         self.value = None
         msgs = []
         self.values = []
-        for i in self._reload():
+        for i in self.extra_from_queue():
             self.value = i.payload
             self.values.append(self.value)
             msgs.append(i)
@@ -71,9 +103,13 @@ class AMQPStore(object):
 
         return self.value
 
-    def _reload(self, no_ack=False):
+    def extra_from_queue(self, no_ack=False):
+        """
+        从队列加载并返回列表
+        """
         from kombu import Connection, pools
         from flask import current_app
+
         conn = Connection(current_app.config['CELERY_BROKER_URL'], heartbeat=0)
         pool = pools.connections[conn]
 

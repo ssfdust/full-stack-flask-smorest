@@ -17,6 +17,7 @@ from . import models
 from app.extensions import ma
 from marshmallow import fields
 
+
 class TodoItemSchema(ma.ModelSchema):
     """
     :attr               rest_time: str                  剩余时间

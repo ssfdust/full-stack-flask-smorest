@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.backtasks.send_mail
     ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,8 +27,14 @@ from app.extensions import celery_ext as celery
 from app.extensions.celeryprogress import ProgressRecorder
 from time import sleep
 
-@celery.task(bind=True, name='发送邮件', max_retries=5, autoretry_for=(Exception,),
-             acks_late=True, time_limit=60)
+
+@celery.task(
+    bind=True,
+    name='发送邮件',
+    max_retries=5,
+    autoretry_for=(Exception,),
+    acks_late=True,
+    time_limit=60)
 def send_mail(self, to, subject, content, template='emails/default.html'):
     '''
     发送邮件

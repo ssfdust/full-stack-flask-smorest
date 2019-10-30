@@ -14,8 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 """
     app.backtasks.storages
     ~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,8 +27,14 @@
 from app.extensions import celery_ext as celery
 from loguru import logger
 
-@celery.task(bind=True, name='清理内容', max_retries=5, autoretry_for=(Exception,),
-             acks_late=True, time_limit=600)
+
+@celery.task(
+    bind=True,
+    name='清理内容',
+    max_retries=5,
+    autoretry_for=(Exception,),
+    acks_late=True,
+    time_limit=600)
 def clean_expired_storages(self):
     """
     清理过期文件
@@ -45,8 +49,14 @@ def clean_expired_storages(self):
     for prg, total in cleaner.clean():
         progress_recorder.set_progress(prg, total)
 
-@celery.task(bind=True, name='进度条测试', max_retries=5, autoretry_for=(Exception,),
-             acks_late=True, time_limit=1000)
+
+@celery.task(
+    bind=True,
+    name='进度条测试',
+    max_retries=5,
+    autoretry_for=(Exception,),
+    acks_late=True,
+    time_limit=1000)
 def progress_bar(self):
     """
     进度条测试

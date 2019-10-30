@@ -12,14 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.logger
     ~~~~~~~~~~~~~~~~~~~~~~
 
     日志处理模块，打印日志同时保存到MongoDb
 """
-
 
 from flask import request
 from loguru import logger
@@ -46,8 +44,7 @@ def save_resp(resp):
         module=module if module else 'unknown',
         level='info',
         status_code=resp.status_code,
-        message="请求发起"
-        ).save()
+        message="请求发起").save()
     return resp
 
 

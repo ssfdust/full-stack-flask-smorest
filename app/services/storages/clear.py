@@ -15,6 +15,7 @@
 
 from app.utils import local
 
+
 class StorageCleaner(object):
 
     def __init__(self, orm_cls, filters=None):
@@ -30,6 +31,7 @@ class StorageCleaner(object):
         for idx, storage in enumerate(storages, 1):
             storage.hard_delete()
             yield idx, cnt
+
 
 class MonthExpiredCleaner(StorageCleaner):
 

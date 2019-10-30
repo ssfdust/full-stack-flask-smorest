@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from flask import request, url_for
 import functools
 import marshmallow as ma
@@ -24,17 +23,13 @@ class PaginationParametersSchema(ma.Schema):
     class Meta:
         ordered = True
 
-    page = ma.fields.Integer(
-        missing=1,
-        validate=ma.validate.Range(min=1)
-    )
+    page = ma.fields.Integer(missing=1, validate=ma.validate.Range(min=1))
     per_page = ma.fields.Integer(
-        missing=10,
-        validate=ma.validate.Range(min=1, max=100)
-    )
+        missing=10, validate=ma.validate.Range(min=1, max=100))
 
 
 def paginate(max_per_page=10):
+
     def decorator(func):
         parameters = {
             'in': 'query',
@@ -48,8 +43,7 @@ def paginate(max_per_page=10):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             page = request.args.get('page', 1, type=int)
-            per_page = request.args.get('per_page', max_per_page,
-                                        type=int)
+            per_page = request.args.get('per_page', max_per_page, type=int)
             query = func(*args, **kwargs)
             p = query.paginate(page, per_page)
 
@@ -62,24 +56,28 @@ def paginate(max_per_page=10):
 
             links = {}
             if p.has_next:
-                links['next'] = url_for(request.endpoint, page=p.next_num,
-                                        per_page=per_page, **kwargs)
+                links['next'] = url_for(
+                    request.endpoint,
+                    page=p.next_num,
+                    per_page=per_page,
+                    **kwargs)
             if p.has_prev:
-                links['prev'] = url_for(request.endpoint, page=p.prev_num,
-                                        per_page=per_page, **kwargs)
-            links['first'] = url_for(request.endpoint, page=1,
-                                     per_page=per_page, **kwargs)
-            links['last'] = url_for(request.endpoint, page=p.pages,
-                                    per_page=per_page, **kwargs)
+                links['prev'] = url_for(
+                    request.endpoint,
+                    page=p.prev_num,
+                    per_page=per_page,
+                    **kwargs)
+            links['first'] = url_for(
+                request.endpoint, page=1, per_page=per_page, **kwargs)
+            links['last'] = url_for(
+                request.endpoint, page=p.pages, per_page=per_page, **kwargs)
 
             meta['links'] = links
             # logging.warning(p.items[0].members.all())
-            result = {
-                'data': p.items,
-                'meta': meta,
-                'code': 0
-            }
+            result = {'data': p.items, 'meta': meta, 'code': 0}
 
             return result
+
         return wrapped
+
     return decorator

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 提供拓展后的基础对象
 """
@@ -29,7 +28,8 @@ def _include_ext_types(obj):
     setattr(obj, 'ArrowType', ArrowType)
 
     for key in ext_types.__dict__:
-        if key.endswith('Type') and not hasattr(obj, key) and not key.endswith('ArrowType'):
+        if key.endswith('Type') and not hasattr(
+                obj, key) and not key.endswith('ArrowType'):
             setattr(obj, key, getattr(ext_types, key))
 
 

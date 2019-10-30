@@ -15,17 +15,19 @@
 
 import arrow
 
+
 def localnow():
     """返回本地时间"""
     from flask_babel import get_timezone
     time = arrow.now(str(get_timezone()))
     return time
 
+
 def localdate():
     """返回本地日期"""
     now = localnow()
-    return now.replace(hour=0, minute=0, second=0,
-                       microsecond=0)
+    return now.replace(hour=0, minute=0, second=0, microsecond=0)
+
 
 def date():
     """返回本地日期Date格式"""

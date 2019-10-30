@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """测试mixin模块"""
 
 import pytest
@@ -14,6 +13,7 @@ import copy
 class TestSqlaCRUD(object):
 
     def test_create(self, app, db, monkeypatch):
+
         class SimpleCreate(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             num = db.Column(db.Integer)
@@ -34,6 +34,7 @@ class TestSqlaCRUD(object):
         assert simple2.modified > modtime
 
     def test_update(self, app, db):
+
         class SimpleUpdate(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             num = db.Column(db.Integer)
@@ -49,9 +50,14 @@ class TestSqlaCRUD(object):
         simple = SimpleUpdate.create(num=1)
         modtime = copy.copy(simple.modified)
         assert simple.num == 1
-        simple.update(id=10000, num=2, name='456', deleted=True,
-                      created='2008-04-12', time='2008-04-12',
-                      modified='2008-04-12')
+        simple.update(
+            id=10000,
+            num=2,
+            name='456',
+            deleted=True,
+            created='2008-04-12',
+            time='2008-04-12',
+            modified='2008-04-12')
         assert simple.num == 2
         assert simple.name == '456'
         assert simple.id != 10000
@@ -62,6 +68,7 @@ class TestSqlaCRUD(object):
         assert simple.modified > modtime
 
     def test_delete(self, app, db):
+
         class SimpleDelete(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             num = db.Column(db.Integer)
@@ -76,10 +83,12 @@ class TestSqlaCRUD(object):
 
         assert simple.deleted is True
 
-        cnt = db.session.query(SimpleDelete).filter(SimpleDelete.id == simple.id).count()
+        cnt = db.session.query(SimpleDelete).filter(
+            SimpleDelete.id == simple.id).count()
         assert cnt == 1
 
     def test_hard_delete(self, app, db):
+
         class SimpleHardDelete(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             num = db.Column(db.Integer)
@@ -92,10 +101,12 @@ class TestSqlaCRUD(object):
         assert simple.id is not None
         simple.hard_delete()
 
-        cnt = db.session.query(SimpleHardDelete).filter(SimpleHardDelete.id == simple.id).count()
+        cnt = db.session.query(SimpleHardDelete).filter(
+            SimpleHardDelete.id == simple.id).count()
         assert cnt == 0
 
     def test_update_by_ma(self, app, db):
+
         class TestParent(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String(8))
@@ -104,8 +115,10 @@ class TestSqlaCRUD(object):
             id = db.Column(db.Integer, primary_key=True)
             pid = db.Column(db.Integer, db.ForeignKey(TestParent.id))
             name = db.Column(db.String(8))
-            parnet = db.relationship(TestParent, backref=db.backref('children', active_history=True),
-                                     active_history=True)
+            parnet = db.relationship(
+                TestParent,
+                backref=db.backref('children', active_history=True),
+                active_history=True)
 
         class ChildSchema(Schema):
             id = fields.Int()
@@ -134,14 +147,17 @@ class TestSqlaCRUD(object):
         assert new_parnet.id == parent.id + 1
         tmp_parent = TestParent(name='add2', children=[child2, child3])
         parent.update_by_ma(ParentSchema(), tmp_parent)
-        parent = db.session.query(TestParent).filter(TestParent.id == parent.id).one()
-        assert parent.children == [child2, child3] or parent.children == [child3, child2]
+        parent = db.session.query(TestParent).filter(
+            TestParent.id == parent.id).one()
+        assert parent.children == [child2, child3
+                                  ] or parent.children == [child3, child2]
         assert parent.name == 'add2'
         new_parnet = TestParent().create()
         assert new_parnet.id == parent.id + 2
         assert parent.modified > modtime
 
     def test_commit(self, app, db):
+
         class SimpleCommit(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             num = db.Column(db.Integer, unique=True)

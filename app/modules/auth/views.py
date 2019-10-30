@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.auth
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,10 +23,8 @@
 from flask import abort, send_file
 from flask import current_app as app
 from flask.views import MethodView
-from flask_jwt_extended import (
-    create_access_token, create_refresh_token, decode_token, get_jwt_identity,
-    get_raw_jwt
-)
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                decode_token, get_jwt_identity, get_raw_jwt)
 from loguru import logger
 
 from app.extensions.jwt.uitls import add_token_to_database, revoke_token
@@ -83,8 +80,10 @@ class LoginView(MethodView):
             refresh_token = create_refresh_token(identity=args['email'])
 
             # 将token加入数据库
-            add_token_to_database(access_token, app.config['JWT_IDENTITY_CLAIM'])
-            add_token_to_database(refresh_token, app.config['JWT_IDENTITY_CLAIM'])
+            add_token_to_database(access_token,
+                                  app.config['JWT_IDENTITY_CLAIM'])
+            add_token_to_database(refresh_token,
+                                  app.config['JWT_IDENTITY_CLAIM'])
 
             logger.info(f"{args['email']} 登录成功")
 
@@ -95,8 +94,7 @@ class LoginView(MethodView):
                     'access_token': access_token
                 }
             }
-            return {'code': 0, 'msg': 'success',
-                    'data': data}
+            return {'code': 0, 'msg': 'success', 'data': data}
         else:
             logger.error(f"{args['email']} 登录密码错误")
             abort(403, "密码错误")
@@ -143,12 +141,12 @@ class ForgetPasswordView(MethodView):
         if user:
             logger.info(f"{user.email}发起了忘记密码申请")
             token = generate_confirm_token(user, 'passwd')
-            send_mail.delay(user.email, '找回密码', {'token': token}, 'emails/reset-password.html')
+            send_mail.delay(user.email, '找回密码', {'token': token},
+                            'emails/reset-password.html')
         else:
             abort(404, "用户不存在")
 
-        return {'code': 0,
-                'msg': 'success'}
+        return {'code': 0, 'msg': 'success'}
 
 
 @blp.route('/confirm')
@@ -166,11 +164,9 @@ class UserConfirmView(MethodView):
         jti = get_raw_jwt()['jti']
         _, user = confirm_token(jti, 'confirm')
         logger.info(f"{user.email}完成了用户验证")
-        user.update(confirmed_at=local.localnow(),
-                    active=True)
+        user.update(confirmed_at=local.localnow(), active=True)
 
-        return {'code': 0,
-                'msg': 'success'}
+        return {'code': 0, 'msg': 'success'}
 
 
 @blp.route('/reset-forgot-password')
@@ -198,8 +194,7 @@ class ResetForgotPasswordView(MethodView):
             logger.info(f"{user.email} 修改了密码")
             user.update(password=encrypt_password(confirm_password))
 
-            return {'code': 0,
-                    'msg': 'success'}
+            return {'code': 0, 'msg': 'success'}
         else:
             logger.error(f"{user.email} 密码提交错误")
             abort(501, "密码不一致，修改失败")
@@ -219,8 +214,7 @@ class ResetForgotPasswordView(MethodView):
         state, _ = check_confirm_token(jti, 'passwd')
 
         if state:
-            return {'code': 0,
-                    'msg': 'success'}
+            return {'code': 0, 'msg': 'success'}
         else:
             abort(403, "禁止访问")
 
@@ -241,15 +235,20 @@ class RefreshJwtTokenView(MethodView):
         logger.info(f"{current_user} 刷新了token")
         add_token_to_database(access_token, app.config['JWT_IDENTITY_CLAIM'])
 
-        return {'code': 0, 'msg': 'success',
-                'data': {'access_token': access_token}}
+        return {
+            'code': 0,
+            'msg': 'success',
+            'data': {
+                'access_token': access_token
+            }
+        }
 
 
 @blp.route('/logout')
 class LogoutView(MethodView):
 
-    @blp.arguments(schemas.RefreshTokenSchema(only=['refresh_token']),
-                   as_kwargs=True)
+    @blp.arguments(
+        schemas.RefreshTokenSchema(only=['refresh_token']), as_kwargs=True)
     @blp.response(BaseMsgSchema, description='登出成功')
     @doc_login_required
     def post(self, refresh_token):

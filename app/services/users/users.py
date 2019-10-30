@@ -17,6 +17,7 @@
 
 from loguru import logger
 
+
 def create_user(user, is_admin=False):
     """
     创建用户
@@ -34,24 +35,27 @@ def create_user(user, is_admin=False):
     if is_admin:
         su_role = Role.get_by_name(ROLES.SuperUser)
         user.roles.append(su_role)
-        avator = Storages(name='AdminAvator.jpg',
-                          storetype='avator',
-                          saved=True,
-                          filetype='image/jpeg',
-                          path='default/AdminAvator.jpg',
-                          uid=1,
-                          )
+        avator = Storages(
+            name='AdminAvator.jpg',
+            storetype='avator',
+            saved=True,
+            filetype='image/jpeg',
+            path='default/AdminAvator.jpg',
+            uid=1,
+        )
     else:
         roles = Role.get_by_user_default()
         user.roles = roles
-        avator = Storages(name='DefaultAvator.jpg',
-                          storetype='avator',
-                          saved=True,
-                          filetype='image/jpeg',
-                          path='default/DefaultAvator.jpg',
-                          uid=1,
-                          )
+        avator = Storages(
+            name='DefaultAvator.jpg',
+            storetype='avator',
+            saved=True,
+            filetype='image/jpeg',
+            path='default/DefaultAvator.jpg',
+            uid=1,
+        )
     UserInfo(user=user, avator=avator).save(False)
+
 
 class UserFactory(object):
     """
@@ -110,8 +114,11 @@ class UserFactory(object):
             ) sub
             WHERE ru.role_id = sub.role_id AND ru.user_id = sub.user_id
         """
-        db.session.execute(sql, {'group_ids': tuple([g.id for g in self.deleted_groups]),
-                                 'user_id': self.user.id})
+        db.session.execute(
+            sql, {
+                'group_ids': tuple([g.id for g in self.deleted_groups]),
+                'user_id': self.user.id
+            })
 
     def add_permissions(self):
         """
@@ -132,8 +139,11 @@ class UserFactory(object):
             WHERE a.group_id in :group_ids and ru.role_id is null
         """
         try:
-            db.session.execute(sql, {'group_ids': tuple([g.id for g in self.added_groups]),
-                                     'user_id': self.user.id})
+            db.session.execute(
+                sql, {
+                    'group_ids': tuple([g.id for g in self.added_groups]),
+                    'user_id': self.user.id
+                })
             logger.info('创建组uid: %s数据成功' % self.user.id)
         except Exception as e:
             logger.error('add groups error')

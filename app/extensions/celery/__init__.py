@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import celery
 
 from celery.signals import task_postrun, task_prerun, worker_process_init
@@ -32,15 +31,18 @@ def decoder(s):
 def register_serializer():
     serialization.register(
         "bson",
-        encoder=encoder, decoder=decoder,
+        encoder=encoder,
+        decoder=decoder,
         content_type="application/json",
         content_encoding="utf-8",
     )
+
 
 # https://github.com/getsentry/zeus/blob/97528038a0abfd6f0e300d8d3f276e1b0818c328/zeus/utils/celery.py#L10
 
 
 class Celery(object):
+
     def __init__(self, app=None):
         # we create the celery immediately as otherwise NOTHING WORKS
         self.app = None
@@ -59,8 +61,7 @@ class Celery(object):
             broker=app.config["CELERY_BROKER_URL"],
             backend=app.config["CELERY_RESULT_BACKEND"],
             enable_utc=True,
-            timezone=app.config['BABEL_DEFAULT_TIMEZONE']
-        )
+            timezone=app.config['BABEL_DEFAULT_TIMEZONE'])
         # XXX(dcramer): why the hell am I wasting time trying to make Celery work?
         self.celery.__dict__.update(vars(new_celery))
         self.celery.conf.update(app.config)

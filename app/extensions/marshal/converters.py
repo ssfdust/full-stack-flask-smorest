@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.marshal.converters
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +30,6 @@ from .fields import ArrowField
 
 
 class ModelConverter(BaseModelConverter):
-
     """
     更新SQLA_TYPE_MAPPING， 为ModelConverter添加新的类型转换：
 

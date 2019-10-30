@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 任务模块的websocket模块
 
@@ -22,6 +21,7 @@ from flask_socketio import Namespace, emit
 from app.extensions import socketio
 
 idlst = []
+
 
 class TaskNamespace(Namespace):
     """
@@ -42,11 +42,10 @@ class TaskNamespace(Namespace):
         from app.extensions.celeryprogress import progress
 
         tasks = Tasks.objects(state='run').limit(5).all()
-        data = [
-            {'name': task.name,
-             'progress': progress.get_info(str(task.id))['percent']}
-            for task in tasks
-        ]
+        data = [{
+            'name': task.name,
+            'progress': progress.get_info(str(task.id))['percent']
+        } for task in tasks]
 
         emit('get_tasks', {'data': data})
 

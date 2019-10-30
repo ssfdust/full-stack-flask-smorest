@@ -21,8 +21,8 @@ def confirm_token(jti, token_type):
     from flask import abort
 
     try:
-        token = TokenBlackList.query.filter_by(jti=jti,
-                                               token_type=token_type).one()
+        token = TokenBlackList.query.filter_by(
+            jti=jti, token_type=token_type).one()
         if not token.revoked:
             token.update(revoked=True)
             user = User.get_by_email(token.user_identity)
@@ -40,8 +40,8 @@ def check_confirm_token(jti, token_type):
     from flask import abort
 
     try:
-        token = TokenBlackList.query.filter_by(jti=jti,
-                                               token_type=token_type).one()
+        token = TokenBlackList.query.filter_by(
+            jti=jti, token_type=token_type).one()
         if not token.revoked:
             user = User.get_by_email(token.user_identity)
             return True, user
@@ -57,8 +57,9 @@ def generate_confirm_token(user, token_type):
     from app.extensions.jwt.uitls import add_token_to_database
     from datetime import timedelta
 
-    confirm_token = create_access_token(identity=user.email,
-                                        expires_delta=timedelta(days=1))
-    add_token_to_database(confirm_token, app.config['JWT_IDENTITY_CLAIM'], token_type)
+    confirm_token = create_access_token(
+        identity=user.email, expires_delta=timedelta(days=1))
+    add_token_to_database(confirm_token, app.config['JWT_IDENTITY_CLAIM'],
+                          token_type)
 
     return confirm_token

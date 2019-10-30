@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """测试MongoEngine自定义类型"""
 
 import pytest
@@ -18,6 +17,7 @@ class TestArrowField():
     """测试ArrowField"""
 
     def test_arrow_from_empty_string(self, database):
+
         class Sample(db.Document):
             created = ArrowField()
 
@@ -52,8 +52,10 @@ class TestArrowField():
         assert md.created.format('YYYY-MM-DD') == '1993-08-17'
 
     def test_arrow_from_whitespace_string(self, database):
+
         class Sample(db.Document):
             created = ArrowField()
+
         with pytest.raises(Exception):
             md = Sample(created="    ")
             md.save()
@@ -100,8 +102,8 @@ class TestArrowField():
         assert samples.count() == 10
 
         samples = Sample.objects.filter(
-            created__lte=arrow.get(1980, 1, 1), created__gte=arrow.get(1975, 1, 1)
-        )
+            created__lte=arrow.get(1980, 1, 1),
+            created__gte=arrow.get(1975, 1, 1))
         assert samples.count() == 5
 
     def test_utc_time(self, monkeypatch):
@@ -114,9 +116,7 @@ class TestArrowField():
         Sample.drop_collection()
 
         time = arrow.get('2015-01-01 09:00:00')
-        sample = Sample(
-            created=time
-        )
+        sample = Sample(created=time)
         sample.save()
         time1 = arrow.get('2015-01-01 08:59:59')
         samples = Sample.objects.filter(created__gte=time1).all()

@@ -17,6 +17,7 @@ from functools import wraps
 from flask import request
 import ujson as json
 
+
 def upload_handler(func):
     # Create the wrapped function.  This just calls the 'decorated' function
     @wraps(func)

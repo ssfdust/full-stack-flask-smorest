@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.mongo.fields
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,7 +41,8 @@ class ArrowField(BaseField):
     def validate(self, value):
         new_value = self.to_mongo(value)
         if not isinstance(new_value, datetime):
-            self.error(u'cannot parse date "%s" type: %s' % (value, type(value)))
+            self.error(u'cannot parse date "%s" type: %s' %
+                       (value, type(value)))
 
     def to_mongo(self, value):
         """
@@ -82,4 +82,5 @@ class ArrowField(BaseField):
         return value
 
     def prepare_query_value(self, op, value):
-        return super(ArrowField, self).prepare_query_value(op, self.to_mongo(value))
+        return super(ArrowField,
+                     self).prepare_query_value(op, self.to_mongo(value))

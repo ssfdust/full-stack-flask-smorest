@@ -6,8 +6,9 @@ import pytest
 
 class TestCustomFields():
 
-    @pytest.mark.parametrize('time', ['2019-09-01', '2019-09-01 09:00:10',
-                                      '2019-09-01T09:00:10.008Z'])
+    @pytest.mark.parametrize(
+        'time',
+        ['2019-09-01', '2019-09-01 09:00:10', '2019-09-01T09:00:10.008Z'])
     def test_arrow_field(self, app, time):
         import arrow
 
@@ -20,9 +21,7 @@ class TestCustomFields():
 
             time = ArrowField()
 
-        test_data = {
-            'time': time
-        }
+        test_data = {'time': time}
 
         schema = TestSchema()
         instance = schema.load(test_data)

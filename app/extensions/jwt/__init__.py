@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from flask_jwt_extended import JWTManager
 from flask import jsonify, abort
 from .uitls import is_token_revoked
@@ -25,20 +24,14 @@ jwt = JWTManager()
 @jwt.unauthorized_loader
 def unauthorized_callback(e):
     logger.error('未受权的访问')
-    response = jsonify({
-        "code": 401,
-        "msg": "未授权的访问"
-    })
+    response = jsonify({"code": 401, "msg": "未授权的访问"})
     response.status_code = 401
     return response
 
 
 @jwt.expired_token_loader
 def token_expired():
-    response = jsonify({
-        "code": 401,
-        "msg": "登录已过期"
-    })
+    response = jsonify({"code": 401, "msg": "登录已过期"})
     logger.warning('登录过期')
     response.status_code = 401
     return response

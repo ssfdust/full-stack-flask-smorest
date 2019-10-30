@@ -15,8 +15,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 """
     app.extensions.config
     ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,9 +68,9 @@ class Config(FlaskConfig):
         """
 
         # Prepeend the root path is we don't have an absolute path
-        filename = (os.path.join(self.root_path, filename)
-                    if filename.startswith(os.sep)
-                    else filename)
+        filename = (
+            os.path.join(self.root_path, filename)
+            if filename.startswith(os.sep) else filename)
 
         try:
             with open(filename) as toml_file:
@@ -95,9 +93,8 @@ class Config(FlaskConfig):
             else:
                 mappings.append(mapping[0])
         elif len(mapping) > 1:
-            raise TypeError(
-                'expected at most 1 positional argument, got %d' % len(mapping)
-            )
+            raise TypeError('expected at most 1 positional argument, got %d' %
+                            len(mapping))
         mappings.append(kwargs.items())
         for mapping in mappings:
             for (key, value) in mapping:

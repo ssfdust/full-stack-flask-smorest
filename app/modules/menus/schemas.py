@@ -19,6 +19,7 @@ from app.extensions.marshal.bases import BaseMsgSchema
 
 from marshmallow import fields
 
+
 class MenuSchema(ma.ModelSchema):
     """菜单"""
 
@@ -26,6 +27,7 @@ class MenuSchema(ma.ModelSchema):
 
     class Meta:
         model = models.Menu
+
 
 class MenuViewSchema(BaseMsgSchema):
     """

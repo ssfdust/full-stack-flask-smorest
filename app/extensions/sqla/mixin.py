@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.sqla.mixin
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,10 +24,12 @@
     id, deleted, modified, created为系统默认字段
 """
 
+import arrow
 import psycopg2
 import sqlalchemy as sa
-from .sqla import DuplicateEntry, CharsTooLong
-import arrow
+
+from .db_instance import db
+from .sqla import CharsTooLong, DuplicateEntry
 
 
 class CRUDMixin(object):
@@ -65,8 +66,6 @@ class CRUDMixin(object):
 
         保存对象并更新保存时间
         """
-        from . import db
-
         setattr(self, 'modified', arrow.now())
         db.session.add(self)
         if commit:
@@ -86,8 +85,6 @@ class CRUDMixin(object):
 
         从数据库中彻底删除行
         """
-        from . import db
-
         db.session.delete(self)
         return commit and self.commit()
 
@@ -117,7 +114,6 @@ class CRUDMixin(object):
         """
         from sqlalchemy.orm.attributes import get_attribute, del_attribute, set_attribute
         from marshmallow import Schema
-        from . import db
 
         if not isinstance(schema, Schema):
             schema = schema()
@@ -139,8 +135,6 @@ class CRUDMixin(object):
 
     def commit(self):
         """提交以及错误处理"""
-        from . import db
-
         try:
             db.session.commit()
         except sa.exc.IntegrityError as e:

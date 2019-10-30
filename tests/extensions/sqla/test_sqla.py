@@ -9,6 +9,7 @@ from marshmallow import Schema, fields
 class TestSqla():
 
     def test_soft_delete(self, app, db):
+
         class SoftDelete(Model):
             id = db.Column(db.Integer, primary_key=True)
             deleted = db.Column(db.Boolean, default=False)
@@ -26,6 +27,7 @@ class TestSqla():
         assert SoftDelete.query.with_deleted().count() == 10
 
     def test_surrogate_pk(self, app, db):
+
         class TestPk(SurrogatePK):
 
             name = db.Column(db.String(1))
@@ -34,6 +36,7 @@ class TestSqla():
             assert hasattr(TestPk, key)
 
     def test_base_crud(self, app, db):
+
         class TestBaseCRUD(Model, SurrogatePK):
             name = db.Column(db.String(4))
 

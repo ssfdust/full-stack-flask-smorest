@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.auth.permissions
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,16 +52,21 @@ class PERMISSIONS:
 
 DEFAULT_ROLES_PERMISSIONS_MAPPING = {
     ROLES.SuperUser: [
-        PERMISSIONS.SuperUser, PERMISSIONS.User,
+        PERMISSIONS.SuperUser,
+        PERMISSIONS.User,
         # 用户管理
-        PERMISSIONS.GroupAdd, PERMISSIONS.GroupDelete,
-        PERMISSIONS.GroupEdit, PERMISSIONS.GroupQuery,
+        PERMISSIONS.GroupAdd,
+        PERMISSIONS.GroupDelete,
+        PERMISSIONS.GroupEdit,
+        PERMISSIONS.GroupQuery,
         PERMISSIONS.UserEdit,
         # End Of SuperUser
     ],
     ROLES.UserManager: [
-        PERMISSIONS.GroupAdd, PERMISSIONS.GroupDelete,
-        PERMISSIONS.GroupEdit, PERMISSIONS.GroupQuery,
+        PERMISSIONS.GroupAdd,
+        PERMISSIONS.GroupDelete,
+        PERMISSIONS.GroupEdit,
+        PERMISSIONS.GroupQuery,
         PERMISSIONS.UserEdit,
     ],
     # End Of Permissions Mapping

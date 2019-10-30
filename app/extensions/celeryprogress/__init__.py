@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
 
@@ -42,11 +41,12 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
     def __init__(self, task, task_id=None):
         self.task = task
         self.task_id = task_id if task_id else task.request.id
-        super().__init__(key='celery_progress',
-                         value=None,
-                         exchange='celery_progress',
-                         expires=3600*24,
-                         routing_key=self.task_id)
+        super().__init__(
+            key='celery_progress',
+            value=None,
+            exchange='celery_progress',
+            expires=3600 * 24,
+            routing_key=self.task_id)
 
     def set_progress(self, current, total):
         percent = 0
@@ -60,8 +60,7 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
                 'current': current,
                 'total': total,
                 'percent': percent,
-            }
-        )
+            })
         self.save()
 
 
@@ -75,8 +74,7 @@ class Progress(AMQPStore):
             value=None,
             routing_key='celery',
             exchange='celery_progress',
-            expires=3600*24
-        )
+            expires=3600 * 24)
 
     def _get_info(self):
         self.reload()
@@ -92,9 +90,7 @@ class Progress(AMQPStore):
                 ret = self._results[i]
                 break
         else:
-            ret = {
-                'percent': '0'
-            }
+            ret = {'percent': '0'}
 
         return ret
 

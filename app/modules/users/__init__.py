@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.users
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,10 +26,7 @@
 from flask_smorest import Blueprint
 from app.extensions import api
 
-blp = Blueprint(
-    'Users', __name__, url_prefix='/users',
-    description='获取用户的基本信息'
-)
+blp = Blueprint('Users', __name__, url_prefix='/users', description='获取用户的基本信息')
 
 
 def init_app(app):
@@ -40,6 +36,7 @@ def init_app(app):
     """
     from . import resources, models  # noqa
 
-    base_prefix = app.config['MODULE_BASE_PREFIX'] if 'MODULE_BASE_PREFIX' in app.config else ''
+    base_prefix = app.config[
+        'MODULE_BASE_PREFIX'] if 'MODULE_BASE_PREFIX' in app.config else ''
 
     api.register_blueprint(blp, base_prefix=base_prefix)

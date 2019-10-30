@@ -21,6 +21,7 @@ from . import models
 from . import blp
 from . import schemas
 
+
 @blp.route('')
 class MenuView(MethodView):
 
@@ -33,10 +34,9 @@ class MenuView(MethodView):
         from app.utils.db import hierarchy_to_json
 
         permissions = [item.id for item in current_user.abilities]
-        items = models.Menu.query.filter(models.Menu.permission_id.in_(permissions)).all()
+        items = models.Menu.query.filter(
+            models.Menu.permission_id.in_(permissions)).all()
         dict_items = schemas.MenuSchema(many=True).dump(items)
         data = hierarchy_to_json(dict_items)
 
-        return {'data': data,
-                'code': 0,
-                'msg': 'success'}
+        return {'data': data, 'code': 0, 'msg': 'success'}

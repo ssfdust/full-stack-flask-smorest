@@ -12,14 +12,11 @@ from ._utils import app_context_task
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@task(
-    help={
-        'su_passwd': 'root密码',
-        'config_types': '配置类型（默认：development、testing）'
-    }
-)
-def create_pg_db_and_user(context, su_passwd=None,
-                          config_types=[]):
+@task(help={
+    'su_passwd': 'root密码',
+    'config_types': '配置类型（默认：development、testing）'
+})
+def create_pg_db_and_user(context, su_passwd=None, config_types=[]):
     """
     根据配置新建postgresql数据库以及用户
     """
@@ -33,7 +30,10 @@ def create_pg_db_and_user(context, su_passwd=None,
         with open(f'cmds/{config_type}_createpg.sh') as f:
             part = f.read()
         log.info(f"正在为{config_type}配置创建rdb")
-        context.sudo(f"bash -c 'psql postgres <<< $(echo {part})'", user='postgres', password=su_passwd)
+        context.sudo(
+            f"bash -c 'psql postgres <<< $(echo {part})'",
+            user='postgres',
+            password=su_passwd)
 
 
 @task(
@@ -41,9 +41,10 @@ def create_pg_db_and_user(context, su_passwd=None,
         'admin': '管理员账户（默认: admin）',
         'passwd': '管理员密码（默认: admin）',
         'config_types': '配置类型（默认：development、testing）'
-    }
-)
-def create_mg_db_and_user(context, admin='admin', passwd='admin',
+    })
+def create_mg_db_and_user(context,
+                          admin='admin',
+                          passwd='admin',
                           config_types=[]):
     """
     根据配置新建mongodb数据库以及用户
@@ -76,9 +77,7 @@ def add_closure_table_procedure(context):
     log.info("闭包表导入成功.")
 
 
-@app_context_task(
-    help={'skip_on_failure': '忽略错误（默认：否）'}
-)
+@app_context_task(help={'skip_on_failure': '忽略错误（默认：否）'})
 def init_development_data(context, skip_on_failure=False):
     """
     初始化诸如用户、用户权限等基本信息到数据库
@@ -97,8 +96,7 @@ def init_development_data(context, skip_on_failure=False):
         else:
             log.debug(
                 "The following error was ignored due to the `skip_on_failure` flag: %s",
-                exception
-            )
+                exception)
             log.info("Initializing development data step is skipped.")
     else:
         log.info("数据初始化成功.")

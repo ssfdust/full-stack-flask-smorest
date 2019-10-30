@@ -18,10 +18,12 @@ from app.extensions import ma
 from app.extensions.marshal.bases import BaseMsgSchema
 from marshmallow import fields
 
+
 class UserInfoSchema(ma.ModelSchema):
 
     class Meta:
         model = models.UserInfo
+
 
 class UserSchema(ma.ModelSchema):
 
@@ -33,9 +35,11 @@ class UserSchema(ma.ModelSchema):
         from app.modules.auth.models import User
         model = User
 
+
 class UserDetailsSchema(BaseMsgSchema):
 
     data = fields.Nested(UserSchema)
+
 
 class GroupSchema(ma.ModelSchema):
     """
@@ -47,12 +51,14 @@ class GroupSchema(ma.ModelSchema):
     class Meta:
         model = models.Group
 
+
 class GroupItemSchema(BaseMsgSchema):
     """
     组返回
     """
 
     data = fields.Nested(GroupSchema)
+
 
 class GroupResSchema(BaseMsgSchema):
 

@@ -15,12 +15,11 @@
 
 from app.extensions.sqla import db, Model, SurrogatePK
 
-menus_relation = db.Table(
-    'menus_relation',
-    db.Column('ancestor', db.Integer(), nullable=False),
-    db.Column('descendant', db.Integer(), nullable=False),
-    db.Column('distance', db.Integer(), nullable=False)
-)
+menus_relation = db.Table('menus_relation',
+                          db.Column('ancestor', db.Integer(), nullable=False),
+                          db.Column('descendant', db.Integer(), nullable=False),
+                          db.Column('distance', db.Integer(), nullable=False))
+
 
 class Menu(Model, SurrogatePK):
     """
@@ -42,23 +41,25 @@ class Menu(Model, SurrogatePK):
     permission_id = db.Column(db.Integer(), doc='权限ID', default=1)
     icon = db.Column(db.String(512), doc='图片')
     path = db.Column(db.String(512), doc='前端URL')
-    permission = db.relationship("Permission",
-                                 primaryjoin="Permission.id == Menu.permission_id",
-                                 foreign_keys=permission_id,
-                                 doc='权限'
-                                 )
-    parent = db.relationship("Menu",
-                             primaryjoin="remote(Menu.id) == Menu.pid",
-                             foreign_keys=pid,
-                             doc="父级菜单",
-                             )
-    children = db.relationship("Menu",
-                               secondary="menus_relation",
-                               primaryjoin="Menu.id == menus_relation.c.ancestor",
-                               doc="子级菜单",
-                               secondaryjoin=("and_(Menu.id == menus_relation.c.descendant"
-                                              ", menus_relation.c.distance > 0)"),
-                               viewonly=True)
+    permission = db.relationship(
+        "Permission",
+        primaryjoin="Permission.id == Menu.permission_id",
+        foreign_keys=permission_id,
+        doc='权限')
+    parent = db.relationship(
+        "Menu",
+        primaryjoin="remote(Menu.id) == Menu.pid",
+        foreign_keys=pid,
+        doc="父级菜单",
+    )
+    children = db.relationship(
+        "Menu",
+        secondary="menus_relation",
+        primaryjoin="Menu.id == menus_relation.c.ancestor",
+        doc="子级菜单",
+        secondaryjoin=("and_(Menu.id == menus_relation.c.descendant"
+                       ", menus_relation.c.distance > 0)"),
+        viewonly=True)
 
     @classmethod
     def get_by_name(cls, name):

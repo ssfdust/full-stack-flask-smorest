@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions
     ~~~~~~~~~~~~~~~~~~~~
@@ -22,20 +21,18 @@
     拓展组件
 """
 
-
 from flask_babel import Babel
 from flask_mail import Mail
 from flask_socketio import SocketIO
 
-from .admin import admin
 from .api import api, spec_kwargs
 from .celery import celery_ext
 from .jwt import jwt
 from .logger import Logger
 from .marshal import ma
 from .mongo import mongo
-from .security import security
 from .sqla import db
+from .security import security
 
 babel = Babel()
 mail = Mail()
@@ -45,9 +42,6 @@ socketio = SocketIO()
 
 def init_app(app):
     """拓展组件的初始化"""
-    for ext in [db, ma, mongo, logger, babel,
-                jwt, security, admin, mail,
-                celery_ext, socketio
-                ]:
+    for ext in [db, ma, mongo, logger, babel, jwt, mail, celery_ext, socketio, security]:
         ext.init_app(app)
     api.init_app(app, spec_kwargs=spec_kwargs)

@@ -24,31 +24,45 @@ MONGO_PATH = 'cmds/{config}_mongodb.txt'
 SQL_PATH = 'cmds/{config}_create.sql'
 SQLSH_PATH = 'cmds/{config}_createpg.sh'
 
-CONFIG_TYPES = ['development',
-                'production',
-                'testing']
+CONFIG_TYPES = ['development', 'production', 'testing']
 
-SETTING_KEYS = ['db_url', 'locale', 'base_prefix', 'timezone', 'mail_server',
-                'mail_port', 'mail_username', 'mail_sender', 'mail_passwd',
-                'schedule_collection', 'broker_url', 'server_name', 'mongo_db',
-                'mongo_user', 'mongo_passwd', 'mongo_host', 'mongo_port']
+SETTING_KEYS = [
+    'db_url', 'locale', 'base_prefix', 'timezone', 'mail_server', 'mail_port',
+    'mail_username', 'mail_sender', 'mail_passwd', 'schedule_collection',
+    'broker_url', 'server_name', 'mongo_db', 'mongo_user', 'mongo_passwd',
+    'mongo_host', 'mongo_port'
+]
 RANDOM_KEYS = ['secret_key', 'jwt_secret_key', 'passwd_salt']
 
 DEFAULT_VALS = {
-    'db_url': 'postgresql://full-stack-flask-admin:full-stack-flask-admin@localhost:5432/full-stack-flask',
-    'locale': 'zh_cn',
-    'base_prefix': '/api/v1',
-    'timezone': 'Asia/Shanghai',
-    'schedule_collection': 'full-stack-flask-schedules',
-    'mail_server': 'smtp.exmail.qq.com',
-    'mail_port': '465',
-    'broker_url': 'amqp://',
-    'server_name': 'full-flask.net',
-    'mongo_db': 'full-stack-flask-admin',
-    'mongo_user': 'full-stack-flask-admin',
-    'mongo_passwd': 'full-stack-flask-admin',
-    'mongo_host': '127.0.0.1',
-    'mongo_port': '27017'
+    'db_url':
+        'postgresql://full-stack-flask-admin:full-stack-flask-admin@localhost:5432/full-stack-flask',
+    'locale':
+        'zh_cn',
+    'base_prefix':
+        '/api/v1',
+    'timezone':
+        'Asia/Shanghai',
+    'schedule_collection':
+        'full-stack-flask-schedules',
+    'mail_server':
+        'smtp.exmail.qq.com',
+    'mail_port':
+        '465',
+    'broker_url':
+        'amqp://',
+    'server_name':
+        'full-flask.net',
+    'mongo_db':
+        'full-stack-flask-admin',
+    'mongo_user':
+        'full-stack-flask-admin',
+    'mongo_passwd':
+        'full-stack-flask-admin',
+    'mongo_host':
+        '127.0.0.1',
+    'mongo_port':
+        '27017'
 }
 
 HELPS = {
@@ -80,35 +94,32 @@ EOF_SU = "# End Of SuperUser"
 EOF_MAPPING = "# End Of Permissions Mapping"
 
 ADDED_ROLE = ("{model_name}Manager = '{model_name}Manager'\n"
-              f"    {EOF_ROLES}"
-              )
-ADDED_PERMISSIONS = (
-    "# {model_name}Manager\n"
-    "    {model_name}Add = '{model_name}AddPrivilege'\n"
-    "    {model_name}Edit = '{model_name}EditPrivilege'\n"
-    "    {model_name}Delete = '{model_name}DeletePrivilege'\n"
-    "    {model_name}Query = '{model_name}QueryPrivilege'\n"
-    f"    {EOF_PEMISSIONS}"
-)
+              f"    {EOF_ROLES}")
+ADDED_PERMISSIONS = ("# {model_name}Manager\n"
+                     "    {model_name}Add = '{model_name}AddPrivilege'\n"
+                     "    {model_name}Edit = '{model_name}EditPrivilege'\n"
+                     "    {model_name}Delete = '{model_name}DeletePrivilege'\n"
+                     "    {model_name}Query = '{model_name}QueryPrivilege'\n"
+                     f"    {EOF_PEMISSIONS}")
 ADDED_SU = (
     "# {module_title}管理\n"
     "        PERMISSIONS.{model_name}Add, PERMISSIONS.{model_name}Delete,\n"
     "        PERMISSIONS.{model_name}Edit, PERMISSIONS.{model_name}Query,\n"
-    f"        {EOF_SU}"
-)
+    f"        {EOF_SU}")
 ADDED_MAPPING = (
     "ROLES.{model_name}Manager: [\n"
     "        PERMISSIONS.{model_name}Add, PERMISSIONS.{model_name}Delete,\n"
     "        PERMISSIONS.{model_name}Edit, PERMISSIONS.{model_name}Query\n"
     "    ],\n"
-    f"    {EOF_MAPPING}"
-)
+    f"    {EOF_MAPPING}")
 
 
 def rand_string(strlen=10):
     """生成数字字母特殊字符的随机字符串"""
-    password_characters = string.ascii_letters + string.digits + string.punctuation.replace("'", "")
-    return ''.join(random.choice(password_characters) for i in range(strlen) if i != "'")
+    password_characters = string.ascii_letters + string.digits + string.punctuation.replace(
+        "'", "")
+    return ''.join(
+        random.choice(password_characters) for i in range(strlen) if i != "'")
 
 
 @task
@@ -138,9 +149,8 @@ def generate_config(context):
             for key in SETTING_KEYS:
                 if key in DEFAULT_VALS:
                     value = rlinput(
-                        '请设置 %s (%s) \n(默认 %s): \n' % (key, HELPS[key], DEFAULT_VALS[key]),
-                        DEFAULT_VALS[key]
-                    )
+                        '请设置 %s (%s) \n(默认 %s): \n' %
+                        (key, HELPS[key], DEFAULT_VALS[key]), DEFAULT_VALS[key])
                     config[key] = value if value else DEFAULT_VALS[key]
                 else:
                     config[key] = input('请设置 %s (%s): ' % (key, HELPS[key]))
@@ -149,8 +159,7 @@ def generate_config(context):
                 rand_str = rand_string(30)
                 value = rlinput(
                     '请设置 %s (%s) \n(默认 %s): \n' % (key, HELPS[key], rand_str),
-                    rand_str
-                )
+                    rand_str)
                 config[key] = value if value else rand_str
                 print()
 
@@ -159,40 +168,35 @@ def generate_config(context):
         else:
             for key in _default_config:
                 value = rlinput(
-                    '请设置 %s (%s) \n(默认 %s): \n' % (key, HELPS[key], _default_config[key]),
-                    _default_config[key]
-                )
+                    '请设置 %s (%s) \n(默认 %s): \n' %
+                    (key, HELPS[key], _default_config[key]),
+                    _default_config[key])
                 config[key] = value if value else _default_config[key]
                 print()
 
         # Genrate configuration
         env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader('tasks/app/templates/configurations/')
-        )
+            loader=jinja2.FileSystemLoader(
+                'tasks/app/templates/configurations/'))
 
         log.info("正在生成配置...")
-        for template_name, conf_path in [
-                ['config.template', CONFIG_PATH],
-                ['nginx.template', NGINX_PATH],
-                ['mongodb.template', MONGO_PATH]
-        ]:
+        for template_name, conf_path in [['config.template', CONFIG_PATH],
+                                         ['nginx.template', NGINX_PATH],
+                                         ['mongodb.template', MONGO_PATH]]:
             template = env.get_template(template_name)
-            template.stream(
-                **config
-            ).dump('%s' % conf_path.format(config=config_type))
+            template.stream(**config).dump('%s' %
+                                           conf_path.format(config=config_type))
 
         log.info("正在生成Postgresql初始化指令...")
-        for template_name, conf_path in [
-                ['sql.template', SQL_PATH],
-                ['sql-sh.template', SQLSH_PATH]
-        ]:
+        for template_name, conf_path in [['sql.template', SQL_PATH],
+                                         ['sql-sh.template', SQLSH_PATH]]:
             template = env.get_template(template_name)
             u = url.make_url(config['db_url'])
             template.stream(
                 db_username=u.username,
                 db_password=u.password,
-                db_name=u.database
-            ).dump('%s' % conf_path.format(config=config_type))
+                db_name=u.database).dump('%s' %
+                                         conf_path.format(config=config_type))
 
         print()
 
@@ -205,10 +209,12 @@ def generate_config(context):
         'module_title': '模块标题（注释用）',
         'module_name_singular': '模块单例名',
         'description': '模块描述'
-    }
-)
-def crud_module(context, module_name='', module_name_singular='',
-                module_title='', description=''):
+    })
+def crud_module(context,
+                module_name='',
+                module_name_singular='',
+                module_title='',
+                description=''):
     # pylint: disable=unused-argument
     """
     新建一个增删改查模块
@@ -232,30 +238,21 @@ def crud_module(context, module_name='', module_name_singular='',
         return
 
     if not re.match('^[a-zA-Z0-9_]+$', module_name):
-        log.critical(
-            "模块名中包含特殊字符"
-            "([a-zA-Z0-9_]+)"
-        )
+        log.critical("模块名中包含特殊字符" "([a-zA-Z0-9_]+)")
         return
 
     if not module_name_singular:
         module_name_singular = module_name[:-1]
 
     module_path = 'app/modules/%s' % module_name
-    admin_views_path = 'app/admin/views'
+    admin_views_path = 'admin/views'
 
     if not module_title:
         module_title = " ".join(
-            [word.capitalize()
-                for word in module_name.split('_')
-             ]
-        )
+            [word.capitalize() for word in module_name.split('_')])
 
     model_name = "".join(
-        [word.capitalize()
-            for word in module_name_singular.split('_')
-         ]
-    )
+        [word.capitalize() for word in module_name_singular.split('_')])
 
     if os.path.exists(module_path):
         log.critical('模块 `%s` 已存在.', module_name)
@@ -264,18 +261,17 @@ def crud_module(context, module_name='', module_name_singular='',
     os.makedirs(module_path)
 
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader('tasks/app/templates/crud_module')
-    )
+        loader=jinja2.FileSystemLoader('tasks/app/templates/crud_module'))
 
     # 从.AUTHOR中获取author
     author = load_author()
 
     for template_file in (
-        '__init__',
-        'models',
-        'params',
-        'resources',
-        'schemas',
+            '__init__',
+            'models',
+            'params',
+            'resources',
+            'schemas',
     ):
         template = env.get_template('%s.py.template' % template_file)
         template.stream(
@@ -286,10 +282,7 @@ def crud_module(context, module_name='', module_name_singular='',
             model_name=model_name,
             description=description,
             year=datetime.date.today().year,
-            author=author
-        ).dump(
-            '%s/%s.py' % (module_path, template_file)
-        )
+            author=author).dump('%s/%s.py' % (module_path, template_file))
 
     # 生成admin模板
     log.info("生成admin的views模板中...")
@@ -299,11 +292,10 @@ def crud_module(context, module_name='', module_name_singular='',
         module_title=module_title,
         model_name=model_name,
         year=datetime.date.today().year,
-        author=author
-    ).dump(
-        '%s/%s.py' % (admin_views_path, module_name)
+        author=author).dump('%s/%s.py' % (admin_views_path, module_name))
+    log.info(
+        f'{admin_views_path}/{module_name}.py已生成，请在app/admin/register.py中添加相关信息。'
     )
-    log.info(f'{admin_views_path}/{module_name}.py已生成，请在app/admin/register.py中添加相关信息。')
 
     permissions_adder(context, model_name=model_name, module_title=module_title)
 
@@ -312,9 +304,7 @@ def crud_module(context, module_name='', module_name_singular='',
     log.info("请在app/factory.py中的ENABLED_MODULES中添加新模块以激活。")
 
 
-@task(
-    help={'revert': '还原'}
-)
+@task(help={'revert': '还原'})
 def apply_changes(context, revert=False):
     """
     应用新模块的权限
@@ -326,15 +316,11 @@ def apply_changes(context, revert=False):
     if os.path.exists(NEW_PERMISSIONS_FILE) and revert:
         os.remove(NEW_PERMISSIONS_FILE)
     if not revert:
-        orders = [
-            [PERMISSIONS_FILE, BACKUP_PERMISSIONS_FILE],
-            [NEW_PERMISSIONS_FILE, PERMISSIONS_FILE]
-        ]
+        orders = [[PERMISSIONS_FILE, BACKUP_PERMISSIONS_FILE],
+                  [NEW_PERMISSIONS_FILE, PERMISSIONS_FILE]]
     else:
-        orders = [
-            [PERMISSIONS_FILE, NEW_PERMISSIONS_FILE],
-            [BACKUP_PERMISSIONS_FILE, PERMISSIONS_FILE]
-        ]
+        orders = [[PERMISSIONS_FILE, NEW_PERMISSIONS_FILE],
+                  [BACKUP_PERMISSIONS_FILE, PERMISSIONS_FILE]]
     for orig, dst in orders:
         if os.path.exists(orig):
             log.info(f"移动{orig}到{dst}")
@@ -345,10 +331,7 @@ def apply_changes(context, revert=False):
     log.info("应用完毕")
 
 
-@task(
-    help={'model_name': '模块ORM名',
-          'module_title': '模块名'}
-)
+@task(help={'model_name': '模块ORM名', 'module_title': '模块名'})
 def permissions_adder(context, model_name='', module_title=''):
     # pylint: disable=unused-argument
     """
@@ -368,12 +351,9 @@ def permissions_adder(context, model_name='', module_title=''):
     with open('app/modules/auth/permissions.py') as f:
         text = f.read()
 
-    for orig, subs in [
-            [EOF_ROLES, added_role],
-            [EOF_PEMISSIONS, added_permissions],
-            [EOF_SU, added_su],
-            [EOF_MAPPING, added_mapping]
-    ]:
+    for orig, subs in [[EOF_ROLES, added_role],
+                       [EOF_PEMISSIONS, added_permissions], [EOF_SU, added_su],
+                       [EOF_MAPPING, added_mapping]]:
         text = text.replace(orig, subs)
 
     with open('app/modules/auth/permissions.new.py', 'w') as f:

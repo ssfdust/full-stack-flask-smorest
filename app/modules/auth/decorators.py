@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.auth.decorators
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -113,15 +112,21 @@ def permission_required(*permissions):
     permissions = list(permissions)
 
     def wrapper(func):
+
         @wraps(func)
         def inner(*args, **kwargs):
-            if all(permission in [p.name for p in current_user.permissions] for permission in permissions):
+            if all(permission in [p.name
+                                  for p in current_user.permissions]
+                   for permission in permissions):
                 return func(*args, **kwargs)
-            if all(permission in current_user.permissions for permission in permissions):
+            if all(permission in current_user.permissions
+                   for permission in permissions):
                 return func(*args, **kwargs)
             logger.error(f"{current_user.email}不具备{permissions}")
             abort(403, "禁止访问")
+
         return inner
+
     return wrapper
 
 
@@ -144,13 +149,18 @@ def role_required(*roles):
     from flask import abort
 
     def wrapper(func):
+
         @wraps(func)
         def inner(*args, **kwargs):
-            if all(role in [p.name for p in current_user.roles] for role in roles):
+            if all(role in [p.name
+                            for p in current_user.roles]
+                   for role in roles):
                 return func(*args, **kwargs)
             if all(role in current_user.roles for role in roles):
                 return func(*args, **kwargs)
             logger.error(f"{current_user.email}不具备{roles}")
             abort(403, "禁止访问")
+
         return inner
+
     return wrapper

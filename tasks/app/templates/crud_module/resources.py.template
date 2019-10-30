@@ -70,14 +70,14 @@ class {{ model_name }}View(MethodView):
     @permission_required(PERMISSIONS.{{ model_name }}Add)
     @blp.arguments(params.{{ model_name }}Param)
     @blp.response(schemas.{{ model_name }}ItemSchema)
-    def post(self, {{ model_name.lower() }}, **kwargs):
+    def post(self, {{ module_name_singular }}, **kwargs):
         '''
         新增{{ module_title }}信息
         '''
-        {{ model_name.lower() }}.save()
-        logger.info(f"{current_user.username}新增了{{ module_title }}{{ '{' + model_name.lower() + '}' }}")
+        {{ module_name_singular }}.save()
+        logger.info(f"{current_user.username}新增了{{ module_title }}{{ '{' + module_name_singular + '}' }}")
 
-        return {'data': {{ model_name.lower() }}}
+        return {'data': {{ module_name_singular }}}
 
     @doc_login_required
     @permission_required(PERMISSIONS.{{ model_name }}Delete)
@@ -96,9 +96,9 @@ class {{ model_name }}View(MethodView):
         return
 
 
-@blp.route('/<int:{{ model_name.lower() }}_id>',
+@blp.route('/<int:{{ module_name_singular }}_id>',
            parameters=[
-               {'in': 'path', 'name': '{{ model_name.lower() }}_id', 'description': '{{ module_title }}id'}
+               {'in': 'path', 'name': '{{ module_name_singular }}_id', 'description': '{{ module_title }}id'}
            ])
 class {{ model_name }}ItemView(MethodView):
 
@@ -106,37 +106,37 @@ class {{ model_name }}ItemView(MethodView):
     @permission_required(PERMISSIONS.{{ model_name }}Edit)
     @blp.arguments(params.{{ model_name }}Param)
     @blp.response(schemas.{{ model_name }}ItemSchema)
-    def put(self, {{ model_name.lower() }}, {{ model_name.lower() }}_id, **kwargs):
+    def put(self, {{ module_name_singular }}, {{ module_name_singular }}_id, **kwargs):
         '''
         更新{{ module_title }}
         '''
 
-        {{ model_name.lower() }} = models.{{ model_name }}.update_by_id({{ model_name.lower() }}_id,
+        {{ module_name_singular }} = models.{{ model_name }}.update_by_id({{ module_name_singular }}_id,
                                                                         params.{{ model_name }}Param,
-                                                                        {{ model_name.lower() }})
-        logger.info(f"{current_user.username}更新了{{ module_title }}{{ '{' + model_name.lower() + '.id}' }}")
+                                                                        {{ module_name_singular }})
+        logger.info(f"{current_user.username}更新了{{ module_title }}{{ '{' + module_name_singular + '.id}' }}")
 
-        return {'data': {{ model_name.lower() }}}
+        return {'data': {{ module_name_singular }}}
 
     @doc_login_required
     @permission_required(PERMISSIONS.{{ model_name }}Delete)
     @blp.response(BaseMsgSchema)
-    def delete(self, {{ model_name.lower() }}_id, **kwargs):
+    def delete(self, {{ module_name_singular }}_id, **kwargs):
         '''
         删除{{ module_title }}
         '''
-        models.{{ model_name }}.delete_by_id({{ model_name.lower() }}_id)
-        logger.info(f"{current_user.username}删除了{{ module_title }}{{ '{' + model_name.lower() + '_id}' }}")
+        models.{{ model_name }}.delete_by_id({{ module_name_singular }}_id)
+        logger.info(f"{current_user.username}删除了{{ module_title }}{{ '{' + module_name_singular + '_id}' }}")
 
         return
 
     @doc_login_required
     @permission_required(PERMISSIONS.{{ model_name }}Query)
     @blp.response(schemas.{{ model_name }}ItemSchema)
-    def get(self, {{ model_name.lower() }}_id, **kwargs):
+    def get(self, {{ module_name_singular }}_id, **kwargs):
         '''
         获取单条{{ module_title }}
         '''
-        {{ model_name.lower() }} = models.{{ model_name }}.get_by_id({{ model_name.lower() }}_id)
+        {{ module_name_singular }} = models.{{ model_name }}.get_by_id({{ module_name_singular }}_id)
 
-        return {'data': {{ model_name.lower() }}}
+        return {'data': {{ module_name_singular }}}

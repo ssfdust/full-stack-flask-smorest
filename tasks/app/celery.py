@@ -4,8 +4,7 @@ Celery相关的Invoke模块
 from invoke import task
 
 
-@task(default=True,
-      help={'level': '日志等级，默认：INFO'})
+@task(default=True, help={'level': '日志等级，默认：INFO'})
 def start(context, level="INFO"):
     """
     启动Celery服务

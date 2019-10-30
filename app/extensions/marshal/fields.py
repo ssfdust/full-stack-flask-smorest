@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.extensions.marshal.fields
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,7 +36,8 @@ class ArrowField(fields.DateTime):
     def _deserialize(self, value, attr, data, **kwargs):
         """将字符串转为arrow类型"""
         if not value:
-            raise self.make_error("invalid", input=value, obj_type=self.OBJ_TYPE)
+            raise self.make_error(
+                "invalid", input=value, obj_type=self.OBJ_TYPE)
 
         target = arrow.get(value)
 

@@ -41,11 +41,8 @@ def enter(context):
     config.TerminalInteractiveShell.banner1 = '''Python %s on %s
 IPython: %s
 App: %s [%s]
-Instance: %s''' % (sys.version,
-                   sys.platform,
-                   IPython.__version__,
-                   flask_app.import_name,
-                   flask_app.env,
+Instance: %s''' % (sys.version, sys.platform, IPython.__version__,
+                   flask_app.import_name, flask_app.env,
                    flask_app.instance_path)
 
     flask_app.shell_context_processors.append(shell_context)

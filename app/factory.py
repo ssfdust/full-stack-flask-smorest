@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.factory
     ~~~~~~~~~~~~~~~~~~~~~
@@ -30,7 +29,6 @@ from .extensions import init_app, db
 from .extensions.flask import Flask
 from .utils.formatters import mongon_opts_str
 
-from .admin import register
 from loguru import logger
 import os
 
@@ -40,11 +38,7 @@ CONFIG_MAPPGING = {
     'testing': 'app/config/testing.toml'
 }
 
-ENABLED_MODULES = ['auth', 'users', 'storages',
-                   'menus', 'todolist']
-
-# 注册Admin模块
-register.init()
+ENABLED_MODULES = ['auth', 'users', 'storages', 'menus', 'todolist']
 
 
 def create_app(modules, config_name='development'):
@@ -63,8 +57,10 @@ def create_app(modules, config_name='development'):
     通过环境变量export FLASK_ENV可以覆盖掉默认的配置信息，在Docker中
     比较好用。
     """
-    app = Flask("Full-Stack Flask", template_folder='app/templates',
-                static_folder='app/static')
+    app = Flask(
+        "Full-Stack Flask",
+        template_folder='app/templates',
+        static_folder='app/static')
 
     config_type = os.environ.get('FLASK_ENV', config_name)
 
@@ -72,7 +68,8 @@ def create_app(modules, config_name='development'):
 
     logger.info(f"Server Started. Server name: {app.config['SERVER_NAME']}")
 
-    app.config['CELERY_MONGODB_SCHEDULER_URL'] = mongon_opts_str(app.config['MONGODB_SETTINGS'])
+    app.config['CELERY_MONGODB_SCHEDULER_URL'] = mongon_opts_str(
+        app.config['MONGODB_SETTINGS'])
     app.config['ENABLED_MODULES'] = modules
 
     init_app(app)
@@ -91,9 +88,7 @@ def register_modules(app):
 
     为Flask实例注册项目的主要模块
     """
-    from .admin import processor
     from . import socketio, modules
 
     socketio.init_module()
-    processor.init_processor()
     modules.init_app(app)

@@ -37,16 +37,13 @@ class GroupView(MethodView):
         from app.utils.db import hierarchy_to_json
 
         groups = models.Group.query.all()
-        schema = schemas.GroupSchema(many=True, exclude=['created',
-                                                         'deleted',
-                                                         'modified'])
+        schema = schemas.GroupSchema(
+            many=True, exclude=['created', 'deleted', 'modified'])
         data = schema.dump(groups)
 
         tree_groups = hierarchy_to_json(data)
 
-        return {
-            'data': tree_groups
-        }
+        return {'data': tree_groups}
 
     @doc_login_required
     @permission_required(PERMISSIONS.GroupAdd)
@@ -65,8 +62,7 @@ class GroupView(MethodView):
 
         logger.info(f"{current_user.email}新建了{group.name}组")
 
-        return {'msg': 'success',
-                'code': 0}
+        return {'msg': 'success', 'code': 0}
 
 
 @blp.route('/groups/<int:gid>')
@@ -92,8 +88,7 @@ class GroupItemView(MethodView):
         """
         from app.services.users.groups import GroupFactory
 
-        group = models.Group.update_by_id(gid, params.GroupInfoParam,
-                                          group)
+        group = models.Group.update_by_id(gid, params.GroupInfoParam, group)
 
         group_factory = GroupFactory(group)
         group_factory.modify_group()
@@ -102,8 +97,7 @@ class GroupItemView(MethodView):
 
         logger.info(f"{current_user.email}修改了{group.name}组")
 
-        return {'msg': 'success',
-                'code': 0}
+        return {'msg': 'success', 'code': 0}
 
     @doc_login_required
     @permission_required(PERMISSIONS.GroupDelete)
@@ -125,10 +119,13 @@ class GroupItemView(MethodView):
         return
 
 
-@blp.route('/groups/<int:id>/members',
-           parameters=[
-               {'in': 'path', 'name': 'id', 'description': '组ID'}
-           ])
+@blp.route(
+    '/groups/<int:id>/members',
+    parameters=[{
+        'in': 'path',
+        'name': 'id',
+        'description': '组ID'
+    }])
 class GroupMemberView(MethodView):
 
     @doc_login_required
@@ -150,8 +147,7 @@ class GroupMemberView(MethodView):
 
         models.db.session.commit()
 
-        return {'code': 0,
-                'msg': 'success'}
+        return {'code': 0, 'msg': 'success'}
 
 
 @blp.route('/userinfo')
@@ -174,8 +170,7 @@ class UserView(MethodView):
         更新用户信息
         """
         models.UserInfo.update_by_id(current_user.userinfo.id,
-                                     params.UserInfoParam,
-                                     userinfo)
+                                     params.UserInfoParam, userinfo)
         logger.info(f"{current_user.username}更新了个人信息")
 
         return {'data': current_user}

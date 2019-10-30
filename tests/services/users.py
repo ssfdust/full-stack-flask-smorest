@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 def test_group_children_query(flask_app):
     from app.modules.users.models import Group, db, groups_users
     from app.modules.auth.models import Role, User
@@ -47,7 +48,6 @@ def test_group_children_query(flask_app):
     assert r2 not in u2.roles
     assert r1 not in u3.roles
     data = db.session.query(groups_users).filter(
-        groups_users.c.group_id.in_([grp1_id, grp2_id, grp3_id])
-    ).all()
+        groups_users.c.group_id.in_([grp1_id, grp2_id, grp3_id])).all()
     assert data == []
     db.session.rollback()

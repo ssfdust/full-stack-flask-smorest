@@ -17,12 +17,15 @@ from app.extensions import ma
 from marshmallow import fields
 from app.extensions.marshal.bases import UploadField
 
+
 class UploadParams(ma.Schema):
     '''
     上传参数
     '''
 
-    file = UploadField(description='文件', allow_none=False, required=True, location='files')
+    file = UploadField(
+        description='文件', allow_none=False, required=True, location='files')
     name = fields.String(description='文件名', location='form')
-    storetype = fields.String(description='存储类型', allow_none=False, required=True, location='form')
+    storetype = fields.String(
+        description='存储类型', allow_none=False, required=True, location='form')
     extra_args = UploadField(description='额外参数', location='json')

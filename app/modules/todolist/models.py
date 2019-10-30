@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
     app.modules.todolist.modules
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,10 +26,10 @@ class TodoItem(SurrogatePK, Model):
     """
     待办表
 
-    :param          message: str(60)                    待办内容
-    :param          due: DateTime                       过期时间
-    :param          sort: int                           序号
-    :param          state: bool                         完成状态
+    :attr message: str(60) 待办内容
+    :attr due: DateTime 过期时间
+    :attr sort: int 序号
+    :attr state: bool 完成状态
     """
     __tablename__ = "todolist_items"
 
@@ -42,11 +41,23 @@ class TodoItem(SurrogatePK, Model):
         sort = db.session.query(db.func.max(table.c.id) + 1).first()[0]
         return sort if sort else 1
 
-    message = db.Column(db.String(60), doc='待办内容',
-                        info={'marshmallow': {'required': True, 'allow_none': False}})
-    due = db.Column(db.ArrowType, doc='过期时间',
-                    info={'marshmallow': {'required': True, 'allow_none': False,
-                                          'format': '%Y-%m-%d %H:%M:%S'}})
+    message = db.Column(
+        db.String(60),
+        doc='待办内容',
+        info={'marshmallow': {
+            'required': True,
+            'allow_none': False
+        }})
+    due = db.Column(
+        db.ArrowType,
+        doc='过期时间',
+        info={
+            'marshmallow': {
+                'required': True,
+                'allow_none': False,
+                'format': '%Y-%m-%d %H:%M:%S'
+            }
+        })
     sort = db.Column(db.Integer, doc='序号', default=set_sort)
     state = db.Column(db.Boolean, doc='完成状态', default=False)
 
