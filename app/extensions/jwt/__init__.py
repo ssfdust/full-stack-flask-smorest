@@ -31,9 +31,9 @@ def unauthorized_callback(e):
 
 @jwt.expired_token_loader
 def token_expired():
-    response = jsonify({"code": 401, "msg": "登录已过期"})
+    response = jsonify({"code": 402, "msg": "登录已过期"})
     logger.warning('登录过期')
-    response.status_code = 401
+    response.status_code = 402
     return response
 
 
