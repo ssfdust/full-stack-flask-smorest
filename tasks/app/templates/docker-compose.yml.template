@@ -1,0 +1,59 @@
+version: '3.5'
+
+services:  
+
+  rabbit:
+    image: rabbitmq:latest
+    environment:
+      RABBITMQ_DEFAULT_USER: {{ mq_user }}
+      RABBITMQ_DEFAULT_PASS: {{ mq_passwd }}
+
+  db:
+    image: ssfdust/psql_jieba_swsc:latest
+    ports:
+      - "9432:5432"
+    environment:
+      POSTGRES_USER: {{ '${POSTGRES_USER:-' + db_username + '}' }}
+      POSTGRES_PASSWORD: {{ '${POSTGRES_PASSWORD:-' + db_password + '}' }}
+      POSTGRES_DB: {{ '${POSTGRES_DB:-' + db_name + '}' }}
+      PGDATA: /data/postgres
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+        MONGO_INITDB_DATABASE: {{ '${MONGO_INITDB_DATABASE:-' + mongo_db + '}' }}
+        MONGO_INITDB_ROOT_USERNAME: {{ '${MONGO_INITDB_ROOT_USERNAME:-' + mongo_user + '}' }}
+        MONGO_INITDB_ROOT_PASSWORD: {{ '${MONGO_INITDB_ROOT_PASSWORD:-' + mongo_passwd + '}' }}
+
+  web:
+    image: ssfdust/ssfdust_temp:latest
+    volumes:
+      - .:/Application 
+    ports:
+      - "9001:5000"
+    depends_on:
+      - rabbit
+      - db
+      - mongo
+
+  worker:
+    image: ssfdust/ssfdust_temp:latest
+    command: inv app.celery
+    volumes:
+      - .:/Application
+    depends_on:
+      - rabbit
+      - db
+      - mongo
+
+  beat:
+    image: ssfdust/ssfdust_temp:latest
+    command: inv app.celery.beat
+    volumes:
+      - .:/Application
+    depends_on:
+      - rabbit
+      - db
+      - mongo

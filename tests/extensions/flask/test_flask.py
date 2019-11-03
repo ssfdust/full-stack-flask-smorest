@@ -14,7 +14,7 @@ class TestFlask():
         with tempfile.NamedTemporaryFile(delete=False) as fp:
             fp.write(b'TEST_CONFIG = 123')
 
-        app = Flask(__name__)
+        app = Flask("TestFlask")
         app.config.from_toml(fp.name)
 
         assert app is not None
@@ -42,7 +42,7 @@ class TestFlask():
             fp.write(b'TEST_CONFIG = 123')
         config = Config(root_path=str(Path(__name__)))
         config.from_toml(fp.name)
-        app = Flask(__name__)
+        app = Flask("TestConfInit")
         config.init_app(app)
         assert app.config['TEST_CONFIG'] == 123
         Config(app=app)

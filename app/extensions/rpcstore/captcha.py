@@ -56,6 +56,6 @@ class CaptchaStore(AMQPStore):
     @property
     def code_lst(self):
         if self.value is None:
-            return None
+            return []
         else:
             return [self.value.upper(), self.value.lower(), self.value]

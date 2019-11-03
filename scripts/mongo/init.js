@@ -1,0 +1,11 @@
+db.createUser({
+    user:"full-stack-flask-admin",
+    pwd:"full-stack-flask-admin",
+    roles:[{
+        role:"dbAdmin",
+        db:"full-stack-flask-admin"
+    },{
+        role:"readWrite",
+        db:"full-stack-flask-admin"
+    }]
+})

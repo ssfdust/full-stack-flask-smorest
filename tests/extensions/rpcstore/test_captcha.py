@@ -27,3 +27,8 @@ class TestCapture():
         store.get_captcha()
 
         assert store.value == value
+
+    def test_empty(self, flask_app):
+        from app.extensions.rpcstore.captcha import CaptchaStore
+        store = CaptchaStore("unkown")
+        assert store.code_lst == []

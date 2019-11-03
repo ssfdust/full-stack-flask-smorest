@@ -1,0 +1,59 @@
+version: '3.5'
+
+services:  
+
+  rabbit:
+    image: rabbitmq:latest
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  db:
+    image: ssfdust/psql_jieba_swsc:latest
+    ports:
+      - "9432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-full-stack-flask-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-full-stack-flask-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-full-stack-flask}
+      PGDATA: /data/postgres
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-full-stack-flask-admin}
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-full-stack-flask-admin}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-full-stack-flask-admin}
+
+  web:
+    image: ssfdust/ssfdust_temp:latest
+    volumes:
+      - .:/Application 
+    ports:
+      - "9001:5000"
+    depends_on:
+      - rabbit
+      - db
+      - mongo
+
+  worker:
+    image: ssfdust/ssfdust_temp:latest
+    command: inv app.celery
+    volumes:
+      - .:/Application
+    depends_on:
+      - rabbit
+      - db
+      - mongo
+
+  beat:
+    image: ssfdust/ssfdust_temp:latest
+    command: inv app.celery.beat
+    volumes:
+      - .:/Application
+    depends_on:
+      - rabbit
+      - db
+      - mongo

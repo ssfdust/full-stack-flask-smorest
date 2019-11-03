@@ -46,11 +46,11 @@ class AMQPStore(object):
         self.limit = limit
         self.value = value
         self.values = []
-        if exchange is None and '_' in key:
-            exchange = key.split('_')[0]
+        #  if exchange is None and '_' in key:
+        #      exchange = key.split('_')[0]
         self.exchange = Exchange(exchange)
-        if not routing_key:
-            routing_key = key
+        #  if not routing_key:
+        #      routing_key = key
         self.routing_key = routing_key
         self.queue = Queue(
             self.key,

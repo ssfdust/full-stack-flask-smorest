@@ -43,7 +43,7 @@ def database(connection):
 def app(config):
     from flask import Flask
     from app.extensions import mongo, babel
-    app = Flask('Test')
+    app = Flask('TestMongo')
     app.config['MONGODB_SETTINGS'] = config
     app.config['BABEL_DEFAULT_TIMEZONE'] = 'Asia/Shanghai'
     mongo.init_app(app)

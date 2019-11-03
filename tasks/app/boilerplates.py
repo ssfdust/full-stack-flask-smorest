@@ -382,3 +382,33 @@ def load_author():
             toml.dump({'AUTHOR': author_name, 'EMAIL': email}, f)
 
     return author
+
+
+@task
+def generate_docker_compose(context):
+    import toml
+    import jinja2
+    from sqlalchemy.engine import url
+    from kombu.utils.url import parse_url
+
+    config = "production"
+    configuration = toml.load(CONFIG_PATH.format(config=config))
+    db_url = configuration['SQLALCHEMY_DATABASE_URI']
+    u = url.make_url(db_url)
+    mongo_info = configuration['MONGODB_SETTINGS']
+    broker_url = configuration['CELERY_BROKER_URL']
+    broker_info = parse_url(broker_url)
+    breakpoint()
+
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader('tasks/app/templates/'))
+    template = env.get_template("docker-compose.yml.template")
+    template.stream(
+        mq_user=broker_info['userid'] if broker_info['userid'] else 'guest',
+        mq_passwd=broker_info['password'] if broker_info['password'] else 'guest',
+        mongo_db=mongo_info['db'],
+        mongo_user=mongo_info['username'],
+        mongo_passwd=mongo_info['password'],
+        db_username=u.username,
+        db_password=u.password,
+        db_name=u.database).dump('docker-compose.yml')

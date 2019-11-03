@@ -87,9 +87,7 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
 
     def _coerce(self, value):
         """ 预处理 """
-        if value is None:
-            return None
-        elif isinstance(value, six.string_types):
+        if isinstance(value, six.string_types):
             value = arrow.get(value)
         elif isinstance(value, Iterable):
             value = arrow.get(*value)

@@ -110,6 +110,7 @@ class TestSqlaCRUD(object):
         class TestParent(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
             name = db.Column(db.String(8))
+            modified = db.Column(db.ArrowType)
 
         class TestChild(CRUDMixin, db.Model):
             id = db.Column(db.Integer, primary_key=True)
@@ -149,8 +150,13 @@ class TestSqlaCRUD(object):
         parent.update_by_ma(ParentSchema(), tmp_parent)
         parent = db.session.query(TestParent).filter(
             TestParent.id == parent.id).one()
-        assert parent.children == [child2, child3
-                                  ] or parent.children == [child3, child2]
+        #  assert parent.children == [child2, child3
+        #                            ] or parent.children == [child3, child2]
+        parent.children.sort(key=lambda x: x.id)
+        for sample, child in zip([child2, child3], parent.children):
+            assert sample.id == child.id
+            assert sample.name == child.name
+            assert sample.pid == child.pid
         assert parent.name == 'add2'
         new_parnet = TestParent().create()
         assert new_parnet.id == parent.id + 2

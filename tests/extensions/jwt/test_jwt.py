@@ -1,29 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-def get_user(user):
-    return {"user": user}
+from flask import jsonify
 
 
 class TestJwt():
 
-    def test_jwt_manager(self, app, db, monkeypatch):
-        from app.extensions.jwt import jwt
-        from app.extensions.jwt.uitls import add_token_to_database, revoke_token
+    def test_jwt_manager(self, app, db, monkeypatch, jwt):
+        from app.extensions.jwt.uitls import add_token_to_database
+        from flask_jwt_extended import create_access_token, jwt_required, current_user
         from app.extensions.jwt.models import TokenBlackList
-        from flask_jwt_extended import create_access_token, jwt_required, current_user, get_raw_jwt
-        from flask import jsonify
 
-        jwt.user_loader_callback_loader(get_user)
-        jwt.init_app(app)
-
-        @app.route('/login', methods=['POST'])
-        def login():
-            token = create_access_token('test')
-            add_token_to_database(token, "identity")
-
-            return jsonify({"token": token})
+        token = create_access_token('test')
+        add_token_to_database(token, "identity")
 
         @app.route('/protected', methods=["GET"])
         @jwt_required
@@ -31,31 +20,55 @@ class TestJwt():
             assert current_user == {"user": "test"}
             return jsonify({"code": 1})
 
-        @app.route('/revoke', methods=["GET"])
-        @jwt_required
-        def revoke():
-            jwt = get_raw_jwt()
-            revoke_token(jwt)
-            return jsonify({"code": 1})
-
         test_client = app.test_client()
-        resp = test_client.post("/login")
-        assert resp.status_code == 200
-        headers = {"Authorization": "Bearer {}".format(resp.json["token"])}
+
+        headers = {"Authorization": "Bearer {}".format(token)}
         resp = test_client.get("/protected")
         assert resp.status_code == 401
         resp = test_client.get("/protected", headers=headers)
         resp.status_code == 200
 
-        token = TokenBlackList.query.first()
-        token.expires == (1900, 1, 1, 0, 0, 0)
-        token.save()
+        TokenBlackList.query.delete()
+        db.session.commit()
+
         resp = test_client.get("/protected", headers=headers)
-        resp.status_code == 402
+        resp.status_code == 401
+
+    def test_jwt_expired(self, app, db, jwt):
+        from app.extensions.jwt.models import TokenBlackList
+        from app.extensions.jwt.uitls import add_token_to_database
+        from flask_jwt_extended import create_access_token
+        from datetime import timedelta
+
+        token = create_access_token('test', expires_delta=-timedelta(seconds=1))
+        add_token_to_database(token, "identity", allow_expired=True)
+
+        headers = {"Authorization": "Bearer {}".format(token)}
+        test_client = app.test_client()
+
+        resp = test_client.get("/protected", headers=headers)
+        assert resp.status_code == 402
 
         TokenBlackList.query.delete()
         db.session.commit()
-        test_client.post("/login")
-        test_client.get("/revoke")
-        resp = test_client.get("/protected")
+
+    def test_jwt_revoke(self, app, db, jwt):
+        from app.extensions.jwt.uitls import add_token_to_database, revoke_token
+        from flask_jwt_extended import create_access_token, decode_token
+        from app.extensions.jwt.models import TokenBlackList
+
+        token = create_access_token('test',)
+        add_token_to_database(token, "identity", allow_expired=True)
+
+        _jwt = decode_token(token)
+        revoke_token(_jwt)
+        headers = {"Authorization": "Bearer {}".format(token)}
+        test_client = app.test_client()
+
+        resp = test_client.get("/protected", headers=headers)
         assert resp.status_code == 401
+
+        TokenBlackList.query.delete()
+        db.session.commit()
+
+        revoke_token(_jwt)

@@ -42,15 +42,16 @@ def database(connection):
 @pytest.fixture(scope='session')
 def app(config):
     from flask import Flask
-    from app.extensions import mongo, babel, logger
-    app = Flask('Test')
+    from app.extensions import mongo, babel, Logger
+    app = Flask('TestLogger')
     app.config['MONGODB_SETTINGS'] = config
     app.config['BABEL_DEFAULT_TIMEZONE'] = 'Asia/Shanghai'
     mongo.init_app(app)
     babel.init_app(app)
-    logger.init_app(app)
+    Logger(app)
 
-    with app.app_context():
+    with app.app_context() as f:
+        print(f)
         yield app
 
 

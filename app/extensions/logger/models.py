@@ -19,15 +19,8 @@
     日志ORM模块
 """
 
-try:
-    from app.extensions import mongo as db
-except ImportError:
-    import mongoengine as db
-    setattr(db, "ArrowField", db.DateTimeField)
-try:
-    from app.utils.local import localnow
-except ImportError:
-    localnow = None
+from app.extensions import mongo as db
+from app.utils.local import localnow
 
 
 class Log(db.Document):

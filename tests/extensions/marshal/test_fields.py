@@ -3,6 +3,8 @@
 
 import pytest
 
+import marshmallow
+
 
 class TestCustomFields():
 
@@ -27,3 +29,18 @@ class TestCustomFields():
         instance = schema.load(test_data)
 
         assert instance['time'] == arrow.get(test_data['time'])
+
+    def test_validate(self, app):
+        from app.extensions.marshal.ma import Marshmallow
+        from app.extensions.marshal.fields import ArrowField
+
+        ma = Marshmallow(app)
+
+        class TestSchema(ma.Schema):
+
+            time = ArrowField()
+
+        test_data = {'time': ""}
+        schema = TestSchema()
+        with pytest.raises(marshmallow.exceptions.ValidationError):
+            schema.load(test_data)

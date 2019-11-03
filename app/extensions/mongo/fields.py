@@ -62,14 +62,15 @@ class ArrowField(BaseField):
 
     def _coerce(self, value):
         """ 预处理 """
-        if value is None:
-            return None
-        elif isinstance(value, six.string_types):
-            value = arrow.get(value)
-        elif isinstance(value, Iterable):
+        #  if value is None:
+        #      return None
+        #  elif isinstance(value, six.string_types):
+        #      value = arrow.get(value)
+        #  elif isinstance(value, Iterable):
+        if isinstance(value, Iterable):
             value = arrow.get(*value)
-        elif isinstance(value, datetime):
-            value = arrow.get(value)
+        #  elif isinstance(value, datetime):
+        #      value = arrow.get(value)
         return value
 
     def to_python(self, value):

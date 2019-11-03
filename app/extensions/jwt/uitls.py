@@ -43,7 +43,7 @@ def is_token_revoked(decoded_token):
 
 
 def add_token_to_database(encoded_token, identity_claim,
-                          custom_token_type=None):
+                          custom_token_type=None, allow_expired=False):
     """
     将新的Token解码后加入到数据库
 
@@ -51,7 +51,7 @@ def add_token_to_database(encoded_token, identity_claim,
     :param identity_claim: 指定的认证字段
     """
     from .models import TokenBlackList
-    decoded_token = decode_token(encoded_token)
+    decoded_token = decode_token(encoded_token, allow_expired=allow_expired)
     jti = decoded_token['jti']
     token_type = decoded_token[
         'type'] if not custom_token_type else custom_token_type

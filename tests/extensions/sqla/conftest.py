@@ -11,17 +11,17 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import close_all_sessions
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def db_name():
     return os.environ.get('APP_TEST_DB', 'flask_test_db')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def postgresql_db_user():
     return os.environ.get('APP_TEST_DB_USER', 'postgres')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def postgresql_dsn(postgresql_db_user, db_name):
     try:
         configuration = toml.load('app/config/testing.toml')
@@ -31,11 +31,20 @@ def postgresql_dsn(postgresql_db_user, db_name):
                                                        db_name)
 
 
-@pytest.fixture(scope='session')
-def app(postgresql_dsn):
+@pytest.fixture(scope='package')
+def db():
+    from app.extensions.sqla.sqla import SQLAlchemy
+
+    db_module = SQLAlchemy()
+
+    yield db_module
+
+
+@pytest.fixture(scope='package')
+def app(postgresql_dsn, db):
     from flask import Flask
-    from app.extensions import db, babel
-    app = Flask('Test')
+    from app.extensions import babel
+    app = Flask('TestSqla')
     app.config['SQLALCHEMY_DATABASE_URI'] = postgresql_dsn
     app.config['BABEL_DEFAULT_TIMEZONE'] = 'Asia/Shanghai'
     db.init_app(app)
@@ -46,13 +55,6 @@ def app(postgresql_dsn):
         yield app
         db.session.commit()
         db.drop_all()
-
-
-@pytest.fixture(scope='session')
-def db(app):
-    from app.extensions import db as db_module
-
-    yield db_module
 
 
 @pytest.fixture

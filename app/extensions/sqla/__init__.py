@@ -29,11 +29,9 @@
 from .mixin import CRUDMixin
 from .db_instance import db
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy.orm.base import _entity_descriptor
 
-try:
-    from app.utils.local import localnow
-except ImportError:
-    localnow = None
+from app.utils.local import localnow
 
 
 class QueryWithSoftDelete(BaseQuery):
@@ -72,6 +70,14 @@ class QueryWithSoftDelete(BaseQuery):
         # pre-loaded, so we need to implement it using a workaround
         obj = self.with_deleted()._get(*args, **kwargs)
         return obj if obj is None or self._with_deleted or not obj.deleted else None
+
+    def filter_like_by(self, **kwargs):
+        """like方法"""
+        clauses = [
+            _entity_descriptor(self._joinpoint_zero(), key).like("%{}%".format(value))
+            for key, value in kwargs.items()
+        ]
+        return self.filter(*clauses)
 
 
 class Model(CRUDMixin, db.Model):

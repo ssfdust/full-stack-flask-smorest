@@ -19,9 +19,9 @@ class TestLog():
         assert log.url == "/test/api"
         assert log.arguments["name"] == "1"
         assert log.arguments["pass"] == "2"
-        client.get('/test/api/111')
+        client.post('/test/api/111')
         log = Log.objects.order_by('-id').first()
-        assert log.method == "GET"
+        assert log.method == "POST"
         assert log.status_code == 404
         assert log.url == "/test/api/111"
 

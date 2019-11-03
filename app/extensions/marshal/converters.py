@@ -35,10 +35,7 @@ class ModelConverter(BaseModelConverter):
 
     ArrowType -> ArrowField
     """
-    try:
-        from app.extensions.sqla.types import ArrowType
+    from app.extensions.sqla.types import ArrowType
 
-        SQLA_TYPE_MAPPING = BaseModelConverter.SQLA_TYPE_MAPPING
-        SQLA_TYPE_MAPPING[ArrowType] = ArrowField
-    except ImportError:
-        pass
+    SQLA_TYPE_MAPPING = BaseModelConverter.SQLA_TYPE_MAPPING
+    SQLA_TYPE_MAPPING[ArrowType] = ArrowField

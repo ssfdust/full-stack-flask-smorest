@@ -1,5 +1,8 @@
 upstream flask {
-    server {{ server_name }}:8000;
+    server 127.0.0.1:8000;
+}
+upstream admin {
+    server 127.0.0.1:8001;
 }
 
 server {
@@ -11,9 +14,14 @@ server {
     add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
     add_header Access-Control-Expose-Headers 'Authorization';
 
-    location / {
+    location /admin {
         proxy_set_header Host $host;
-        proxy_pass http://flask/;
+        proxy_pass http://admin/admin;
+    }
+
+    location /api {
+        proxy_set_header Host $host;
+        proxy_pass http://flask/api;
     }
 
     location /socket.io {

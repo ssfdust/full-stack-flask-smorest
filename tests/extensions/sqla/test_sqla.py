@@ -14,7 +14,10 @@ class TestSqla():
             id = db.Column(db.Integer, primary_key=True)
             deleted = db.Column(db.Boolean, default=False)
 
-        db.create_all()
+        try:
+            SoftDelete.__table__.create(db.get_engine())
+        except Exception:
+            pass
         last = None
         for _ in range(10):
             last = SoftDelete.create()
@@ -25,6 +28,24 @@ class TestSqla():
         item = SoftDelete.query.with_deleted().get(last.id)
         assert item is not None
         assert SoftDelete.query.with_deleted().count() == 10
+
+    def test_filter_like_by(self, app, db):
+
+        class FilterLikeBy(Model):
+            id = db.Column(db.Integer, primary_key=True)
+            name = db.Column(db.String(50))
+            deleted = db.Column(db.Boolean, default=False)
+
+        try:
+            FilterLikeBy.__table__.create(db.get_engine())
+        except Exception:
+            pass
+        FilterLikeBy.create(name="aaaabbbb")
+        FilterLikeBy.create(name="bbbbcccc")
+        FilterLikeBy.create(name="bbcccc")
+        FilterLikeBy.create(name="bbc")
+        cnt = FilterLikeBy.query.filter_like_by(name="bc").count()
+        assert cnt == 3
 
     def test_surrogate_pk(self, app, db):
 
@@ -43,7 +64,10 @@ class TestSqla():
         class TestSchema(Schema):
             name = fields.Str()
 
-        db.create_all()
+        try:
+            TestBaseCRUD.__table__.create(db.get_engine())
+        except Exception:
+            pass
 
         cruds = [TestBaseCRUD.create(name=str(i)) for i in range(10)]
 
