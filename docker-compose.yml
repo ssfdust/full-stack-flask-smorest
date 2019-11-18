@@ -21,14 +21,14 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
         MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-full-stack-flask-admin}
         MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-full-stack-flask-admin}
         MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-full-stack-flask-admin}
 
   web:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     volumes:
       - .:/Application 
     ports:
@@ -39,7 +39,7 @@ services:
       - mongo
 
   worker:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery
     volumes:
       - .:/Application
@@ -49,7 +49,7 @@ services:
       - mongo
 
   beat:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery.beat
     volumes:
       - .:/Application
