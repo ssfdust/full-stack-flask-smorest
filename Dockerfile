@@ -2,7 +2,7 @@ FROM python:latest
 
 ENV FLASK_ENV=production
 
-RUN pip install poetry
+RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python --preview
 
 RUN mkdir Application
 
