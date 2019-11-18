@@ -4,6 +4,8 @@ ENV FLASK_ENV=production
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python - --preview
 
+RUN export PATH=$PATH:$HOME/.poetry/bin
+
 RUN mkdir Application
 
 # set working directory to /app/
