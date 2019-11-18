@@ -5,27 +5,41 @@ services:
   rabbit:
     image: rabbitmq:latest
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   db:
     image: ssfdust/psql_jieba_swsc:latest
     ports:
       - "9432:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-full-stack-flask-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-full-stack-flask-admin}
-      POSTGRES_DB: ${POSTGRES_DB:-full-stack-flask}
+      POSTGRES_USER: ${POSTGRES_USER:-smorest-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smorest2019}
+      POSTGRES_DB: ${POSTGRES_DB:-my-smorest}
       PGDATA: /data/postgres
 
   mongo:
     image: mongo:latest
     ports:
-      - "27018:27017"
+      - "27017:27017"
+    volumes:
+      - ./scripts/mongo:/docker-entrypoint-initdb.d/
     environment:
-        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-full-stack-flask-admin}
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-full-stack-flask-admin}
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-full-stack-flask-admin}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-my-smorest}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-smorest-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-smorest2019}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   web:
     image: ssfdust/full-stack-flask-smorest:latest
@@ -33,6 +47,7 @@ services:
       - .:/Application 
     ports:
       - "9001:5000"
+    restart: on-failure
     depends_on:
       - rabbit
       - db
@@ -41,6 +56,7 @@ services:
   worker:
     image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery
+    restart: on-failure
     volumes:
       - .:/Application
     depends_on:
@@ -51,6 +67,7 @@ services:
   beat:
     image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery.beat
+    restart: on-failure
     volumes:
       - .:/Application
     depends_on:

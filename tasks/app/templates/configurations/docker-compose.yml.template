@@ -7,6 +7,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: {{ mq_user }}
       RABBITMQ_DEFAULT_PASS: {{ mq_passwd }}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   db:
     image: ssfdust/psql_jieba_swsc:latest
@@ -22,25 +28,35 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    volumes:
+      - ./scripts/mongo:/docker-entrypoint-initdb.d/
     environment:
-        MONGO_INITDB_DATABASE: {{ '${MONGO_INITDB_DATABASE:-' + mongo_db + '}' }}
-        MONGO_INITDB_ROOT_USERNAME: {{ '${MONGO_INITDB_ROOT_USERNAME:-' + mongo_user + '}' }}
-        MONGO_INITDB_ROOT_PASSWORD: {{ '${MONGO_INITDB_ROOT_PASSWORD:-' + mongo_passwd + '}' }}
+      MONGO_INITDB_DATABASE: {{ '${MONGO_INITDB_DATABASE:-' + mongo_db + '}' }}
+      MONGO_INITDB_ROOT_USERNAME: {{ '${MONGO_INITDB_ROOT_USERNAME:-' + mongo_user + '}' }}
+      MONGO_INITDB_ROOT_PASSWORD: {{ '${MONGO_INITDB_ROOT_PASSWORD:-' + mongo_passwd + '}' }}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   web:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     volumes:
       - .:/Application 
     ports:
       - "9001:5000"
+    restart: on-failure
     depends_on:
       - rabbit
       - db
       - mongo
 
   worker:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery
+    restart: on-failure
     volumes:
       - .:/Application
     depends_on:
@@ -49,8 +65,9 @@ services:
       - mongo
 
   beat:
-    image: ssfdust/ssfdust_temp:latest
+    image: ssfdust/full-stack-flask-smorest:latest
     command: inv app.celery.beat
+    restart: on-failure
     volumes:
       - .:/Application
     depends_on:

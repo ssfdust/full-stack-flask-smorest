@@ -1,0 +1,11 @@
+db.createUser({
+    user:"{{ mongo_user }}",
+    pwd:"{{ mongo_passwd }}",
+    roles:[{
+        role:"dbAdmin",
+        db:"{{ mongo_db }}"
+    },{
+        role:"readWrite",
+        db:"{{ mongo_db }}"
+    }]
+});

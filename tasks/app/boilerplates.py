@@ -398,17 +398,18 @@ def generate_docker_compose(context):
     mongo_info = configuration['MONGODB_SETTINGS']
     broker_url = configuration['CELERY_BROKER_URL']
     broker_info = parse_url(broker_url)
-    breakpoint()
 
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader('tasks/app/templates/'))
-    template = env.get_template("docker-compose.yml.template")
-    template.stream(
-        mq_user=broker_info['userid'] if broker_info['userid'] else 'guest',
-        mq_passwd=broker_info['password'] if broker_info['password'] else 'guest',
-        mongo_db=mongo_info['db'],
-        mongo_user=mongo_info['username'],
-        mongo_passwd=mongo_info['password'],
-        db_username=u.username,
-        db_password=u.password,
-        db_name=u.database).dump('docker-compose.yml')
+        loader=jinja2.FileSystemLoader('tasks/app/templates/configurations'))
+    for temp_path, path in zip(["docker-compose.yml.template", "init.js.template"],
+                               ['docker-compose.yml', "scripts/mongo/init.js"]):
+        template = env.get_template(temp_path)
+        template.stream(
+            mq_user=broker_info['userid'] if broker_info['userid'] else 'guest',
+            mq_passwd=broker_info['password'] if broker_info['password'] else 'guest',
+            mongo_db=mongo_info['db'],
+            mongo_user=mongo_info['username'],
+            mongo_passwd=mongo_info['password'],
+            db_username=u.username,
+            db_password=u.password,
+            db_name=u.database).dump(path)

@@ -21,6 +21,6 @@ def beat(context):
     启动Celery Beat服务
     """
     command = f"""
-        celery beat -A app.app:celery -S app.extensions.mongobeat.schedulers.MongoScheduler
+        celery beat -A app.app:celery -S app.extensions.mongobeat.schedulers.MongoScheduler --pidfile="/tmp/celerybeat.pid"
     """
     context.run(command, pty=True)

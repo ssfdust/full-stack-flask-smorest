@@ -1,11 +1,11 @@
 db.createUser({
-    user:"full-stack-flask-admin",
-    pwd:"full-stack-flask-admin",
+    user:"smorest-admin",
+    pwd:"smorest2019",
     roles:[{
         role:"dbAdmin",
-        db:"full-stack-flask-admin"
+        db:"my-smorest"
     },{
         role:"readWrite",
-        db:"full-stack-flask-admin"
+        db:"my-smorest"
     }]
-})
+});
