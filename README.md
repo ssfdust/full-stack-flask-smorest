@@ -83,7 +83,18 @@ sudo vim /etc/hosts
 
 ## 运行服务
 ```
-inv app.run.daemon
+inv app.manager
+```
+
+## docker发布
+1. 参考docker-compose.yml修改production.toml
+2. 根据production.toml生成模板配置
+```
+inv app.boilerplates.generate-docker-compose
+```
+3. 执行
+```
+docker-compose up
 ```
 
 ## 默认用户名密码
