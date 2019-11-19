@@ -24,6 +24,7 @@ Admin首页模块
 from flask import jsonify, redirect, url_for
 from flask_admin import AdminIndexView as BaseAdminIndexView
 from flask_admin.base import BaseView, expose
+from loguru import logger
 
 
 class AdminIndexView(BaseAdminIndexView):
@@ -41,6 +42,7 @@ class AdminIndexView(BaseAdminIndexView):
         info, task_success, task_run, task_fail = get_main_page_info()
 
         form = TodoForm()
+        logger.debug(info)
 
         return self.render(
             self._template,

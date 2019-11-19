@@ -16,10 +16,50 @@
 运行服务器
 """
 
-from eventlet import monkey_patch
 import sys
 
-monkey_patch()
+
+def run_as_socketio(app, args):
+    """在socketio中运行"""
+    from app.extensions import socketio
+
+    socketio.init_app(app)
+
+    socketio.run(
+        app,
+        host=args.bind,
+        debug=args.debug,
+        use_reloader=args.use_reloader,
+        port=args.port)
+
+
+def run_as_gunicorn(app, args):
+    """在gunicorn中运行"""
+    from gunicorn.app.wsgiapp import WSGIApplication
+
+    args = vars(args)
+    args['worker_class'] = 'eventlet'
+    args['workers'] = 1
+    if args['debug']:
+        args['loglevel'] = 'debug'
+
+    class StandaloneApplication(WSGIApplication):
+
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            config = {key: value for key, value in self.options.items()
+                      if key in self.cfg.settings and value is not None}
+            for key, value in config.items():
+                self.cfg.set(key.lower(), value)
+
+        def load(self):
+            return self.application
+
+    StandaloneApplication(app, args).run()
 
 
 def main():
@@ -37,7 +77,7 @@ def main():
         help='从admin启动(默认：否)')
     parser.add_argument(
         '-b',
-        '--host',
+        '--bind',
         type=str,
         action='store',
         default='0.0.0.0',
@@ -55,6 +95,12 @@ def main():
         default=False,
         help='开启重加载模式 (默认: 关闭)')
     parser.add_argument(
+        '-g',
+        '--gunicorn',
+        action='store_true',
+        default=False,
+        help='开启重加载模式 (默认: 关闭)')
+    parser.add_argument(
         '-p',
         '--port',
         action='store',
@@ -62,22 +108,20 @@ def main():
         default=8000,
         help='设置Web服务器开放端口(默认: 8000)')
     args = parser.parse_args()
+    if not args.gunicorn:
+        from eventlet import monkey_patch
+        monkey_patch()
+
+        func = run_as_socketio
+    else:
+        func = run_as_gunicorn
 
     if not args.admin:
         from app.app import app
     else:
         from admin.app import app
 
-    from app.extensions import socketio
-
-    socketio.init_app(app)
-
-    socketio.run(
-        app,
-        host=args.host,
-        debug=args.debug,
-        use_reloader=args.use_reloader,
-        port=args.port)
+    func(app, args)
 
 
 if __name__ == '__main__':

@@ -29,6 +29,7 @@ from app.extensions.flask import Flask
 from app.utils.formatters import mongon_opts_str
 
 from .extensions import init_app
+from .register import init as init_admin
 
 CONFIG_MAPPGING = {
     'development': 'app/config/development.toml',
@@ -37,6 +38,8 @@ CONFIG_MAPPGING = {
 }
 
 ENABLED_MODULES = ['auth', 'users', 'storages', 'menus', 'todolist']
+
+init_admin()
 
 
 def create_app(config_name='development'):
@@ -81,11 +84,8 @@ def register_modules(app):
     为Flask实例注册项目的主要模块
     """
     from app import socketio
-    from .register import init as init_admin
     from .processor import init_processor
 
     init_processor()
-
-    init_admin()
 
     socketio.init_module()

@@ -31,7 +31,7 @@ from app.extensions.mongo import mongo
 from app.extensions.sqla import db
 
 from .admin import admin
-from .security import security
+from app.extensions.security import security
 
 babel = Babel()
 mail = Mail()
