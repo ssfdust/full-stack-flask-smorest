@@ -61,13 +61,13 @@ FLASK_ENV=testing inv app.db.init-development-data
 
 ### **将域名写入到本机hosts**
 
-```
+```bash
 sudo vim /etc/hosts
 ```
 
 插入
 
-```
+```bash
 127.0.0.1           <server_name>
 ```
 
@@ -76,27 +76,27 @@ sudo vim /etc/hosts
 1.  在http段新增
 
 
-    ```
+    ```bash
     include        conf.d/*.conf;
     ```
 
 2.  在nginx.conf所在目录中不存在conf.d则创建
 
-    ```
+    ```bash
     sudo mkdir /etc/nginx/conf.d
     ```
 
 3.  复制deploy/nginx/flask.conf到conf.d
 
 
-    ```
+    ```bash
     sudo cp deploy/nginx/flask.conf /etc/nginx/conf.d/
     ```
 
 4.  重启nginx
 
 
-    ```
+    ```bash
     sudo systemctl restart nginx
     ```
 
@@ -112,14 +112,14 @@ inv app.manager
 2.  根据production.toml生成模板配置
 
 
-    ```
+    ```bash
     inv app.boilerplates.generate-docker-compose
     ```
 
 3.  执行
 
 
-    ```
+    ```bash
     docker-compose up
     ```
 

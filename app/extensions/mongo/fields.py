@@ -24,8 +24,6 @@ from __future__ import absolute_import
 from collections import Iterable
 from mongoengine.base import BaseField
 
-import six
-
 from datetime import datetime
 from dateutil import tz
 
