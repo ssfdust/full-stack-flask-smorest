@@ -79,23 +79,23 @@ sudo vim /etc/hosts
 
 2.  在nginx.conf所在目录中不存在conf.d则创建
 
-        ```
-        sudo mkdir /etc/nginx/conf.d
-        ```
+    ```
+    sudo mkdir /etc/nginx/conf.d
+    ```
 
 3.  复制deploy/nginx/flask.conf到conf.d
 
 
-        ```
-        sudo cp deploy/nginx/flask.conf /etc/nginx/conf.d/
-        ```
+    ```
+    sudo cp deploy/nginx/flask.conf /etc/nginx/conf.d/
+    ```
 
 4.  重启nginx
 
 
-        ```
-        sudo systemctl restart nginx
-        ```
+    ```
+    sudo systemctl restart nginx
+    ```
 
 ### **运行服务**
 
@@ -109,16 +109,16 @@ inv app.manager
 2.  根据production.toml生成模板配置
 
 
-        ```
-        inv app.boilerplates.generate-docker-compose
-        ```
+    ```
+    inv app.boilerplates.generate-docker-compose
+    ```
 
 3.  执行
 
 
-        ```
-        docker-compose up
-        ```
+    ```
+    docker-compose up
+    ```
 
 ### **默认用户名密码**
 
