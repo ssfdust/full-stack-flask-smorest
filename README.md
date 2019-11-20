@@ -73,9 +73,9 @@ sudo vim /etc/hosts
 1.  在http段新增
 
 
-        ```
-        include        conf.d/*.conf;
-        ```
+    ```
+    include        conf.d/*.conf;
+    ```
 
 2.  在nginx.conf所在目录中不存在conf.d则创建
 
