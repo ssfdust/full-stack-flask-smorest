@@ -1,6 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/aa3d7d986faf4e22969c56be5ea3d54d)](https://www.codacy.com/manual/ssfdust/full-stack-flask-smorest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ssfdust/full-stack-flask-smorest&amp;utm_campaign=Badge_Grade)
 
-
 full-stack-flask-smorest
 ========================
 
