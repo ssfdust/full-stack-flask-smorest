@@ -7,6 +7,7 @@ import pytest
 import toml
 
 import datetime
+from sqlalchemy.exc import ProgrammingError
 
 FAKE_TIME = datetime.datetime(2000, 12, 25, 17, 5, 55)
 
@@ -57,7 +58,7 @@ def app(postgresql_dsn, jwt, db):
     with app.app_context():
         try:
             TokenBlackList.__table__.create(db.get_engine())
-        except Exception:
+        except ProgrammingError:
             pass
         db.create_all()
         yield app

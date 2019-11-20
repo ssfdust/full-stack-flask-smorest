@@ -4,6 +4,7 @@ import pytest
 from werkzeug.exceptions import NotFound
 from app.extensions.sqla import Model, SurrogatePK
 from marshmallow import Schema, fields
+from sqlalchemy.exc import ProgrammingError
 
 
 class TestSqla():
@@ -16,7 +17,7 @@ class TestSqla():
 
         try:
             SoftDelete.__table__.create(db.get_engine())
-        except Exception:
+        except ProgrammingError:
             pass
         last = None
         for _ in range(10):
@@ -38,7 +39,7 @@ class TestSqla():
 
         try:
             FilterLikeBy.__table__.create(db.get_engine())
-        except Exception:
+        except ProgrammingError:
             pass
         FilterLikeBy.create(name="aaaabbbb")
         FilterLikeBy.create(name="bbbbcccc")
@@ -66,7 +67,7 @@ class TestSqla():
 
         try:
             TestBaseCRUD.__table__.create(db.get_engine())
-        except Exception:
+        except ProgrammingError:
             pass
 
         cruds = [TestBaseCRUD.create(name=str(i)) for i in range(10)]

@@ -80,8 +80,8 @@ def main():
         '--bind',
         type=str,
         action='store',
-        default='0.0.0.0',
-        help='设置服务器默认IP(默认：0.0.0.0)')
+        default='127.0.0.1',
+        help='设置服务器默认IP(默认：127.0.0.1)')
     parser.add_argument(
         '-d',
         '--debug',

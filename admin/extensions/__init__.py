@@ -40,5 +40,5 @@ socketio = SocketIO()
 
 def init_app(app):
     """拓展组件的初始化"""
-    for ext in [db, ma, mongo, babel, admin, security, mail, celery_ext]:
+    for ext in [celery_ext, db, ma, mongo, babel, admin, security, mail]:
         ext.init_app(app)

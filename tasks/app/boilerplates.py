@@ -3,7 +3,7 @@
 模板相关的Invoke模块
 """
 import logging
-import random
+import secrets
 import string
 import re
 import os
@@ -119,7 +119,7 @@ def rand_string(strlen=10):
     password_characters = string.ascii_letters + string.digits + string.punctuation.replace(
         "'", "")
     return ''.join(
-        random.choice(password_characters) for i in range(strlen) if i != "'")
+        secrets.choice(password_characters) for i in range(strlen) if i != "'")
 
 
 @task
