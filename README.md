@@ -1,7 +1,7 @@
 full-stack-flask-smorest
 =============
 
-## **特性**
+## **特性** ##
 
 * Restful-Api
 * Jwt-Authorization
@@ -19,14 +19,14 @@ full-stack-flask-smorest
 * swagger(带jwt验证)
 * redoc
 
-## **预览**
+## **预览** ##
 ![image](https://raw.githubusercontent.com/ssfdust/full-stack-flask-rest-api/master/screenshots/swagger.png)
 ![image](https://raw.githubusercontent.com/ssfdust/full-stack-flask-rest-api/master/screenshots/redoc.png)
 ![image](https://raw.githubusercontent.com/ssfdust/full-stack-flask-rest-api/master/screenshots/dashboard.png)
 ![image](https://raw.githubusercontent.com/ssfdust/full-stack-flask-rest-api/master/screenshots/celery.png)
 ![image](https://raw.githubusercontent.com/ssfdust/full-stack-flask-rest-api/master/screenshots/files.png)
 
-## **安装**
+## **安装** ##
 ### **安装服务并启动**
 1. mongodb
 2. postgresql
