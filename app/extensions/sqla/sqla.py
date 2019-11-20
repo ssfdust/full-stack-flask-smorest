@@ -45,9 +45,7 @@ class SQLAlchemy(BaseSQLAlchemy):
 
 class DuplicateEntry(Exception):
     """重复的类型"""
-    pass
 
 
 class CharsTooLong(Exception):
     """字符过长"""
-    pass

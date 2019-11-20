@@ -72,5 +72,3 @@ class BasePageSchema(Schema):
 
 class UploadField(fields.Field):
     """文件提交栏，复用Field类型"""
-
-    pass
