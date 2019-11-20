@@ -44,10 +44,10 @@ def doc_login_required(func):
             def get(self):
                 return {'code': 0}
     '''
-    # 'Decorate' the function with the real authentication decorator
+    # 获取登录函数
     auth_required_func = jwt_required(func)
 
-    # Create the wrapped function.  This just calls the 'decorated' function
+    # 封装函数
     @wraps(func)
     def wrapper(*args, **kwargs):
         return auth_required_func(*args, **kwargs)
@@ -76,16 +76,17 @@ def doc_refresh_required(func):
                 return {'code': 0}
     '''
 
-    # 'Decorate' the function with the real authentication decorator
-    auth_required_func = jwt_refresh_token_required(func)
+    # 获取刷新函数
+    refresh_required_func = jwt_refresh_token_required(func)
 
-    # Create the wrapped function.  This just calls the 'decorated' function
+    # 封装刷新函数
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return auth_required_func(*args, **kwargs)
+        return refresh_required_func(*args, **kwargs)
 
-    # 增加验证
+    # 增加swagger信息
     wrapper._apidoc = getattr(func, '_apidoc', {})
+    # 设置刷新key
     wrapper._apidoc.setdefault('security', [{'refresh_key': []}])
 
     return wrapper
