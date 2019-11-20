@@ -51,7 +51,7 @@ $("#savePassword").on("click", function(){
           data: JSON.stringify(data),
           contentType: "application/json; charset=utf-8",
           success: function(data) {
-            if (data.code == 1){
+            if (data.code === 1){
                 Toast.fire({
                   type: "error",
                   title: "初始密码错误"

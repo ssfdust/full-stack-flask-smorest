@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.8
 
 ENV FLASK_ENV=production
 
@@ -12,7 +12,7 @@ RUN mkdir Application
 WORKDIR /Application/
 
 # add requirements.txt to the image
-ADD pyproject.toml poetry.lock /Application/
+COPY pyproject.toml poetry.lock /Application/
 
 RUN poetry config virtualenvs.create false \
   && poetry install --no-dev --no-interaction --no-ansi

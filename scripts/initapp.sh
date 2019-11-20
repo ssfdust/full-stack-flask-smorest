@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ ! -e "./inited_app" ];then
     touch ./inited_app
     inv app.init.initdb

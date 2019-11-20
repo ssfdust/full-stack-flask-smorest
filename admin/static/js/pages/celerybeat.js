@@ -6,11 +6,11 @@ $("#fa_modal_window").on("shown.bs.modal", function () {
     var formarr = form.serializeArray();
     var curtype = "";
 
-    formarr.forEach(item => {
+    formarr.forEach((item) => {
         if (item.name === "type") {
             curtype = item.value;
         }
-    })
+    });
     /* for (let i=0;i < formarr.length;i++){
      *     if (formarr[i].name === "type") {
      *         curtype = formarr[i].value;
