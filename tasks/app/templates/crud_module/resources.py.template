@@ -30,6 +30,7 @@ from app.extensions.api.decorators import paginate
 from app.extensions.marshal.bases import BaseMsgSchema, BaseIntListSchema
 from app.modules.auth import PERMISSIONS
 from app.modules.auth.decorators import doc_login_required, permission_required
+from app.extensions.marshal.bases import GeneralLikeArgs
 
 from . import blp, models, params, schemas
 
@@ -56,6 +57,7 @@ class {{ model_name }}View(MethodView):
 
     @doc_login_required
     @permission_required(PERMISSIONS.{{ model_name }}Query)
+    @blp.arguments(GeneralLikeArgs, location="query")
     @blp.response(schemas.{{ model_name }}PageSchema)
     @paginate()
     def get(self, **kwargs):
@@ -63,6 +65,8 @@ class {{ model_name }}View(MethodView):
         获取所有{{ module_title }}信息——分页
         '''
         query = models.{{ model_name }}.query
+        if kwargs:
+            query = query.filter_like_by(**kwargs)
 
         return query
 

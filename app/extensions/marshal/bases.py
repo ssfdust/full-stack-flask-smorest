@@ -72,3 +72,9 @@ class BasePageSchema(Schema):
 
 class UploadField(fields.Field):
     """文件提交栏，复用Field类型"""
+
+
+class GeneralLikeArgs(Schema):
+    """统一模糊查询"""
+
+    name = fields.Str(description="名称")

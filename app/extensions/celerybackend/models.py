@@ -55,6 +55,6 @@ class Tasks(db.Document):
     meta = {'collection': 'celery_taskmeta'}
 
     @classmethod
-    def get_by_id_str(cls, id):
+    def get_by_id_str(cls, task_id):
         """根据id字符串获取对象"""
-        return cls.objects.get(id=UUID(id))
+        return cls.objects.get(id=UUID(task_id))
