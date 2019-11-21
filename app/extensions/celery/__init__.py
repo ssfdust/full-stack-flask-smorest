@@ -12,6 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+    app.extensions.celery
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    celery模块
+"""
 
 import celery
 
@@ -85,16 +91,13 @@ class Celery(object):
         if self.app is None:
             return
 
-        #  context = task._flask_context = [
-        #      self.app.app_context(),
-        #      self.app.test_request_context(),
-        #  ]
-        #  for ctx in context:
-        #      ctx.push()
         self.app_ctx.push()
         self.req_ctx.push()
 
     def _task_postrun(self, task, **kwargs):
+        if self.app is None:
+            return
+
         self.app_ctx.pop()
         self.req_ctx.pop()
 

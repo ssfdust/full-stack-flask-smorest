@@ -22,6 +22,7 @@ def enter(context):
     import IPython
     from app.modules.users.models import UserInfo
     from app.modules.auth.models import User
+    from app.extensions import db
 
     flask_app = app.app
 
@@ -30,6 +31,7 @@ def enter(context):
         context.update(vars(flask))
         context.update(vars(app))
         context['User'] = User
+        context['db'] = db
         context['UserInfo'] = UserInfo
         return context
 

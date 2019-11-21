@@ -12,6 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+    app.extensions.celeryprogress
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    celery 进度条模块
+"""
 
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
@@ -23,6 +29,8 @@ PROGRESS_STATE = 'PROGRESS'
 
 
 class AbtractProgressRecorder(object):
+    """抽象Recorder"""
+
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -30,15 +38,11 @@ class AbtractProgressRecorder(object):
         pass
 
 
-class ConsoleProgressRecorder(AbtractProgressRecorder):
-
-    def set_progress(self, current, total):
-        print('processed {} items of {}'.format(current, total))
-
-
 class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
+    """实现Recorder"""
 
     def __init__(self, task, task_id=None):
+        """初始化进度条"""
         self.task = task
         self.task_id = task_id if task_id else task.request.id
         super().__init__(
@@ -46,9 +50,10 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
             value=None,
             exchange='celery_progress',
             expires=3600 * 24,
-            routing_key=self.task_id)
+            routing_key="celery_progress")
 
     def set_progress(self, current, total):
+        """设置进度条信息"""
         percent = 0
         if total > 0:
             percent = (Decimal(current) / Decimal(total)) * Decimal(100)
@@ -65,6 +70,7 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
 
 
 class Progress(AMQPStore):
+    """读取进度"""
 
     _results = OrderedDict()
 
@@ -72,7 +78,7 @@ class Progress(AMQPStore):
         super().__init__(
             key='celery_progress',
             value=None,
-            routing_key='celery',
+            routing_key='celery_progress',
             exchange='celery_progress',
             expires=3600 * 24)
 
@@ -90,25 +96,9 @@ class Progress(AMQPStore):
                 ret = self._results[i]
                 break
         else:
-            ret = {'percent': '0'}
+            ret = {'percent': 0}
 
         return ret
-
-
-def _get_completed_progress():
-    return {
-        'current': 100,
-        'total': 100,
-        'percent': 100,
-    }
-
-
-def _get_unknown_progress():
-    return {
-        'current': 0,
-        'total': 100,
-        'percent': 0,
-    }
 
 
 progress = Progress()

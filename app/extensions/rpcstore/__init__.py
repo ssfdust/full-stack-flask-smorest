@@ -92,7 +92,7 @@ class AMQPStore(object):
         self.value = None
         msgs = []
         self.values = []
-        for i in self.extra_from_queue():
+        for i in self.extract_from_queue():
             self.value = i.payload
             self.values.append(self.value)
             msgs.append(i)
@@ -103,7 +103,7 @@ class AMQPStore(object):
 
         return self.value
 
-    def extra_from_queue(self, no_ack=False):
+    def extract_from_queue(self, no_ack=False):
         """
         从队列加载并返回列表
         """

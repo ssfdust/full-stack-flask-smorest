@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-    app.celerybackend
+    app.extensions.celerybackend
     ~~~~~~~~~~~~~~~~~~~~~~
 
-    自定义Celery后台
+    自定义Celery结果保存模块
 """
 
-from celery.backends.mongodb import MongoBackend as BaseMongoBackend
+from celery.backends.mongodb import MongoBackend as BaseMongoBackend, states
 from datetime import datetime
 from kombu.exceptions import EncodeError
 from pymongo.errors import InvalidDocument  # noqa
@@ -68,7 +68,22 @@ class MongoBackend(BaseMongoBackend):
             # mongodb handles serialization
             if isinstance(data, str) or \
                     isinstance(data, dict) or \
+                    isinstance(data, list) or \
                     isinstance(data, int):
                 return data
             else:
                 return str(data)
+
+    def _get_task_meta_for(self, task_id):
+        """根据task_id获取后台数据"""
+        obj = self.collection.find_one({'_id': UUIDLegacy(uuid.UUID(task_id))})
+        if obj:
+            return self.meta_from_decoded({
+                'task_id': obj['_id'],
+                'status': obj['status'],
+                'result': self.decode(obj['result']),
+                'date_done': obj['date_done'],
+                'traceback': self.decode(obj['traceback']),
+                'children': self.decode(obj['children']),
+            })
+        return {'status': states.PENDING, 'result': None}

@@ -14,6 +14,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+    app.extensions.celerybackend.models
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    自定义Celery Backend models
+"""
 
 try:
     from app.extensions import mongo as db
@@ -21,8 +27,11 @@ except ImportError:
     import mongoengine as db
     setattr(db, "ArrowField", db.DateTimeField)
 
+from uuid import UUID
+
 
 class Tasks(db.Document):
+    """任务表"""
 
     id = db.UUIDField(primary_key=True, verbose_name='任务')
     name = db.StringField(verbose_name='任务名称')
@@ -44,3 +53,8 @@ class Tasks(db.Document):
     children = db.DynamicField(verbose_name='子任务')
 
     meta = {'collection': 'celery_taskmeta'}
+
+    @classmethod
+    def get_by_id_str(cls, id):
+        """根据id字符串获取对象"""
+        return cls.objects.get(id=UUID(id))
