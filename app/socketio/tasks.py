@@ -20,7 +20,6 @@
     主要处理进度条的实时状态
 """
 from flask_socketio import Namespace, emit
-from app.extensions import socketio
 
 
 class TaskNamespace(Namespace):
@@ -30,6 +29,7 @@ class TaskNamespace(Namespace):
 
     def on_connect(self):
         """连接时"""
+        print("Connected")
 
     def on_disconnect(self):
         """连接丢失时"""
@@ -48,6 +48,3 @@ class TaskNamespace(Namespace):
         } for task in tasks]
 
         emit('get_tasks', {'data': data})
-
-
-socketio.on_namespace(TaskNamespace('/tasks'))

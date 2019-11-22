@@ -21,11 +21,7 @@
     自定义Celery Backend models
 """
 
-try:
-    from app.extensions import mongo as db
-except ImportError:
-    import mongoengine as db
-    setattr(db, "ArrowField", db.DateTimeField)
+from app.extensions import mongo as db
 
 from uuid import UUID
 

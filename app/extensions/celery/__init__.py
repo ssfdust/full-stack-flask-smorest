@@ -85,18 +85,18 @@ class Celery(object):
         return self.celery
 
     def _worker_process_init(self, **kwargs):
-        self.app.app_context().push()
+        self.app.app_context().push()  # pragma: no cover
 
     def _task_prerun(self, task, **kwargs):
         if self.app is None:
-            return
+            return  # pragma: no cover
 
         self.app_ctx.push()
         self.req_ctx.push()
 
     def _task_postrun(self, task, **kwargs):
         if self.app is None:
-            return
+            return  # pragma: no cover
 
         self.app_ctx.pop()
         self.req_ctx.pop()

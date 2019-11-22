@@ -35,7 +35,7 @@ class AbtractProgressRecorder(object):
 
     @abstractmethod
     def set_progress(self, current, total):
-        pass
+        pass  # pragma: no cover
 
 
 class ProgressRecorder(AMQPStore, AbtractProgressRecorder):

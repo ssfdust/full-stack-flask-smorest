@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
 from flask_jwt_extended import create_access_token
 from app.extensions.jwt.uitls import add_token_to_database
 from hashlib import md5
 
 
-@pytest.mark.run(order=1)
 class TestAuth():
 
     def test_auth(self, flask_app, flask_app_client, regular_user):

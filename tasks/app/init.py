@@ -38,12 +38,11 @@ def create_pg_db_and_user(context, su_passwd=None, config_types=[]):
 
 @task(help={
     'admin': '管理员账户（默认: admin）',
-    'passwd': '管理员密码（默认: admin）',
     'config_types': '配置类型（默认：development、testing）'
 })
 def create_mg_db_and_user(context,
                           admin='admin',
-                          passwd='admin',
+                          passwd=None,
                           config_types=[]):
     """
     根据配置新建mongodb数据库以及用户

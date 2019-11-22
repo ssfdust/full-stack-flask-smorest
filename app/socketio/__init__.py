@@ -26,4 +26,7 @@ from app.extensions import socketio
 def init_module():
     """引入模块"""
     from .auth import AuthNamespace
+    from .tasks import TaskNamespace
+
     socketio.on_namespace(AuthNamespace('/auth'))
+    socketio.on_namespace(TaskNamespace('/tasks'))

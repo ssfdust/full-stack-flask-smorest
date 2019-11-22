@@ -56,16 +56,17 @@ class TestApi():
             db.session.commit()
 
         test_client = app.test_client()
-        resp = test_client.get('/')
+        resp = test_client.get('/?page=2&per_page=5')
 
         data = resp.json
 
         assert data['meta'] == {
             'links': {
-                'first': '/?page=1&per_page=10',
-                'last': '/?page=2&per_page=10',
-                'next': '/?page=2&per_page=10'
+                'first': '/?page=1&per_page=5',
+                'last': '/?page=4&per_page=5',
+                'next': '/?page=3&per_page=5',
+                'prev': '/?page=1&per_page=5'
             },
-            'page': 1, 'pages': 2,
-            'per_page': 10, 'total': 20
+            'page': 2, 'pages': 4,
+            'per_page': 5, 'total': 20
         }

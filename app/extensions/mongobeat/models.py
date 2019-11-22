@@ -40,7 +40,7 @@ def get_periodic_task_collection():
     """获取表名"""
     if hasattr(current_app.conf, "CELERY_MONGODB_SCHEDULER_COLLECTION") \
             and current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION:
-        return current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION
+        return current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION  # pragma: no cover
     return "schedules"
 
 
