@@ -26,6 +26,7 @@
 """
 
 import datetime
+from ast import literal_eval
 
 import celery.schedules
 from celery import current_app
@@ -183,9 +184,9 @@ class PeriodicTask(DynamicDocument):
         else:
             self.crontab = None
         if isinstance(self.args, str):
-            self.args = eval(self.args)
+            self.args = literal_eval(self.args)
         if isinstance(self.kwargs, str):
-            self.kwargs = eval(self.kwargs)
+            self.kwargs = literal_eval(self.kwargs)
 
     @property
     def schedule(self):

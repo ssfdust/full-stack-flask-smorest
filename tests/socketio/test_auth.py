@@ -36,6 +36,5 @@ class TestAuth():
         assert flask_app_client.is_connected('/auth') is False
 
         flask_app_client.connect('/auth', query_string="121212")
-        assert flask_app_client.is_connected('/auth') is False
-        flask_app_client.connect('/auth')
+        flask_app_client.emit('test', namespace="/auth")
         assert flask_app_client.is_connected('/auth') is False
