@@ -20,9 +20,10 @@
 
     用以实时交互的模块
 """
-from app.utils.imports import import_submodules
+from app.extensions import socketio
 
 
 def init_module():
     """引入模块"""
-    import_submodules(locals(), __name__, __path__)
+    from .auth import AuthNamespace
+    socketio.on_namespace(AuthNamespace('/auth'))

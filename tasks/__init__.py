@@ -28,7 +28,7 @@ if colorlog is not False:
     formatter = colorlog.ColoredFormatter(
         ('%(asctime)s '
          '[%(log_color)s%(levelname)s%(reset)s] '
-         '[%(cyan)s%(name)s%(reset)s] '
+         '[%(cyan)s%(name)s:%(lineno)s%(reset)s] '
          '%(message_log_color)s%(message)s'),
         reset=True,
         log_colors={

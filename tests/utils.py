@@ -5,6 +5,14 @@ from contextlib import contextmanager
 from flask import Response
 from flask.testing import FlaskClient
 from werkzeug.utils import cached_property
+from flask_socketio import SocketIOTestClient
+
+
+class AuthSocketIOClient(SocketIOTestClient):
+
+    def __getattr__(self, name):
+        if hasattr(self.flask_test_client, name):
+            return getattr(self.flask_test_client, name)
 
 
 class JSONResponse(Response):

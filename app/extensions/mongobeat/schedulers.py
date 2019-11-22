@@ -100,10 +100,10 @@ class MongoScheduleEntry(ScheduleEntry):
             self.schedule,
         ))
 
-    def reserve(self, entry):
-        new_entry = Scheduler.reserve(self, entry)
-        return new_entry
-
+    #  def reserve(self, entry):
+    #      new_entry = Scheduler.reserve(self, entry)
+    #      return new_entry
+    #
     def save(self):
         if self.total_run_count > self._task.total_run_count:
             self._task.total_run_count = self.total_run_count

@@ -80,6 +80,8 @@ class PeriodicTask(DynamicDocument):
 
     class Interval(EmbeddedDocument):
         """
+        :attr every 每（周期）
+        :attr period 周期区间
         """
 
         meta = {'allow_inheritance': True}
@@ -104,6 +106,11 @@ class PeriodicTask(DynamicDocument):
 
     class Crontab(EmbeddedDocument):
         """
+        :attr minute 分钟
+        :attr hour 小时
+        :attr day_of_week 周
+        :attr day_of_month 日
+        :attr mouth_of_year 月
         """
         meta = {'allow_inheritance': True}
 
@@ -175,6 +182,10 @@ class PeriodicTask(DynamicDocument):
             self.interval = None
         else:
             self.crontab = None
+        if isinstance(self.args, str):
+            self.args = eval(self.args)
+        if isinstance(self.kwargs, str):
+            self.kwargs = eval(self.kwargs)
 
     @property
     def schedule(self):

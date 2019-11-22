@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from flask_jwt_extended import JWTManager
-from flask import jsonify, abort
+from flask import jsonify
 from .uitls import is_token_revoked
 from loguru import logger
 
@@ -47,8 +47,6 @@ def get_user(identity):
     from app.modules.auth.models import User
     if identity:
         return User.get_by_email(identity)
-    else:
-        abort(401)
 
 
 from . import models  # noqa

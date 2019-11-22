@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pytest
+from app.extensions import socketio
 from . import utils
 
 
@@ -29,7 +30,9 @@ def db(flask_app):
 def flask_app_client(flask_app):
     flask_app.test_client_class = utils.AutoAuthFlaskClient
     flask_app.response_class = utils.JSONResponse
-    return flask_app.test_client()
+    test_client = flask_app.test_client()
+    return utils.AuthSocketIOClient(flask_app, socketio,
+                                    flask_test_client=test_client)
 
 
 @pytest.fixture(scope='session')
@@ -48,7 +51,7 @@ def temp_db_instance_helper(db):
     return temp_db_instance_manager
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def regular_user(temp_db_instance_helper):
     for _ in temp_db_instance_helper(
         utils.generate_user_instance(username='regular_user')

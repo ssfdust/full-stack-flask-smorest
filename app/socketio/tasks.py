@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-任务模块的websocket模块
+    app.socketio.tasks
+    ~~~~~~~~~~~~~~~~~~~
+    任务模块的websocket模块
 
-主要处理进度条的实时状态
+    主要处理进度条的实时状态
 """
 from flask_socketio import Namespace, emit
 from app.extensions import socketio
-
-idlst = []
 
 
 class TaskNamespace(Namespace):

@@ -64,7 +64,7 @@ def celery_sess_app(celery_ext):
 def celery_sess_worker(request,
                        celery_sess_app):
     @shared_task(name='celery.ping')
-    def ping():
+    def ping(*args, **kwargs):
         return 'pong'
     with worker.start_worker(celery_sess_app,
                              pool='solo',

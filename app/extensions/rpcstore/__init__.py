@@ -20,6 +20,7 @@
 """
 
 from kombu import Exchange, Queue
+from amqp.exceptions import NotFound
 
 
 class AMQPStore(object):
@@ -41,9 +42,11 @@ class AMQPStore(object):
                  expires=None,
                  limit=999,
                  routing_key=None,
+                 max_length=None,
                  auto_delete=False):
         self.key = key
         self.limit = limit
+        self.max_length = max_length
         self.value = value
         self.values = []
         #  if exchange is None and '_' in key:
@@ -56,6 +59,7 @@ class AMQPStore(object):
             self.key,
             self.exchange,
             durable=True,
+            max_length=max_length,
             routing_key=self.routing_key,
             auto_delete=auto_delete,
             expires=expires)
@@ -85,21 +89,24 @@ class AMQPStore(object):
 
         return self.value
 
-    def reload(self, no_ack=False):
+    def reload(self, no_ack=False, requeue=False):
         """
         重载数值
         """
         self.value = None
         msgs = []
         self.values = []
-        for i in self.extract_from_queue():
+        for i in self.extract_from_queue(no_ack):
             self.value = i.payload
             self.values.append(self.value)
             msgs.append(i)
 
-        if no_ack is False:
+        if no_ack is False and requeue is False:
             for i in msgs:
                 i.ack()
+        if requeue is True:
+            for i in msgs:
+                i.requeue()
 
         return self.value
 
@@ -117,7 +124,10 @@ class AMQPStore(object):
             binding = self.queue(channel)
 
             for _ in range(self.limit):
-                msg = binding.get(accept=['json'], no_ack=no_ack)
-                if not msg:
+                try:
+                    msg = binding.get(accept=['json'], no_ack=no_ack)
+                    if not msg:
+                        break
+                    yield msg
+                except NotFound:
                     break
-                yield msg
