@@ -35,4 +35,4 @@ class TestSession():
         session = SessionManager()
         assert session.check_token('12121212') is False
         fake_sess = SessionManager('121212')
-        fake_sess.check_session() is False
+        assert fake_sess.check_session() is False
