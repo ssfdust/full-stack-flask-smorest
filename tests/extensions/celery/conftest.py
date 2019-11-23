@@ -4,7 +4,6 @@
 import pytest
 from celery.contrib.testing.app import setup_default_app
 from celery.contrib.testing import worker
-from celery import shared_task
 
 
 @pytest.fixture(scope="session")
@@ -54,6 +53,7 @@ def celery_ext(app):
 @pytest.fixture(scope='session')
 def celery_sess_app(celery_ext):
     test_app = celery_ext.get_celery_app()
+    test_app.loader.import_task_module('celery.contrib.testing.tasks')
     with setup_default_app(test_app):
         test_app.set_default()
         test_app.set_current()
@@ -63,9 +63,6 @@ def celery_sess_app(celery_ext):
 @pytest.fixture(scope='session')
 def celery_sess_worker(request,
                        celery_sess_app):
-    @shared_task(name='celery.ping')
-    def ping(*args, **kwargs):
-        return 'pong'
     with worker.start_worker(celery_sess_app,
                              pool='solo',
                              perform_ping_check=False,

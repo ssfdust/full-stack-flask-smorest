@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python# -*- coding: utf-8 -*-
 
 from app.extensions.mongobeat.schedulers import MongoScheduleEntry, MongoScheduler
 from app.extensions.mongobeat.models import PeriodicTask
@@ -143,3 +142,10 @@ class TestMongoBeat(SchedulerCase):
         with pytest.raises(Exception):
             model = self.create_model()
             str(model)
+
+
+class TestMongoScheduler(SchedulerCase):
+
+    @pytest.fixture(autouse=True)
+    def setup_scheduler(self):
+        self.m1 = self.create_model_interval(PeriodicTask.Interval(every=10, period="minutes"))

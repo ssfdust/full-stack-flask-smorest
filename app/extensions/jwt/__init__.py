@@ -15,14 +15,15 @@
 
 from flask_jwt_extended import JWTManager
 from flask import jsonify
-from .uitls import is_token_revoked
 from loguru import logger
+
+from .uitls import is_token_revoked
 
 jwt = JWTManager()
 
 
 @jwt.unauthorized_loader
-def unauthorized_callback(e):
+def unauthorized_callback(_):
     logger.error('未受权的访问')
     response = jsonify({"code": 401, "msg": "未授权的访问"})
     response.status_code = 401
@@ -45,8 +46,7 @@ def check_if_token_in_blacklist(decrypted_token):
 @jwt.user_loader_callback_loader
 def get_user(identity):
     from app.modules.auth.models import User
-    if identity:
-        return User.get_by_email(identity)
+    return User.get_by_email(identity)
 
 
-from . import models  # noqa
+from . import models

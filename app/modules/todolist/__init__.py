@@ -35,7 +35,7 @@ def init_app(app):
 
     :param              app: Flask                  Flask实例
     """
-    from . import models  # noqa
+    from . import models  # pylint: disable=unused-import
 
     base_prefix = app.config[
         'MODULE_BASE_PREFIX'] if 'MODULE_BASE_PREFIX' in app.config else ''

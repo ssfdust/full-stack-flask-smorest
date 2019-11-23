@@ -22,7 +22,7 @@
 from celery.backends.mongodb import MongoBackend as BaseMongoBackend, states
 from datetime import datetime
 from kombu.exceptions import EncodeError
-from pymongo.errors import InvalidDocument  # noqa
+from pymongo.errors import InvalidDocument
 from bson import UUIDLegacy
 import uuid
 import mongoengine
