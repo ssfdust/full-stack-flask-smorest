@@ -16,7 +16,7 @@
 # limitations under the License.
 
 
-class GroupFactory(object):
+class GroupFactory():
     """
     组操作工厂，实现对组的递归操作
 

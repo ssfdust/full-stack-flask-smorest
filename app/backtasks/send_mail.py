@@ -21,11 +21,16 @@
     发送邮件模块
 """
 
+from time import sleep
+
 from loguru import logger
+from flask_mail import Message
+from flask import render_template_string
 
 from app.extensions import celery_ext as celery
 from app.extensions.celeryprogress import ProgressRecorder
-from time import sleep
+from app.extensions import mail
+from app.modules.email_templates.models import EmailTemplate
 
 
 @celery.task(
@@ -35,7 +40,7 @@ from time import sleep
     autoretry_for=(Exception,),
     acks_late=True,
     time_limit=60)
-def send_mail(self, to, subject, content, template='emails/default.html'):
+def send_mail(self, to, subject, content, template='default'):
     '''
     发送邮件
 
@@ -44,16 +49,13 @@ def send_mail(self, to, subject, content, template='emails/default.html'):
     :param          content: Union(dict, str)       内容
     :param          template: str                   模板
     '''
-    from flask_mail import Message
-    from app.extensions import mail
-    from flask import render_template
-
     logger.info(f'发送邮件至{to}')
 
     progress_recorder = ProgressRecorder(self)
     progress_recorder.set_progress(20, 100)
     msg = Message(subject, recipients=[to])
-    msg.html = render_template(template, **content)
+    template_str = EmailTemplate.get_template(template)
+    msg.html = render_template_string(template_str, **content)
     progress_recorder.set_progress(80, 100)
 
     mail.send(msg)

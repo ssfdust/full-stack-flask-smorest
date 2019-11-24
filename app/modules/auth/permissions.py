@@ -31,6 +31,7 @@ class ROLES:
     SuperUser = 'SuperUser'
     User = 'User'
     UserManager = 'UserManager'
+    EmailTemplateManager = 'EmailTemplateManager'
     # End Of ROLES
 
 
@@ -45,6 +46,11 @@ class PERMISSIONS:
     GroupEdit = 'GroupEditPrivilege'
     GroupQuery = 'GroupQueryPrivilege'
     UserEdit = 'UserEditPrivilege'
+    # EmailTemplateManager
+    EmailTemplateAdd = 'EmailTemplateAddPrivilege'
+    EmailTemplateEdit = 'EmailTemplateEditPrivilege'
+    EmailTemplateDelete = 'EmailTemplateDeletePrivilege'
+    EmailTemplateQuery = 'EmailTemplateQueryPrivilege'
     # End Of PERMISSIONS
 
 
@@ -60,6 +66,9 @@ DEFAULT_ROLES_PERMISSIONS_MAPPING = {
         PERMISSIONS.GroupEdit,
         PERMISSIONS.GroupQuery,
         PERMISSIONS.UserEdit,
+        # 电子邮件模板管理
+        PERMISSIONS.EmailTemplateAdd, PERMISSIONS.EmailTemplateDelete,
+        PERMISSIONS.EmailTemplateEdit, PERMISSIONS.EmailTemplateQuery,
         # End Of SuperUser
     ],
     ROLES.UserManager: [
@@ -68,6 +77,10 @@ DEFAULT_ROLES_PERMISSIONS_MAPPING = {
         PERMISSIONS.GroupEdit,
         PERMISSIONS.GroupQuery,
         PERMISSIONS.UserEdit,
+    ],
+    ROLES.EmailTemplateManager: [
+        PERMISSIONS.EmailTemplateAdd, PERMISSIONS.EmailTemplateDelete,
+        PERMISSIONS.EmailTemplateEdit, PERMISSIONS.EmailTemplateQuery
     ],
     # End Of Permissions Mapping
 }

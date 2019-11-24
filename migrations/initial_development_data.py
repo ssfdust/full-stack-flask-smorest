@@ -12,7 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+数据初始化模板
+"""
 
+from sqlalchemy.orm.exc import NoResultFound
+from flask_security.utils import encrypt_password
 
 def init():
     '''
@@ -21,7 +26,6 @@ def init():
     from app.modules.auth.models import User, Role, Permission
     from app.modules.users.models import UserInfo
     from app.modules.storages.models import Storages
-    from flask_security.utils import encrypt_password
     from app.utils import local
 
     su_permission = Permission.create(
@@ -59,7 +63,6 @@ def update_permissions():
     """
     from app.modules.auth.permissions import DEFAULT_ROLES_PERMISSIONS_MAPPING as mapping
     from app.modules.auth.models import Role, Permission
-    from sqlalchemy.orm.exc import NoResultFound
     from app.extensions import db
 
     for role_name, permissions in mapping.items():
@@ -78,3 +81,12 @@ def update_permissions():
                 role.permissions.append(permit)
 
     db.session.commit()
+
+
+def init_email_templates():
+    """初始化邮件模板"""
+    from app.modules.email_templates.models import EmailTemplate
+    template = '<p>{{ message | safe }}</p><a href="{{ url }}" target="_blank">点击访问</a>'
+    for name in ["default", "confirm", "reset-password"]:
+        EmailTemplate.create(name=name,
+                             template=template)

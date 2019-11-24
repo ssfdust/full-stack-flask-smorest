@@ -6,7 +6,7 @@ from celery.contrib.testing.app import setup_default_app
 from celery.contrib.testing import worker
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def config():
     from app.extensions.flask.config import Config
 
@@ -30,7 +30,7 @@ def config():
     return config
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def app(config):
     from flask import Flask
     from app.extensions import mongo, babel
@@ -42,7 +42,7 @@ def app(config):
     return app
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="package")
 def celery_ext(app):
     from app.extensions.celery import Celery
     celery_ext = Celery(app)
@@ -50,7 +50,7 @@ def celery_ext(app):
     return celery_ext
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def celery_sess_app(celery_ext):
     test_app = celery_ext.get_celery_app()
     test_app.loader.import_task_module('celery.contrib.testing.tasks')
@@ -60,7 +60,7 @@ def celery_sess_app(celery_ext):
         yield test_app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def celery_sess_worker(request,
                        celery_sess_app):
     with worker.start_worker(celery_sess_app,

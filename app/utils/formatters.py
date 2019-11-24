@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import arrow
 import uuid
+
+import arrow
 
 
 def mongon_opts_str(opts):

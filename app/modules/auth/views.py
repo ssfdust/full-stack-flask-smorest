@@ -20,7 +20,7 @@
     用户验证的API资源模块
 """
 
-from flask import abort, send_file
+from flask import abort, send_file, url_for
 from flask import current_app as app
 from flask.views import MethodView
 from flask_jwt_extended import (create_access_token, create_refresh_token,
@@ -141,7 +141,8 @@ class ForgetPasswordView(MethodView):
         if user:
             logger.info(f"{user.email}发起了忘记密码申请")
             token = generate_confirm_token(user, 'passwd')
-            send_mail.delay(user.email, '找回密码', {'token': token},
+            url = url_for('Auth.ResetForgotPasswordView', token=token, _external=True)
+            send_mail.delay(user.email, '找回密码', {'url': url, 'message': "这是一封找回密码邮件"},
                             'emails/reset-password.html')
         else:
             abort(404, "用户不存在")

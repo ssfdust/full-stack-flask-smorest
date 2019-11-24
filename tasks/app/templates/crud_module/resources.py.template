@@ -42,6 +42,7 @@ class {{ model_name }}ListView(MethodView):
     @permission_required(PERMISSIONS.{{ model_name }}Query)
     @blp.response(schemas.{{ model_name }}ListSchema)
     def get(self, **kwargs):
+        # pylint: disable=unused-argument
         '''
         获取所有{{ module_title }}选项信息
         '''
@@ -61,6 +62,7 @@ class {{ model_name }}View(MethodView):
     @blp.response(schemas.{{ model_name }}PageSchema)
     @paginate()
     def get(self, **kwargs):
+        # pylint: disable=unused-argument
         '''
         获取所有{{ module_title }}信息——分页
         '''
@@ -75,6 +77,7 @@ class {{ model_name }}View(MethodView):
     @blp.arguments(params.{{ model_name }}Param)
     @blp.response(schemas.{{ model_name }}ItemSchema)
     def post(self, {{ module_name_singular }}, **kwargs):
+        # pylint: disable=unused-argument
         '''
         新增{{ module_title }}信息
         '''
@@ -88,6 +91,7 @@ class {{ model_name }}View(MethodView):
     @blp.arguments(BaseIntListSchema, as_kwargs=True)
     @blp.response(BaseMsgSchema)
     def delete(self, lst, **kwargs):
+        # pylint: disable=unused-argument
         '''
         批量删除{{ module_title }}
         -------------------------------
@@ -96,8 +100,6 @@ class {{ model_name }}View(MethodView):
 
         models.{{ model_name }}.delete_by_ids(lst['lst'])
         logger.info(f"{current_user.username}删除了{{ module_title }}{lst}")
-
-        return
 
 
 @blp.route('/<int:{{ module_name_singular }}_id>',
@@ -111,6 +113,7 @@ class {{ model_name }}ItemView(MethodView):
     @blp.arguments(params.{{ model_name }}Param)
     @blp.response(schemas.{{ model_name }}ItemSchema)
     def put(self, {{ module_name_singular }}, {{ module_name_singular }}_id, **kwargs):
+        # pylint: disable=unused-argument
         '''
         更新{{ module_title }}
         '''
@@ -126,18 +129,18 @@ class {{ model_name }}ItemView(MethodView):
     @permission_required(PERMISSIONS.{{ model_name }}Delete)
     @blp.response(BaseMsgSchema)
     def delete(self, {{ module_name_singular }}_id, **kwargs):
+        # pylint: disable=unused-argument
         '''
         删除{{ module_title }}
         '''
         models.{{ model_name }}.delete_by_id({{ module_name_singular }}_id)
         logger.info(f"{current_user.username}删除了{{ module_title }}{{ '{' + module_name_singular + '_id}' }}")
 
-        return
-
     @doc_login_required
     @permission_required(PERMISSIONS.{{ model_name }}Query)
     @blp.response(schemas.{{ model_name }}ItemSchema)
     def get(self, {{ module_name_singular }}_id, **kwargs):
+        # pylint: disable=unused-argument
         '''
         获取单条{{ module_title }}
         '''

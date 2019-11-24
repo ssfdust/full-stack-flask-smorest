@@ -49,4 +49,4 @@ def get_user(identity):
     return User.get_by_email(identity)
 
 
-from . import models
+from . import models  # pylint: disable=unused-import

@@ -3,13 +3,13 @@
 
 from flask_jwt_extended import create_access_token
 from app.extensions.jwt.uitls import add_token_to_database
-from hashlib import md5
+from app.utils.secure import encrypt_str
 
 
 class TestAuth():
 
     def test_auth(self, flask_app, flask_app_client, regular_user):
-        user_hash = md5(regular_user.email.encode('utf-8')).hexdigest()
+        user_hash = encrypt_str(regular_user.email)
         query_string = 'user_id=' + user_hash
         access_token = create_access_token(identity=regular_user.email)
         flask_app_client.connect('/auth', query_string=query_string)

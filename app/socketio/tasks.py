@@ -20,6 +20,8 @@
     主要处理进度条的实时状态
 """
 from flask_socketio import Namespace, emit
+from app.extensions.celerybackend.models import Tasks
+from app.extensions.celeryprogress import progress
 
 
 class TaskNamespace(Namespace):
@@ -38,8 +40,6 @@ class TaskNamespace(Namespace):
         """
         从队列中返回最新五个任务的进度条状态
         """
-        from app.extensions.celerybackend.models import Tasks
-        from app.extensions.celeryprogress import progress
 
         tasks = Tasks.objects(state='run').limit(5).all()
         data = [{

@@ -6,12 +6,12 @@ import mongoengine
 import os
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def db_name():
     return os.environ.get('TEST_MONGO_DATABASE', 'test_mongo_db')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def config(db_name):
     try:
         import toml
@@ -23,7 +23,7 @@ def config(db_name):
         return {'db': db_name}
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def connection(config):
     try:
         conn = mongoengine.get_connection()
@@ -34,12 +34,12 @@ def connection(config):
     conn.drop_database(conn_db.name)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def database(connection):
     return mongoengine.get_db()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def app(config):
     from flask import Flask
     from app.extensions import mongo, babel
@@ -53,7 +53,7 @@ def app(config):
         yield app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='package')
 def db(app):
     from app.extensions import mongo as db_module
 

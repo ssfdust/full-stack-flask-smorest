@@ -7,6 +7,8 @@ class TestLog():
     def test_log_api(self, app, db):
         from app.extensions.logger.models import Log
 
+        Log.drop_collection()
+
         @app.route('/test/api')
         def index():
             return "11"

@@ -12,11 +12,17 @@ def flask_app():
 
     from app.app import app
     from app.extensions import db
+    from app.extensions.sqla.sqla import DuplicateEntry
+    from migrations.initial_development_data import init_email_templates
 
     with app.app_context():
         db.create_all()
+        try:
+            init_email_templates()
+        except DuplicateEntry:
+            pass
         yield app
-        db.session.commit()
+        db.session.rollback()
         db.drop_all()
 
 

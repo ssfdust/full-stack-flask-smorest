@@ -27,6 +27,9 @@ class TestApi():
 
             name = db.Column(db.String(10))
 
+        with app.app_context():
+            TestPagination.__table__.create(db.get_engine())
+
         class TestSchema(ma.Schema):
             id = ma.fields.Int(dump_only=True)
             name = ma.fields.String()

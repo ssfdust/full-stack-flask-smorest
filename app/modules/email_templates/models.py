@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Copyright {{ year }} {{ author }}
-# Author: {{ author }}
+# Copyright 2019 RedLotus <ssfdust@gmail.com>
+# Author: RedLotus <ssfdust@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,26 +15,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 """
-    app.modules.{{ module_name }}.models
+    app.modules.email_templates.models
     ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    {{ module_title }}的ORM模块
+    电子邮件模板的ORM模块
 """
 
 from app.extensions.sqla import Model, SurrogatePK, db
 
 
-class {{ model_name }}(Model, SurrogatePK):
+class EmailTemplate(Model, SurrogatePK):
     """
-    {{ module_title }}
+    电子邮件模板
 
-    :attr name: str(128) {{ module_title }}名称
+    :attr name: str(128) 电子邮件模板名称
     """
 
-    __tablename__ = "{{ module_name }}"
+    __tablename__ = "email_templates"
 
-    name = db.Column(db.String(length=128), nullable=False, doc="{{ module_name }}的名称")
+    name = db.Column(db.String(length=128), nullable=False, unique=True, doc="email_templates的名称")
+    template = db.Column(db.Text, nullable=False, doc="模板")
+
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.query.filter_by(name=name).one()
+
+    @classmethod
+    def get_template(cls, name):
+        """获取模板"""
+        template = cls.get_by_name(name)
+        return template.template
 
     def __repr__(self):
         return self.name

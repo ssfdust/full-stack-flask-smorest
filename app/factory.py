@@ -22,15 +22,14 @@
 
     用以提供库的初始化函数以及注册模块
 """
+import os
 
+from loguru import logger
 from flask_migrate import Migrate
 
 from .extensions import init_app, db
 from .extensions.flask import Flask
 from .utils.formatters import mongon_opts_str
-
-from loguru import logger
-import os
 
 CONFIG_MAPPGING = {
     'development': 'app/config/development.toml',
@@ -38,7 +37,7 @@ CONFIG_MAPPGING = {
     'testing': 'app/config/testing.toml'
 }
 
-ENABLED_MODULES = ['auth', 'users', 'storages', 'menus', 'todolist']
+ENABLED_MODULES = ['auth', 'users', 'storages', 'menus', 'todolist', 'email_templates']
 
 
 def create_app(modules, config_name='development'):

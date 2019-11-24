@@ -14,11 +14,11 @@
 # limitations under the License.
 
 import arrow
+from flask_babel import get_timezone
 
 
 def localnow():
     """返回本地时间"""
-    from flask_babel import get_timezone
     time = arrow.now(str(get_timezone()))
     return time
 

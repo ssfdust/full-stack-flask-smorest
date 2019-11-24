@@ -95,7 +95,7 @@ class MailSendView(BaseView):
         from flask import request
         from app.backtasks.send_mail import send_mail
         send_mail.delay(request.form['emailto'], request.form['subject'],
-                        {'message': request.form['content']})
+                        {'message': request.form['content'], 'url': '#'})
 
         return jsonify({'code': 0, 'msg': 'success'})
 

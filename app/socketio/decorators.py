@@ -8,10 +8,12 @@
 """
 
 
-from .session import SessionManager
 from functools import wraps
+
 from flask_socketio import disconnect
 from flask import request
+
+from .session import SessionManager
 
 
 def auth_socket(func):

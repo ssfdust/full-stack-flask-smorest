@@ -32,6 +32,7 @@ from app.modules.auth import models as authm
 from app.modules.menus import models as menum
 from app.modules.storages import models as storagem
 from app.modules.users import models as userm
+from app.modules.email_templates import models as etemplatesm
 
 from . import views
 from .extensions import admin
@@ -138,6 +139,14 @@ def init():
             category='系统设置',
             url='/admin/menus',
             endpoint='admin.views.menus'))
+    admin.add_view(
+        views.EmailTemplateView(
+            etemplatesm.EmailTemplate,
+            db.session,
+            name='邮件模板管理',
+            category='系统设置',
+            url='/admin/email-templates',
+            endpoint='admin.views.email-template'))
     # 文件管理
     admin.add_view(
         views.StorageView(

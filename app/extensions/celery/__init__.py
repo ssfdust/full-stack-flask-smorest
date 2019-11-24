@@ -47,7 +47,7 @@ def register_serializer():
 # https://github.com/getsentry/zeus/blob/97528038a0abfd6f0e300d8d3f276e1b0818c328/zeus/utils/celery.py#L10
 
 
-class Celery(object):
+class Celery():
 
     def __init__(self, app=None):
         # we create the celery immediately as otherwise NOTHING WORKS
@@ -61,7 +61,8 @@ class Celery(object):
     def init_app(self, app):
         self.app = app
         self.app_ctx = app.app_context()
-        self.req_ctx = app.test_request_context()
+        base_url = self._parse_app_url(app)
+        self.req_ctx = app.test_request_context(base_url=base_url)
         new_celery = celery.Celery(
             app.import_name,
             broker=app.config["CELERY_BROKER_URL"],
@@ -78,6 +79,21 @@ class Celery(object):
         task_postrun.connect(self._task_postrun)
         task_prerun.connect(self._task_prerun)
 
+    @staticmethod
+    def _parse_app_url(app):
+        adapter = app.url_map.bind(
+            app.config["FRONT_SERVER_NAME"],
+            script_name=app.config["APPLICATION_ROOT"],
+            url_scheme=app.config["PREFERRED_URL_SCHEME"],
+        )
+        host = adapter.get_host("")
+        return str(
+            "%s//%s"
+            % (
+                adapter.url_scheme + ":" if adapter.url_scheme else "", host
+            )
+        )
+
     def task(self, *args, **kwargs):
         return self.celery.task(*args, **kwargs)
 
@@ -85,9 +101,11 @@ class Celery(object):
         return self.celery
 
     def _worker_process_init(self, **kwargs):
+        # pylint: disable=unused-argument
         self.app.app_context().push()  # pragma: no cover
 
     def _task_prerun(self, task, **kwargs):
+        # pylint: disable=unused-argument
         if self.app is None:
             return  # pragma: no cover
 
@@ -95,6 +113,7 @@ class Celery(object):
         self.req_ctx.push()
 
     def _task_postrun(self, task, **kwargs):
+        # pylint: disable=unused-argument
         if self.app is None:
             return  # pragma: no cover
 

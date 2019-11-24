@@ -45,7 +45,7 @@ class UserModelView(AuthModelView):
 
     column_labels = {'send_mail': '邮件验证'}
 
-    def _send_mail(view, context, model, name):
+    def _send_mail(self, _, model, __):
         """验证邮件栏目"""
 
         if model.confirmed_at:
@@ -82,8 +82,9 @@ class UserModelView(AuthModelView):
 
         user = self.model.get_by_id(uid)
         token = generate_confirm_token(user, 'confirm')
-        send_mail.delay(user.email, '验证邮箱', {'token': token},
-                        'emails/confirm.html')
+        url = url_for('Auth.UserConfirmView', token=token, _external=True)
+        send_mail.delay(user.email, '验证邮箱', {'url': url, 'message': "这是一封验证邮件"},
+                        'confirm')
         flash('验证邮件已发送')
 
         return redirect(return_url)
@@ -124,12 +125,12 @@ class UserInfoModelView(AuthModelView):
 
     column_exclude_list = ['uid', 'avator_id']
 
-    def _sex_label(view, context, model, name):
+    def _sex_label(self, __, model, _):
         return model.sex_label
 
     form_choices = {'sex': [('1', '男'), ('2', '女')]}
 
-    def _avatorinfo(view, context, model, name):
+    def _avatorinfo(self, __, model, _):
         """显示头像信息"""
         return Markup(
             '<img src="%s" style="width: 30px; height: 30px;border-radius: 30px;">'

@@ -13,8 +13,7 @@ from flask_jwt_extended.utils import verify_token_not_blacklisted
 from flask_jwt_extended.exceptions import RevokedTokenError
 from jwt.exceptions import DecodeError
 from app.extensions.rpcstore import AMQPStore
-from hashlib import md5
-from amqp.exceptions import NotFound
+from app.utils.secure import encrypt_str
 
 
 class SessionManager(AMQPStore):
@@ -49,8 +48,7 @@ class SessionManager(AMQPStore):
             decoded_token = decode_token(token)
             verify_token_not_blacklisted(decoded_token, 'access')
             email = decoded_token['identity']
-            md5obj = md5(email.encode('utf-8'))
-            self.user_hash = md5obj.hexdigest()
+            self.user_hash = encrypt_str(email)
             return True
         except RevokedTokenError:
             return False
@@ -67,10 +65,7 @@ class SessionManager(AMQPStore):
         """测试一个session"""
         self.check_active()
         self.reload(requeue=True)
-        if self.value:
-            return True
-        else:
-            return False
+        return bool(self.value)
 
     def check_active(self):
         if self.active is False:
