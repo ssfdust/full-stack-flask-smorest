@@ -1,0 +1,23 @@
+language: python
+python:
+  - "3.8"
+sudo: false
+notifications:
+  email: false
+services:
+    - rabbitmq
+    - postgresql
+    - mongodb
+before_install:
+    - mongo < scripts/build/testing_mongodb.txt
+    - psql -U postgres < scripts/build/testing_create.sql
+install:
+    - pip install python-coveralls
+    - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python - --preview
+    - PATH="${PATH}:$HOME/.poetry/bin"
+    - poetry config virtualenvs.create false && poetry install --no-dev --no-interaction --no-ansi
+    - FLASK_ENV=testing inv app.init.add-closure-table-procedure
+script:
+    - inv app.tests --cov app --with-cov
+after_success:
+  - coveralls
