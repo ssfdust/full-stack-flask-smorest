@@ -50,6 +50,8 @@ def temp_db_instance_helper(db):
 
         mapper = instance.__class__.__mapper__
         assert len(mapper.primary_key) == 1
+        if instance not in db.session:
+            db.session.add(instance)
         instance.__class__.query\
             .filter(mapper.primary_key[0] == mapper.primary_key_from_instance(instance)[0])\
             .delete()
@@ -61,5 +63,21 @@ def temp_db_instance_helper(db):
 def regular_user(temp_db_instance_helper):
     for _ in temp_db_instance_helper(
         utils.generate_user_instance(username='regular_user')
+    ):
+        yield _
+
+
+@pytest.fixture(scope='session')
+def inactive_user(temp_db_instance_helper):
+    for _ in temp_db_instance_helper(
+        utils.generate_user_instance(username='inactive_user')
+    ):
+        yield _
+
+
+@pytest.fixture(scope="session")
+def forget_passwd_user(temp_db_instance_helper):
+    for _ in temp_db_instance_helper(
+        utils.generate_user_instance(username='forget_passwd_user')
     ):
         yield _

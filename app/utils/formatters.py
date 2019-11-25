@@ -17,6 +17,8 @@ import uuid
 
 import arrow
 
+from pprint import pformat
+from loguru import logger
 
 def mongon_opts_str(opts):
     url = "mongodb://{username}:{password}@{host}:{port}/{db}".format(**opts)
@@ -69,3 +71,9 @@ def celery_worker_formatter(worker_info):
             result.append(tmp)
 
     return result
+
+
+def pretty_string(text, printer=logger.debug):
+    """美化字符串输出"""
+    for line in pformat(text).split('\n'):
+        printer(line)

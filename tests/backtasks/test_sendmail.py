@@ -5,11 +5,14 @@ import queue
 
 import pytest
 from app.backtasks.send_mail import send_mail
+from app.extensions.celerybackend.models import Tasks
 
 SENDED = queue.Queue()
 
+
 def fake_send(msg):
     SENDED.put(msg)
+
 
 @pytest.fixture
 def patched_mail(monkeypatch):
@@ -30,6 +33,7 @@ class TestSendMail():
         ]
     )
     def test_send_mail(self, flask_app, flask_celery_app, flask_celery_worker, patched_mail, content, template, result):
-        send_mail.delay('test', 'test', content, template).get(timeout=3)
+        req = send_mail.delay('test', 'test', content, template)
+        req.get(timeout=1)
         msg = SENDED.get()
         assert msg.html == result

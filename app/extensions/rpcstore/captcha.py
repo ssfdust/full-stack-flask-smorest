@@ -46,11 +46,15 @@ class CaptchaStore(AMQPStore):
         self.reload()
         return self.code_lst
 
-    def generate_captcha(self, length=4):
+    def _generate_captcha(self, length):
         """生成验证码"""
         passwd_str = string.digits + string.ascii_letters
         code = ''.join([random.choice(passwd_str) for i in range(length)])
         self.value = code
+
+    def generate_captcha(self, length=4):
+        """保存验证码"""
+        self._generate_captcha(length)
         return self.save()
 
     @property

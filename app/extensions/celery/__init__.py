@@ -21,7 +21,7 @@
 
 import celery
 
-from celery.signals import task_postrun, task_prerun, worker_process_init
+from celery.signals import task_postrun, task_prerun, celeryd_init
 from kombu import serialization
 from bson import json_util
 
@@ -61,26 +61,27 @@ class Celery():
     def init_app(self, app):
         self.app = app
         self.app_ctx = app.app_context()
-        base_url = self._parse_app_url(app)
-        self.req_ctx = app.test_request_context(base_url=base_url)
+        # base_url = self._parse_app_url(app)
+        # self.req_ctx = app.test_request_context(base_url=base_url)
+        self.req_ctx = app.test_request_context()
         new_celery = celery.Celery(
             app.import_name,
             broker=app.config["CELERY_BROKER_URL"],
             backend=app.config["CELERY_RESULT_BACKEND"],
             enable_utc=True,
             timezone=app.config['BABEL_DEFAULT_TIMEZONE'])
-        # XXX(dcramer): why the hell am I wasting time trying to make Celery work?
+
         self.celery.__dict__.update(vars(new_celery))
         self.celery.conf.update(app.config)
         self.celery.conf['BROKER_HEARTBEAT'] = 0
 
-        worker_process_init.connect(self._worker_process_init)
+        celeryd_init.connect(self._worker_process_init)
 
         task_postrun.connect(self._task_postrun)
         task_prerun.connect(self._task_prerun)
 
     @staticmethod
-    def _parse_app_url(app):
+    def _parse_app_url(app):  # pragma: no cover
         adapter = app.url_map.bind(
             app.config["FRONT_SERVER_NAME"],
             script_name=app.config["APPLICATION_ROOT"],

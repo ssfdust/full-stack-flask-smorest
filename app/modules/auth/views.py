@@ -20,7 +20,9 @@
     用户验证的API资源模块
 """
 
-from flask import abort, send_file, url_for
+from captcha.image import ImageCaptcha
+from flask import send_file, url_for
+from flask_smorest import abort
 from flask import current_app as app
 from flask.views import MethodView
 from flask_jwt_extended import (create_access_token, create_refresh_token,
@@ -29,7 +31,11 @@ from loguru import logger
 
 from app.extensions.jwt.uitls import add_token_to_database, revoke_token
 from app.extensions.marshal import BaseMsgSchema
+from app.extensions.rpcstore.captcha import CaptchaStore
 from app.utils import local
+from app.services.auth.confirm import confirm_token
+from app.services.auth.confirm import generate_confirm_token
+from app.backtasks.send_mail import send_mail
 
 from . import blp, models, params, schemas
 from .decorators import doc_refresh_required, doc_login_required
@@ -52,26 +58,20 @@ class LoginView(MethodView):
         用户名密码登录后，返回基本信息以及token，
         登录方式为token方式
         '''
-        from app.extensions.rpcstore.captcha import CaptchaStore
-        from amqp.exceptions import NotFound
-
-        try:
-            store = CaptchaStore(args['token'])
-            code_lst = store.get_captcha()
-            if args['captcha'] not in code_lst:
-                abort(409, "验证码错误")
-        except NotFound:
-            abort(408, "验证码失效")
+        store = CaptchaStore(args['token'])
+        code_lst = store.get_captcha()
+        if args['captcha'] not in code_lst:
+            abort(403, message="验证码错误")
 
         user = models.User.get_by_email(args['email'])
 
         if user is None:
             logger.warning(f"{args['email']} 不存在")
-            abort(404, "用户不存在")
+            abort(404, message="用户不存在")
 
         if user.active is not True:
             logger.warning(f"{args['email']} 未激活，尝试登录")
-            abort(407, "用户未激活")
+            abort(403, message="用户未激活")
 
         if user.verify_and_update_password(args['password']) is True:
 
@@ -97,7 +97,7 @@ class LoginView(MethodView):
             return {'code': 0, 'msg': 'success', 'data': data}
         else:
             logger.error(f"{args['email']} 登录密码错误")
-            abort(403, "密码错误")
+            abort(403, message="密码错误")
 
 
 @blp.route('/captcha')
@@ -111,9 +111,6 @@ class CaptchaView(MethodView):
 
         每次随机生成一个token来获取图片，延时时间为5分钟
         '''
-        from app.extensions.rpcstore.captcha import CaptchaStore
-        from captcha.image import ImageCaptcha
-
         image = ImageCaptcha()
         store = CaptchaStore(token)
         code = store.generate_captcha()
@@ -134,18 +131,15 @@ class ForgetPasswordView(MethodView):
 
         发送忘记密码邮件到请求的email
         '''
-        from app.services.auth.confirm import generate_confirm_token
-        from app.backtasks.send_mail import send_mail
-
         user = models.User.get_by_email(email)
         if user:
             logger.info(f"{user.email}发起了忘记密码申请")
             token = generate_confirm_token(user, 'passwd')
             url = url_for('Auth.ResetForgotPasswordView', token=token, _external=True)
             send_mail.delay(user.email, '找回密码', {'url': url, 'message': "这是一封找回密码邮件"},
-                            'emails/reset-password.html')
+                            'reset-password')
         else:
-            abort(404, "用户不存在")
+            abort(404, message="用户不存在")
 
         return {'code': 0, 'msg': 'success'}
 
@@ -160,12 +154,11 @@ class UserConfirmView(MethodView):
         '''
         完成用户验证
         '''
-        from app.services.auth.confirm import confirm_token
-
         jti = get_raw_jwt()['jti']
         _, user = confirm_token(jti, 'confirm')
         logger.info(f"{user.email}完成了用户验证")
-        user.update(confirmed_at=local.localnow(), active=True)
+        if user.confirmed_at is None:
+            user.update(confirmed_at=local.localnow(), active=True)
 
         return {'code': 0, 'msg': 'success'}
 
@@ -186,19 +179,19 @@ class ResetForgotPasswordView(MethodView):
         :param              password: str               原密码
         :param              confirm_password: str       确认密码
         '''
-        from app.services.auth.confirm import confirm_token
         from flask_security.utils import encrypt_password
 
-        jti = get_raw_jwt()['jti']
-        _, user = confirm_token(jti, 'passwd')
+        raw_jwt = get_raw_jwt()
+        _, user = confirm_token(raw_jwt["jti"], 'passwd', revoked=False)
         if password == confirm_password:
             logger.info(f"{user.email} 修改了密码")
             user.update(password=encrypt_password(confirm_password))
+            revoke_token(raw_jwt, 'passwd')
 
             return {'code': 0, 'msg': 'success'}
         else:
             logger.error(f"{user.email} 密码提交错误")
-            abort(501, "密码不一致，修改失败")
+            abort(501, message="密码不一致，修改失败")
 
     @doc_login_required
     @blp.response(code=403, description='禁止访问')
@@ -209,15 +202,10 @@ class ResetForgotPasswordView(MethodView):
 
         测试token是否可用
         '''
-        from app.services.auth.confirm import check_confirm_token
-
         jti = get_raw_jwt()['jti']
-        state, _ = check_confirm_token(jti, 'passwd')
+        confirm_token(jti, 'passwd', revoked=False)
 
-        if state:
-            return {'code': 0, 'msg': 'success'}
-        else:
-            abort(403, "禁止访问")
+        return {'code': 0, 'msg': 'success'}
 
 
 @blp.route('/refresh')

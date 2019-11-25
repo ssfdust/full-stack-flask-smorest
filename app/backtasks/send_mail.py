@@ -21,8 +21,6 @@
     发送邮件模块
 """
 
-from time import sleep
-
 from loguru import logger
 from flask_mail import Message
 from flask import render_template_string
@@ -60,7 +58,5 @@ def send_mail(self, to, subject, content, template='default'):
 
     mail.send(msg)
     progress_recorder.set_progress(100, 100)
-
-    sleep(1)
 
     return {'code': 0, 'result': 'success'}

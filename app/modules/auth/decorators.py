@@ -26,6 +26,7 @@
 from functools import wraps
 from flask_jwt_extended import jwt_required, jwt_refresh_token_required, current_user
 from loguru import logger
+from flask_smorest import abort
 
 # 源码来自
 # https://github.com/Nobatek/flask-rest-api/issues/36#issuecomment-460826257
@@ -108,7 +109,6 @@ def permission_required(*permissions):
             def get(self):
                 return {'code': 0}
     """
-    from flask import abort
 
     permissions = list(permissions)
 
@@ -120,48 +120,46 @@ def permission_required(*permissions):
                                   for p in current_user.permissions]
                    for permission in permissions):
                 return func(*args, **kwargs)
-            if all(permission in current_user.permissions
-                   for permission in permissions):
-                return func(*args, **kwargs)
+            #  if all(permission in current_user.permissions
+            #         for permission in permissions):
+            #      return func(*args, **kwargs)
             logger.error(f"{current_user.email}不具备{permissions}")
-            abort(403, "禁止访问")
+            abort(403, message="禁止访问")
 
         return inner
 
     return wrapper
 
 
-def role_required(*roles):
-    """
-    角色验证
-
-    :param roles: tuple 角色列
-
-    为API添加角色限制，同时添加OpenAPI注释，使用装饰器后
-    只有带有才能访问。必须在doc_login_required装饰器后。
-
-    用法：
-    >>> class SampleView(MethodView):
-            @doc_login_required
-            @role_required('Role')
-            def get(self):
-                return {'code': 0}
-    """
-    from flask import abort
-
-    def wrapper(func):
-
-        @wraps(func)
-        def inner(*args, **kwargs):
-            if all(role in [p.name
-                            for p in current_user.roles]
-                   for role in roles):
-                return func(*args, **kwargs)
-            if all(role in current_user.roles for role in roles):
-                return func(*args, **kwargs)
-            logger.error(f"{current_user.email}不具备{roles}")
-            abort(403, "禁止访问")
-
-        return inner
-
-    return wrapper
+#  def role_required(*roles):
+#      """
+#      角色验证
+#
+#      :param roles: tuple 角色列
+#
+#      为API添加角色限制，同时添加OpenAPI注释，使用装饰器后
+#      只有带有才能访问。必须在doc_login_required装饰器后。
+#
+#      用法：
+#      >>> class SampleView(MethodView):
+#              @doc_login_required
+#              @role_required('Role')
+#              def get(self):
+#                  return {'code': 0}
+#      """
+#      def wrapper(func):
+#
+#          @wraps(func)
+#          def inner(*args, **kwargs):
+#              if all(role in [p.name
+#                              for p in current_user.roles]
+#                     for role in roles):
+#                  return func(*args, **kwargs)
+#              if all(role in current_user.roles for role in roles):
+#                  return func(*args, **kwargs)
+#              logger.error(f"{current_user.email}不具备{roles}")
+#              abort(403, message="禁止访问")
+#
+#          return inner
+#
+#      return wrapper

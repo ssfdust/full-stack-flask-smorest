@@ -32,8 +32,9 @@ class TestArrowField():
         class Sample(db.Document):
             created = ArrowField()
 
-        md = Sample(created="1571632399")
+        md = Sample()
         md.save()
+        md = Sample.objects(id=md.id).upsert_one(created="1571632399")
 
         assert isinstance(md.created, arrow.Arrow)
         assert md.created.format('YYYY-MM-DD') == '2019-10-21'

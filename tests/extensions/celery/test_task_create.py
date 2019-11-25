@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
-
 
 def test_celery_creation(celery_ext, celery_sess_app, celery_sess_worker):
     from flask import current_app
     from app.extensions.celerybackend.models import Tasks
+
     class Test():
         a = 1
 

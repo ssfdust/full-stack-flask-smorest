@@ -46,10 +46,10 @@ class Permission(Model, RoleMixin, SurrogatePK):
     description = db.Column(db.String(255), doc='权限描述')
 
     @classmethod
-    def get_by_name(cls, name):
+    def get_by_name(cls, name):  # pragma: no cover
         return cls.query.filter_by(name=name).first()
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.name
 
 
@@ -79,14 +79,14 @@ class Role(Model, RoleMixin, SurrogatePK):
         backref=db.backref('roles', lazy='dynamic', doc='所有角色'))
 
     @classmethod
-    def get_by_name(cls, name):
+    def get_by_name(cls, name):  # pragma: no cover
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def get_by_user_default(cls):
-        return cls.query.filter_by(user_default=True).all()
+    def get_by_user_default(cls):  # pragma: no cover
+        return cls.query.filter_by(user_default=True).all()  # pragam: no cover
 
-    def get_permissions(self):
+    def get_permissions(self):  # pragma: no cover
         """
         获取权限
 
@@ -94,7 +94,7 @@ class Role(Model, RoleMixin, SurrogatePK):
         """
         return set(permission.name for permission in self.permissions)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.name
 
 
@@ -147,13 +147,13 @@ class User(Model, UserMixin, SurrogatePK):
         }})
 
     @classmethod
-    def get_by_email(cls, email):
+    def get_by_email(cls, email):  # pragma: no cover
         '''
         根据邮箱获取用户
         '''
         return cls.query.filter_by(deleted=False, email=email).first()
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.email
 
     @property

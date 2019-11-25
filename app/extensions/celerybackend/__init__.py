@@ -21,11 +21,11 @@
 
 from celery.backends.mongodb import MongoBackend as BaseMongoBackend, states
 from datetime import datetime
-from kombu.exceptions import EncodeError
 from pymongo.errors import InvalidDocument
 from bson import UUIDLegacy
 import uuid
 import mongoengine
+import logging
 
 
 class MongoBackend(BaseMongoBackend):
@@ -54,8 +54,8 @@ class MongoBackend(BaseMongoBackend):
             self.collection.update_one({'_id': UUIDLegacy(uuid.UUID(task_id))},
                                        {'$set': meta},
                                        upsert=True)
-        except InvalidDocument as exc:
-            raise EncodeError(exc)
+        except InvalidDocument:
+            logging.error("Encode Error When handle meta at task {}".format(task_id))
 
         return result
 
@@ -77,7 +77,7 @@ class MongoBackend(BaseMongoBackend):
     def _get_task_meta_for(self, task_id):
         """根据task_id获取后台数据"""
         obj = self.collection.find_one({'_id': UUIDLegacy(uuid.UUID(task_id))})
-        if obj:
+        if obj and 'date_done' in obj:
             return self.meta_from_decoded({
                 'task_id': obj['_id'],
                 'status': obj['status'],

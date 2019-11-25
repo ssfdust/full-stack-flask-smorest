@@ -112,6 +112,7 @@ def generate_user_instance(
         password = encrypt_password('%s_password' % username)
     user_instance = User(
         id=user_id,
+        active=is_active,
         username=username,
         email=email or '%s@email.com' % username,
         password=password

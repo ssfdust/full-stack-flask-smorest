@@ -51,13 +51,15 @@ def save_resp(resp):
 def sink(message):
     """处理来自loguru的信息"""
     from .models import Message
-
-    msg = Message()
-    msg.module = message.record['name']
-    msg.line = message.record['line']
-    msg.level = message.record['level']
-    msg.message = str(message.record['message'])
-    msg.save()
+    try:
+        msg = Message()
+        msg.module = message.record['name']
+        msg.line = message.record['line']
+        msg.level = message.record['level']
+        msg.message = str(message.record['message'])
+        msg.save()
+    except RuntimeError:
+        pass
 
 
 class Logger(object):

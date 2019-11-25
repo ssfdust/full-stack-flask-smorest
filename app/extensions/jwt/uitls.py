@@ -66,7 +66,7 @@ def add_token_to_database(encoded_token, identity_claim,
         revoked=revoked)
 
 
-def revoke_token(raw_jwt):
+def revoke_token(raw_jwt, token_type='refresh'):
     """
     将指定的jwt撤销
     """
@@ -77,7 +77,7 @@ def revoke_token(raw_jwt):
     try:
         TokenBlackList.query.filter_by(
             user_identity=user,
-            token_type='refresh',
+            token_type=token_type,
         ).update({'revoked': True})
         token = TokenBlackList.query.filter_by(
             user_identity=user, jti=jti).one()

@@ -53,22 +53,19 @@ class ArrowField(BaseField):
         if data:
             value = self._preload(data)
             if value.tzinfo == tz.UTC:
-                value = value.replace(tzinfo=str(gttz()))
+                value = value.replace(tzinfo=gttz())
             utc_value = value.to('UTC')
             return utc_value.datetime
         return data
 
     def _preload(self, value):
         """ 预处理 """
-        #  if value is None:
-        #      return None
-        #  elif isinstance(value, six.string_types):
-        #      value = arrow.get(value)
-        #  elif isinstance(value, Iterable):
-        if isinstance(value, Iterable):
+        if isinstance(value, datetime):
+            value = arrow.get(value)
+        elif isinstance(value, str):
+            value = arrow.get(value)
+        elif isinstance(value, Iterable):
             value = arrow.get(*value)
-        #  elif isinstance(value, datetime):
-        #      value = arrow.get(value)
         return value
 
     def to_python(self, value):
