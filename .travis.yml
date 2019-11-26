@@ -1,0 +1,34 @@
+language: python
+python:
+  - "3.8"
+sudo: false
+notifications:
+  email: false
+services:
+    - rabbitmq
+    - postgresql
+    - mongodb
+addons:
+  postgresql: "11.2"
+  apt:
+      packages:
+          - rabbitmq-server
+before_install:
+    - sudo apt-get update
+    - sudo apt-get --yes remove postgresql\*
+    - sudo apt-get install -y postgresql-11 postgresql-client-11
+    - sudo cp /etc/postgresql/{9.6,11}/main/pg_hba.conf
+    - sudo service postgresql restart 11 
+    - mongo < ./scripts/build/testing_mongodb.txt
+    - psql -U postgres < scripts/build/testing_create.sql
+install:
+    - pip install python-coveralls
+    - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python - --preview
+    - PATH="${PATH}:$HOME/.poetry/bin"
+    - poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
+    - cp -a ./scripts/build/config app/
+    - FLASK_ENV=testing inv app.init.add-closure-table-procedure
+script:
+    - inv app.tests --cov app --with-cov
+after_success:
+  - coveralls

@@ -1,0 +1,15 @@
+use smorest-testing-mongodb
+
+db.createUser({
+    user:"smorest-admin",
+    pwd:"mySmorest2019",
+    roles:[{
+        role:"dbAdmin",
+        db:"smorest-testing-mongodb"
+    },{
+        role:"readWrite",
+        db:"smorest-testing-mongodb"
+    }]
+})
+
+db.auth("smorest-admin", "mySmorest2019")
