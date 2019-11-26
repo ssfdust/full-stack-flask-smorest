@@ -22,11 +22,10 @@ from . import blp
 from . import schemas
 
 
-@blp.route('')
+@blp.route("")
 class MenuView(MethodView):
-
     @doc_login_required
-    @blp.response(schemas.MenuViewSchema, description='用户信息')
+    @blp.response(schemas.MenuViewSchema, description="用户信息")
     def get(self):
         """
         获取用户自己的菜单
@@ -35,8 +34,9 @@ class MenuView(MethodView):
 
         permissions = [item.id for item in current_user.abilities]
         items = models.Menu.query.filter(
-            models.Menu.permission_id.in_(permissions)).all()
+            models.Menu.permission_id.in_(permissions)
+        ).all()
         dict_items = schemas.MenuSchema(many=True).dump(items)
         data = hierarchy_to_json(dict_items)
 
-        return {'data': data, 'code': 0, 'msg': 'success'}
+        return {"data": data, "code": 0, "msg": "success"}

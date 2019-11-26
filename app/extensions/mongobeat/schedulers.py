@@ -36,7 +36,6 @@ from celery import current_app
 
 
 class MongoScheduleEntry(ScheduleEntry):
-
     def __init__(self, task):
         self._task = task
 
@@ -49,12 +48,12 @@ class MongoScheduleEntry(ScheduleEntry):
         self.args = self._task.args
         self.kwargs = self._task.kwargs
         self.options = {
-            'queue': self._task.queue,
-            'exchange': self._task.exchange,
-            'routing_key': self._task.routing_key,
-            'expires': self._task.expires,
-            'soft_time_limit': self._task.soft_time_limit,
-            'enabled': self._task.enabled
+            "queue": self._task.queue,
+            "exchange": self._task.exchange,
+            "routing_key": self._task.routing_key,
+            "expires": self._task.expires,
+            "soft_time_limit": self._task.soft_time_limit,
+            "enabled": self._task.enabled,
         }
         if self._task.total_run_count is None:
             self._task.total_run_count = 0
@@ -78,10 +77,10 @@ class MongoScheduleEntry(ScheduleEntry):
     def is_due(self):
         if not self._task.enabled:
             return False, 5.0  # 5 second delay for re-enable.
-        if hasattr(self._task, 'start_after') and self._task.start_after:
+        if hasattr(self._task, "start_after") and self._task.start_after:
             if datetime.datetime.now() < self._task.start_after:
                 return False, 5.0
-        if hasattr(self._task, 'max_run_count') and self._task.max_run_count:
+        if hasattr(self._task, "max_run_count") and self._task.max_run_count:
             if (self._task.total_run_count or 0) >= self._task.max_run_count:
                 return False, 5.0
         if self._task.run_immediately:
@@ -91,14 +90,14 @@ class MongoScheduleEntry(ScheduleEntry):
         return self.schedule.is_due(self.last_run_at)
 
     def __repr__(self):
-        return (u'<{0} ({1} {2}(*{3}, **{4}) {{5}})>'.format(
+        return u"<{0} ({1} {2}(*{3}, **{4}) {{5}})>".format(
             self.__class__.__name__,
             self.name,
             self.task,
             self.args,
             self.kwargs,
             self.schedule,
-        ))
+        )
 
     #  def reserve(self, entry):
     #      new_entry = Scheduler.reserve(self, entry)
@@ -107,7 +106,11 @@ class MongoScheduleEntry(ScheduleEntry):
     def save(self):
         if self.total_run_count > self._task.total_run_count:
             self._task.total_run_count = self.total_run_count
-        if self.last_run_at and self._task.last_run_at and self.last_run_at > self._task.last_run_at:
+        if (
+            self.last_run_at
+            and self._task.last_run_at
+            and self.last_run_at > self._task.last_run_at
+        ):
             self._task.last_run_at = self.last_run_at
         self._task.run_immediately = False
         try:
@@ -140,23 +143,30 @@ class MongoScheduler(Scheduler):
 
             get_logger(__name__).info(
                 "backend scheduler using %s/%s:%s",
-                current_app.conf.CELERY_MONGODB_SCHEDULER_URL, db,
-                self.Model._get_collection().name)
+                current_app.conf.CELERY_MONGODB_SCHEDULER_URL,
+                db,
+                self.Model._get_collection().name,
+            )
         else:
             try:
                 self._mongo = mongoengine.connect(db)
             except mongoengine.MongoEngineConnectionError:
                 pass
-            get_logger(__name__).info("backend scheduler using %s/%s:%s",
-                                      "mongodb://localhost", db,
-                                      self.Model._get_collection().name)
+            get_logger(__name__).info(
+                "backend scheduler using %s/%s:%s",
+                "mongodb://localhost",
+                db,
+                self.Model._get_collection().name,
+            )
 
         self._schedule = {}
         self._last_updated = None
         Scheduler.__init__(self, *args, **kwargs)
         self.max_interval = (
-            kwargs.get('max_interval') or
-            self.app.conf.CELERYBEAT_MAX_LOOP_INTERVAL or 5)
+            kwargs.get("max_interval")
+            or self.app.conf.CELERYBEAT_MAX_LOOP_INTERVAL
+            or 5
+        )
 
     def setup_schedule(self):
         pass
@@ -166,8 +176,7 @@ class MongoScheduler(Scheduler):
         from the backend database"""
         if not self._last_updated:
             return True
-        return self._last_updated + self.UPDATE_INTERVAL < datetime.datetime.now(
-        )
+        return self._last_updated + self.UPDATE_INTERVAL < datetime.datetime.now()
 
     def get_from_database(self):
         self.sync()

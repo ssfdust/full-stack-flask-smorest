@@ -25,17 +25,17 @@ def upload_handler(func):
 
         results = {}
         for key, value in request.files.items():
-            if value.content_type == 'application/json':
+            if value.content_type == "application/json":
                 content = value.read()
                 value.stream.seek(0)
                 if isinstance(content, bytes):
-                    content = content.decode('utf-8')
+                    content = content.decode("utf-8")
                 results[key] = json.loads(content)
 
         request_dic = request.__dict__
 
-        request_dic['_cached_json'] = (results, results)
-        request_dic['_cached_data'] = json.dumps(results)
+        request_dic["_cached_json"] = (results, results)
+        request_dic["_cached_data"] = json.dumps(results)
 
         return func(*args, **kwargs)
 

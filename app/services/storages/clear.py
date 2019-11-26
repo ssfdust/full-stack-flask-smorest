@@ -17,7 +17,6 @@ from app.utils import local
 
 
 class StorageCleaner(object):
-
     def __init__(self, orm_cls, filters=None):
         self.orm_cls = orm_cls
         self.filters = filters
@@ -34,7 +33,6 @@ class StorageCleaner(object):
 
 
 class MonthExpiredCleaner(StorageCleaner):
-
     def filter(self):
         today = local.localdate()
         a_month_ago = today.shift(months=-1)

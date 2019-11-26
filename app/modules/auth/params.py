@@ -24,19 +24,19 @@ from marshmallow import fields
 
 
 class LoginParams(ma.Schema):
-    '''
+    """
     登录用参数
 
     :attr email: str 用户邮箱
     :attr password: str 密码
     :attr captcha: str 验证码
     :attr token: str 验证码token
-    '''
+    """
 
-    email = fields.Str(required=True, allow_none=False, description='用户邮箱')
-    password = fields.Str(required=True, allow_none=False, description='密码')
-    captcha = fields.Str(required=True, allow_none=False, description='验证码')
-    token = fields.Str(required=True, allow_none=False, description='验证token')
+    email = fields.Str(required=True, allow_none=False, description="用户邮箱")
+    password = fields.Str(required=True, allow_none=False, description="密码")
+    captcha = fields.Str(required=True, allow_none=False, description="验证码")
+    token = fields.Str(required=True, allow_none=False, description="验证token")
 
 
 class JwtParam(ma.Schema):
@@ -46,7 +46,7 @@ class JwtParam(ma.Schema):
     :attr token: str Jwt token
     """
 
-    token = fields.Str(required=False, allow_none=False, description='token')
+    token = fields.Str(required=False, allow_none=False, description="token")
 
 
 class PasswdParam(ma.Schema):
@@ -57,9 +57,8 @@ class PasswdParam(ma.Schema):
     :attr confirm_password: str 确认密码
     """
 
-    password = fields.Str(required=True, allow_none=False, description='密码')
-    confirm_password = fields.Str(
-        required=True, allow_none=False, description='确认密码')
+    password = fields.Str(required=True, allow_none=False, description="密码")
+    confirm_password = fields.Str(required=True, allow_none=False, description="确认密码")
 
 
 class EmailParam(ma.Schema):
@@ -69,7 +68,7 @@ class EmailParam(ma.Schema):
     :attr email: str 邮箱
     """
 
-    email = fields.Str(required=True, description='邮箱')
+    email = fields.Str(required=True, description="邮箱")
 
 
 class CaptchaParam(ma.Schema):
@@ -79,4 +78,4 @@ class CaptchaParam(ma.Schema):
     :attr token: str 验证码token
     """
 
-    token = fields.Str(required=True, description='随机token')
+    token = fields.Str(required=True, description="随机token")

@@ -33,21 +33,22 @@ from app.modules.email_templates.models import EmailTemplate
 
 @celery.task(
     bind=True,
-    name='发送邮件',
+    name="发送邮件",
     max_retries=5,
     autoretry_for=(Exception,),
     acks_late=True,
-    time_limit=60)
-def send_mail(self, to, subject, content, template='default'):
-    '''
+    time_limit=60,
+)
+def send_mail(self, to, subject, content, template="default"):
+    """
     发送邮件
 
     :param          to: str                         收件人
     :param          subject: str                    主题
     :param          content: Union(dict, str)       内容
     :param          template: str                   模板
-    '''
-    logger.info(f'发送邮件至{to}')
+    """
+    logger.info(f"发送邮件至{to}")
 
     progress_recorder = ProgressRecorder(self)
     progress_recorder.set_progress(20, 100)
@@ -59,4 +60,4 @@ def send_mail(self, to, subject, content, template='default'):
     mail.send(msg)
     progress_recorder.set_progress(100, 100)
 
-    return {'code': 0, 'result': 'success'}
+    return {"code": 0, "result": "success"}

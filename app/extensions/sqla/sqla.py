@@ -25,11 +25,15 @@ def _include_ext_types(obj):
     """
 
     from .types import ArrowType
-    setattr(obj, 'ArrowType', ArrowType)
+
+    setattr(obj, "ArrowType", ArrowType)
 
     for key in ext_types.__dict__:
-        if key.endswith('Type') and not hasattr(
-                obj, key) and not key.endswith('ArrowType'):
+        if (
+            key.endswith("Type")
+            and not hasattr(obj, key)
+            and not key.endswith("ArrowType")
+        ):
             setattr(obj, key, getattr(ext_types, key))
 
 

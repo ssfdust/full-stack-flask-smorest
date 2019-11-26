@@ -26,7 +26,7 @@
 from flask_smorest import Blueprint
 from app.extensions import api
 
-blp = Blueprint('Users', __name__, url_prefix='/users', description='获取用户的基本信息')
+blp = Blueprint("Users", __name__, url_prefix="/users", description="获取用户的基本信息")
 
 
 def init_app(app):
@@ -36,7 +36,8 @@ def init_app(app):
     """
     from . import resources, models  # pylint: disable=unused-import
 
-    base_prefix = app.config[
-        'MODULE_BASE_PREFIX'] if 'MODULE_BASE_PREFIX' in app.config else ''
+    base_prefix = (
+        app.config["MODULE_BASE_PREFIX"] if "MODULE_BASE_PREFIX" in app.config else ""
+    )
 
     api.register_blueprint(blp, base_prefix=base_prefix)

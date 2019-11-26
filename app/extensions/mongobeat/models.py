@@ -30,22 +30,32 @@ from ast import literal_eval
 
 import celery.schedules
 from celery import current_app
-from mongoengine import (BooleanField, DateTimeField, DictField,
-                         DynamicDocument, DynamicField, EmbeddedDocument,
-                         EmbeddedDocumentField, IntField, ListField,
-                         StringField)
+from mongoengine import (
+    BooleanField,
+    DateTimeField,
+    DictField,
+    DynamicDocument,
+    DynamicField,
+    EmbeddedDocument,
+    EmbeddedDocumentField,
+    IntField,
+    ListField,
+    StringField,
+)
 
 
 def get_periodic_task_collection():
     """获取表名"""
-    if hasattr(current_app.conf, "CELERY_MONGODB_SCHEDULER_COLLECTION") \
-            and current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION:
+    if (
+        hasattr(current_app.conf, "CELERY_MONGODB_SCHEDULER_COLLECTION")
+        and current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION
+    ):
         return current_app.conf.CELERY_MONGODB_SCHEDULER_COLLECTION  # pragma: no cover
     return "schedules"
 
 
 #: Authorized values for PeriodicTask.Interval.period
-PERIODS = ('days', 'hours', 'minutes', 'seconds', 'microseconds')
+PERIODS = ("days", "hours", "minutes", "seconds", "microseconds")
 
 
 class PeriodicTask(DynamicDocument):
@@ -74,10 +84,7 @@ class PeriodicTask(DynamicDocument):
     :attr run_immediately: 立刻运行
     """
 
-    meta = {
-        'collection': get_periodic_task_collection(),
-        'allow_inheritance': True
-    }
+    meta = {"collection": get_periodic_task_collection(), "allow_inheritance": True}
 
     class Interval(EmbeddedDocument):
         """
@@ -85,16 +92,16 @@ class PeriodicTask(DynamicDocument):
         :attr period 周期区间
         """
 
-        meta = {'allow_inheritance': True}
+        meta = {"allow_inheritance": True}
 
-        every = IntField(
-            min_value=0, default=0, required=True, verbose_name='周期')
-        period = StringField(choices=PERIODS, verbose_name='每')
+        every = IntField(min_value=0, default=0, required=True, verbose_name="周期")
+        period = StringField(choices=PERIODS, verbose_name="每")
 
         @property
         def schedule(self):
             return celery.schedules.schedule(
-                datetime.timedelta(**{self.period: self.every}))
+                datetime.timedelta(**{self.period: self.every})
+            )
 
         @property
         def period_singular(self):
@@ -102,8 +109,8 @@ class PeriodicTask(DynamicDocument):
 
         def __str__(self):
             if self.every == 1:
-                return 'every {0.period_singular}'.format(self)
-            return 'every {0.every} {0.period}'.format(self)
+                return "every {0.period_singular}".format(self)
+            return "every {0.every} {0.period}".format(self)
 
     class Crontab(EmbeddedDocument):
         """
@@ -113,14 +120,14 @@ class PeriodicTask(DynamicDocument):
         :attr day_of_month 日
         :attr mouth_of_year 月
         """
-        meta = {'allow_inheritance': True}
 
-        minute = StringField(default='*', required=True, verbose_name='分钟')
-        hour = StringField(default='*', required=True, verbose_name='小时')
-        day_of_week = StringField(default='*', required=True, verbose_name='周')
-        day_of_month = StringField(default='*', required=True, verbose_name='日')
-        month_of_year = StringField(
-            default='*', required=True, verbose_name='月')
+        meta = {"allow_inheritance": True}
+
+        minute = StringField(default="*", required=True, verbose_name="分钟")
+        hour = StringField(default="*", required=True, verbose_name="小时")
+        day_of_week = StringField(default="*", required=True, verbose_name="周")
+        day_of_month = StringField(default="*", required=True, verbose_name="日")
+        month_of_year = StringField(default="*", required=True, verbose_name="月")
 
         @property
         def schedule(self):
@@ -129,14 +136,14 @@ class PeriodicTask(DynamicDocument):
                 hour=self.hour,
                 day_of_week=self.day_of_week,
                 day_of_month=self.day_of_month,
-                month_of_year=self.month_of_year)
+                month_of_year=self.month_of_year,
+            )
 
         def __str__(self):
-
             def rfield(f):
-                return f and str(f).replace(' ', '') or '*'
+                return f and str(f).replace(" ", "") or "*"
 
-            return '{0} {1} {2} {3} {4} (分/时/周/日/月)'.format(
+            return "{0} {1} {2} {3} {4} (分/时/周/日/月)".format(
                 rfield(self.minute),
                 rfield(self.hour),
                 rfield(self.day_of_week),
@@ -144,42 +151,43 @@ class PeriodicTask(DynamicDocument):
                 rfield(self.month_of_year),
             )
 
-    name = StringField(unique=True, verbose_name='定时名称')
-    task = StringField(required=True, verbose_name='任务名称')
+    name = StringField(unique=True, verbose_name="定时名称")
+    task = StringField(required=True, verbose_name="任务名称")
 
-    args = ListField(DynamicField(), verbose_name='参数')
-    kwargs = DictField(verbose_name='键值参数')
+    args = ListField(DynamicField(), verbose_name="参数")
+    kwargs = DictField(verbose_name="键值参数")
 
-    queue = StringField(verbose_name='队列')
-    exchange = StringField(verbose_name='AMPQ的交换器')
-    routing_key = StringField(verbose_name='AMPQ路由')
-    soft_time_limit = IntField(verbose_name='软时间限制')
+    queue = StringField(verbose_name="队列")
+    exchange = StringField(verbose_name="AMPQ的交换器")
+    routing_key = StringField(verbose_name="AMPQ路由")
+    soft_time_limit = IntField(verbose_name="软时间限制")
 
-    expires = DateTimeField(verbose_name='过期时间')
-    start_after = DateTimeField(verbose_name='在某时间后运行')
-    enabled = BooleanField(default=False, verbose_name='启用')
+    expires = DateTimeField(verbose_name="过期时间")
+    start_after = DateTimeField(verbose_name="在某时间后运行")
+    enabled = BooleanField(default=False, verbose_name="启用")
 
-    last_run_at = DateTimeField(verbose_name='最后运行时间')
+    last_run_at = DateTimeField(verbose_name="最后运行时间")
 
-    total_run_count = IntField(min_value=0, default=0, verbose_name='总计运行次数')
-    max_run_count = IntField(min_value=0, default=0, verbose_name='最大运行次数')
+    total_run_count = IntField(min_value=0, default=0, verbose_name="总计运行次数")
+    max_run_count = IntField(min_value=0, default=0, verbose_name="最大运行次数")
 
-    date_changed = DateTimeField(verbose_name='改变日期')
-    description = StringField(verbose_name='描述')
+    date_changed = DateTimeField(verbose_name="改变日期")
+    description = StringField(verbose_name="描述")
 
-    run_immediately = BooleanField(verbose_name='立刻运行')
+    run_immediately = BooleanField(verbose_name="立刻运行")
 
     type = StringField(
-        required=True, verbose_name='类型', choices=['crontab', 'interval'])
-    interval = EmbeddedDocumentField(Interval, verbose_name='定时')
-    crontab = EmbeddedDocumentField(Crontab, verbose_name='周期')
+        required=True, verbose_name="类型", choices=["crontab", "interval"]
+    )
+    interval = EmbeddedDocumentField(Interval, verbose_name="定时")
+    crontab = EmbeddedDocumentField(Crontab, verbose_name="周期")
 
     # objects = managers.PeriodicTaskManager()
     no_changes = False
 
     def clean(self):
         """透过MongoEngine验证interval和crontab不是同时存在"""
-        if self.type == 'crontab':
+        if self.type == "crontab":
             self.interval = None
         else:
             self.crontab = None
@@ -198,11 +206,11 @@ class PeriodicTask(DynamicDocument):
             raise Exception("must define interval or crontab schedule")
 
     def __str__(self):
-        fmt = '{0.name}: {{no schedule}}'
+        fmt = "{0.name}: {{no schedule}}"
         if self.interval:
-            fmt = '{0.name}: {0.interval}'
+            fmt = "{0.name}: {0.interval}"
         elif self.crontab:
-            fmt = '{0.name}: {0.crontab}'
+            fmt = "{0.name}: {0.crontab}"
         else:
             raise Exception("must define interval or crontab schedule")
         return fmt.format(self)

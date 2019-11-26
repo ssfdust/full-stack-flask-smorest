@@ -36,20 +36,27 @@ class StorageView(AuthModelView):
     can_delete = False
     can_view_details = True
     details_modal = True
-    column_exclude_list = ['id', 'uid', 'path']
+    column_exclude_list = ["id", "uid", "path"]
     form_excluded_columns = [
-        'saved', 'uid', 'path', 'created', 'modified', 'deleted', 'filetype'
+        "saved",
+        "uid",
+        "path",
+        "created",
+        "modified",
+        "deleted",
+        "filetype",
     ]
-    column_filters = ['created', 'modified', 'storetype', 'filetype']
-    form_extra_fields = {'file': JustUploadField('文件')}
+    column_filters = ["created", "modified", "storetype", "filetype"]
+    form_extra_fields = {"file": JustUploadField("文件")}
     column_extra_row_actions = [
         EndpointLinkRowAction(
-            icon_class='fas fa-download',
-            endpoint='admin.views.storages.storage_file',
-            id_arg='file_id')
+            icon_class="fas fa-download",
+            endpoint="admin.views.storages.storage_file",
+            id_arg="file_id",
+        )
     ]
 
-    @expose('file/<int:file_id>', methods=['GET'])
+    @expose("file/<int:file_id>", methods=["GET"])
     def storage_file(self, file_id):
         """访问文件"""
         storage = self.model.get_by_id(file_id)
@@ -58,12 +65,13 @@ class StorageView(AuthModelView):
             storage.store.stream,
             attachment_filename=storage.name,
             mimetype=storage.store.content_type,
-            as_attachment=False)
+            as_attachment=False,
+        )
 
     def on_model_change(self, form, model, is_created):
         """保存文件处理"""
-        if 'file' in form:
-            model.store = form['file'].data
+        if "file" in form:
+            model.store = form["file"].data
         if is_created:
             model.save()
         elif model.deleted is True:
@@ -81,9 +89,9 @@ class GarbageView(AuthModelView):
     can_delete = True
     can_view_details = False
     details_modal = False
-    column_searchable_list = ['id', 'path']
-    column_exclude_list = ['id', 'uid', 'path']
-    column_filters = ['created', 'modified', 'storetype']
+    column_searchable_list = ["id", "path"]
+    column_exclude_list = ["id", "uid", "path"]
+    column_filters = ["created", "modified", "storetype"]
 
     def on_model_delete(self, model):
         """删除时删除文件"""

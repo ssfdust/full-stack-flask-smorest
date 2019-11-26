@@ -27,8 +27,9 @@ class TodoForm(FlaskForm):
     """
     待办表单
     """
-    content = StringField('内容')
-    tododue = DateTimeField('截止日期', format='%Y-%m-%d %H:%M')
+
+    content = StringField("内容")
+    tododue = DateTimeField("截止日期", format="%Y-%m-%d %H:%M")
 
 
 class StorageForm(FlaskForm):
@@ -36,10 +37,10 @@ class StorageForm(FlaskForm):
     存储表单
     """
 
-    name = StringField('文件名')
-    filetype = StringField('文件类型')
-    storetype = StringField('存储类型')
-    date = DateField('文件日期')
+    name = StringField("文件名")
+    filetype = StringField("文件类型")
+    storetype = StringField("存储类型")
+    date = DateField("文件日期")
 
 
 class JustUploadField(StringField):
@@ -68,8 +69,7 @@ class TaskSelect2Field(Select2Field):
         if cls._task_list is None:
             i = inspect()
             i.registered_tasks()
-            cls._task_list = set(
-                chain.from_iterable(i.registered_tasks().values()))
+            cls._task_list = set(chain.from_iterable(i.registered_tasks().values()))
         return cls._task_list
 
     @property

@@ -29,8 +29,8 @@ class UserTokenSchema(ma.Schema):
     登录返回Token
     """
 
-    access_token = fields.Str(description='登录用token')
-    refresh_token = fields.Str(description='刷新用token')
+    access_token = fields.Str(description="登录用token")
+    refresh_token = fields.Str(description="刷新用token")
 
 
 class RefreshTokenSchema(ma.Schema):
@@ -38,7 +38,7 @@ class RefreshTokenSchema(ma.Schema):
     刷新Token
     """
 
-    refresh_token = fields.Str(description='刷新用token')
+    refresh_token = fields.Str(description="刷新用token")
 
 
 class UserDataSchema(ma.Schema):
@@ -46,7 +46,7 @@ class UserDataSchema(ma.Schema):
     用户返回数据
     """
 
-    tokens = fields.Nested(UserTokenSchema, description='token字段')
+    tokens = fields.Nested(UserTokenSchema, description="token字段")
 
 
 class UserViewPostSchema(BaseMsgSchema):
@@ -54,7 +54,7 @@ class UserViewPostSchema(BaseMsgSchema):
     用户提交
     """
 
-    data = fields.Nested(UserDataSchema, description='数据字段')
+    data = fields.Nested(UserDataSchema, description="数据字段")
 
 
 class RefreshViewPostSchema(BaseMsgSchema):

@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import models
+from marshmallow import fields
+
 from app.extensions import ma
 from app.extensions.marshal.bases import BaseMsgSchema
-from marshmallow import fields
+
+from . import models
 
 
 class UserInfoSchema(ma.ModelSchema):
-
     class Meta:
         model = models.UserInfo
 
@@ -33,6 +34,7 @@ class UserSchema(ma.ModelSchema):
 
     class Meta:
         from app.modules.auth.models import User
+
         model = User
 
 
@@ -46,7 +48,7 @@ class GroupSchema(ma.ModelSchema):
     组
     """
 
-    children = fields.List(fields.Nested('self'))
+    children = fields.List(fields.Nested("self"), dump_only=True)
 
     class Meta:
         model = models.Group

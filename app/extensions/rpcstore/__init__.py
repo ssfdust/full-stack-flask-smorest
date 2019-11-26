@@ -35,15 +35,17 @@ class AMQPStore(object):
     :param auto_delete: 是否自动删除
     """
 
-    def __init__(self,
-                 key,
-                 value=None,
-                 exchange=None,
-                 expires=None,
-                 limit=999,
-                 routing_key=None,
-                 max_length=None,
-                 auto_delete=False):
+    def __init__(
+        self,
+        key,
+        value=None,
+        exchange=None,
+        expires=None,
+        limit=999,
+        routing_key=None,
+        max_length=None,
+        auto_delete=False,
+    ):
         self.key = key
         self.limit = limit
         self.max_length = max_length
@@ -62,7 +64,8 @@ class AMQPStore(object):
             max_length=max_length,
             routing_key=self.routing_key,
             auto_delete=auto_delete,
-            expires=expires)
+            expires=expires,
+        )
 
     def save(self, expiration=None):
         """ 保存
@@ -73,7 +76,7 @@ class AMQPStore(object):
         from flask import current_app
         from kombu.pools import producers
 
-        conn = Connection(current_app.config['CELERY_BROKER_URL'], heartbeat=0)
+        conn = Connection(current_app.config["CELERY_BROKER_URL"], heartbeat=0)
 
         with producers[conn].acquire(block=True) as producer:
             producer.publish(
@@ -81,11 +84,12 @@ class AMQPStore(object):
                 exchange=self.exchange,
                 routing_key=self.routing_key,
                 correlation_id=self.routing_key,
-                serializer='json',
+                serializer="json",
                 retry=True,
                 declare=[self.queue],
                 delivery_mode=2,
-                expiration=expiration)
+                expiration=expiration,
+            )
 
         return self.value
 
@@ -117,7 +121,7 @@ class AMQPStore(object):
         from kombu import Connection, pools
         from flask import current_app
 
-        conn = Connection(current_app.config['CELERY_BROKER_URL'], heartbeat=0)
+        conn = Connection(current_app.config["CELERY_BROKER_URL"], heartbeat=0)
         pool = pools.connections[conn]
 
         with pool.acquire_channel(block=True) as (_, channel):
@@ -125,7 +129,7 @@ class AMQPStore(object):
 
             for _ in range(self.limit):
                 try:
-                    msg = binding.get(accept=['json'], no_ack=no_ack)
+                    msg = binding.get(accept=["json"], no_ack=no_ack)
                     if not msg:
                         break
                     yield msg

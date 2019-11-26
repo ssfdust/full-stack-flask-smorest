@@ -15,7 +15,6 @@
 
 
 class StorageCleaner(object):
-
     def __init__(self, storages):
         self.storages = storages
 

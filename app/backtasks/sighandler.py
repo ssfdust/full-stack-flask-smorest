@@ -30,7 +30,7 @@ from uuid import UUID
 from app.utils.local import localnow
 
 
-def _store_task_info(task_id, state='fail', **kwargs):
+def _store_task_info(task_id, state="fail", **kwargs):
     """保存任务信息"""
     models.Tasks.objects(id=UUID(task_id)).upsert_one(state=state, **kwargs)
 
@@ -39,29 +39,29 @@ def _store_task_info(task_id, state='fail', **kwargs):
 def handle_task_received(request=None, **kwargs):
     """处理任务接收"""
     info = request.info()
-    info['task_type'] = info.pop("type")
+    info["task_type"] = info.pop("type")
     task_id = info.pop("id")
     info.pop("worker_pid")
-    _store_task_info(task_id, state='received', **info)
+    _store_task_info(task_id, state="received", **info)
 
 
 @signals.task_prerun.connect
 def handle_task_prerun(task=None, task_id=None, **kwargs):
     """处理任务预运行信号"""
     with celery_ext.app_ctx:
-        _store_task_info(task_id, state='run', time_start=localnow())
+        _store_task_info(task_id, state="run", time_start=localnow())
 
 
 @signals.task_failure.connect
 def handle_task_failure(sender=None, task_id=None, state=None, **kwargs):
     """处理任务预失败信号"""
-    _store_task_info(task_id, state='fail')
+    _store_task_info(task_id, state="fail")
 
 
 @signals.task_success.connect
 def handle_task_success(result=None, sender=None, **kwargs):
     """处理任务成功信号"""
-    _store_task_info(sender.request.id, state='fail')
+    _store_task_info(sender.request.id, state="fail")
 
 
 @signals.task_retry.connect
@@ -79,4 +79,4 @@ def handle_task_revoked(sender=None, task_id=None, state=None, **kwargs):
 @signals.task_rejected.connect
 def handle_task_rejected(sender=None, task_id=None, state=None, **kwargs):
     """处理任务拒绝信号"""
-    _store_task_info(sender, state='revoke')
+    _store_task_info(sender, state="revoke")

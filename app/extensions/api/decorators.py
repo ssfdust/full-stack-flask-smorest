@@ -35,7 +35,8 @@ class PaginationParametersSchema(ma.Schema):
 
     page = ma.fields.Integer(missing=1, validate=ma.validate.Range(min=1), doc="页码")
     per_page = ma.fields.Integer(
-        missing=10, validate=ma.validate.Range(min=1, max=100), doc="分页数目")
+        missing=10, validate=ma.validate.Range(min=1, max=100), doc="分页数目"
+    )
 
 
 def paginate(max_per_page: int = 10):
@@ -65,48 +66,46 @@ def paginate(max_per_page: int = 10):
 
     def decorator(func):
         parameters = {
-            'in': 'query',
-            'schema': PaginationParametersSchema,
+            "in": "query",
+            "schema": PaginationParametersSchema,
         }
 
         # 注入apidoc显示注释等内容
-        func._apidoc = getattr(func, '_apidoc', {})
-        func._apidoc.setdefault('parameters', []).append(parameters)
+        func._apidoc = getattr(func, "_apidoc", {})
+        func._apidoc.setdefault("parameters", []).append(parameters)
 
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
-            page = request.args.get('page', 1, type=int)
-            per_page = request.args.get('per_page', max_per_page, type=int)
+            page = request.args.get("page", 1, type=int)
+            per_page = request.args.get("per_page", max_per_page, type=int)
             query = func(*args, **kwargs)
             p = query.paginate(page, per_page)
 
             meta = {
-                'page': page,
-                'per_page': per_page,
-                'total': p.total,
-                'pages': p.pages,
+                "page": page,
+                "per_page": per_page,
+                "total": p.total,
+                "pages": p.pages,
             }
 
             links = {}
             if p.has_next:
-                links['next'] = url_for(
-                    request.endpoint,
-                    page=p.next_num,
-                    per_page=per_page,
-                    **kwargs)
+                links["next"] = url_for(
+                    request.endpoint, page=p.next_num, per_page=per_page, **kwargs
+                )
             if p.has_prev:
-                links['prev'] = url_for(
-                    request.endpoint,
-                    page=p.prev_num,
-                    per_page=per_page,
-                    **kwargs)
-            links['first'] = url_for(
-                request.endpoint, page=1, per_page=per_page, **kwargs)
-            links['last'] = url_for(
-                request.endpoint, page=p.pages, per_page=per_page, **kwargs)
+                links["prev"] = url_for(
+                    request.endpoint, page=p.prev_num, per_page=per_page, **kwargs
+                )
+            links["first"] = url_for(
+                request.endpoint, page=1, per_page=per_page, **kwargs
+            )
+            links["last"] = url_for(
+                request.endpoint, page=p.pages, per_page=per_page, **kwargs
+            )
 
-            meta['links'] = links
-            result = {'data': p.items, 'meta': meta, 'code': 0}
+            meta["links"] = links
+            result = {"data": p.items, "meta": meta, "code": 0}
 
             return result
 

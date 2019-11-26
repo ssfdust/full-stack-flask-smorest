@@ -28,5 +28,5 @@ def init_module():
     from .auth import AuthNamespace
     from .tasks import TaskNamespace
 
-    socketio.on_namespace(AuthNamespace('/auth'))
-    socketio.on_namespace(TaskNamespace('/tasks'))
+    socketio.on_namespace(AuthNamespace("/auth"))
+    socketio.on_namespace(TaskNamespace("/tasks"))

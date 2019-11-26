@@ -41,10 +41,10 @@ class TaskNamespace(Namespace):
         从队列中返回最新五个任务的进度条状态
         """
 
-        tasks = Tasks.objects(state='run').limit(5).all()
-        data = [{
-            'name': task.name,
-            'progress': progress.get_info(str(task.id))['percent']
-        } for task in tasks]
+        tasks = Tasks.objects(state="run").limit(5).all()
+        data = [
+            {"name": task.name, "progress": progress.get_info(str(task.id))["percent"]}
+            for task in tasks
+        ]
 
-        emit('get_tasks', {'data': data})
+        emit("get_tasks", {"data": data})

@@ -38,15 +38,15 @@ class Log(db.Document):
     :attr level:StringField 等级
     """
 
-    arguments = db.DynamicField(verbose_name='参数')
-    message = db.StringField(verbose_name='消息')
-    created = db.ArrowField(verbose_name='创建时间', default=localnow)
-    method = db.StringField(verbose_name='方法')
-    module = db.StringField(verbose_name='模块')
-    status_code = db.IntField(verbose_name='状态码')
-    url = db.StringField(verbose_name='地址')
-    ip = db.StringField(verbose_name='ip地址')
-    level = db.StringField(verbose_name='等级')
+    arguments = db.DynamicField(verbose_name="参数")
+    message = db.StringField(verbose_name="消息")
+    created = db.ArrowField(verbose_name="创建时间", default=localnow)
+    method = db.StringField(verbose_name="方法")
+    module = db.StringField(verbose_name="模块")
+    status_code = db.IntField(verbose_name="状态码")
+    url = db.StringField(verbose_name="地址")
+    ip = db.StringField(verbose_name="ip地址")
+    level = db.StringField(verbose_name="等级")
 
 
 class Message(db.Document):
@@ -60,8 +60,8 @@ class Message(db.Document):
     :attr created:ArrowField 创建时间
     """
 
-    module = db.StringField(verbose_name='模块')
-    line = db.IntField(verbose_name='行号')
-    level = db.StringField(verbose_name='日志等级')
-    message = db.StringField(verbose_name='内容')
-    created = db.ArrowField(default=localnow, verbose_name='创建时间')
+    module = db.StringField(verbose_name="模块")
+    line = db.IntField(verbose_name="行号")
+    level = db.StringField(verbose_name="日志等级")
+    message = db.StringField(verbose_name="内容")
+    created = db.ArrowField(default=localnow, verbose_name="创建时间")

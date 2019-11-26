@@ -30,28 +30,31 @@ def enter(context):
         context = dict(pprint=pprint.pprint)
         context.update(vars(flask))
         context.update(vars(app))
-        context['User'] = User
-        context['db'] = db
-        context['UserInfo'] = UserInfo
+        context["User"] = User
+        context["db"] = db
+        context["UserInfo"] = UserInfo
         return context
 
-    if 'IPYTHON_CONFIG' in flask_app.config:
-        config = Config(flask_app.config['IPYTHON_CONFIG'])
+    if "IPYTHON_CONFIG" in flask_app.config:
+        config = Config(flask_app.config["IPYTHON_CONFIG"])
     else:
         config = load_default_config()
 
-    config.TerminalInteractiveShell.banner1 = '''Python %s on %s
+    config.TerminalInteractiveShell.banner1 = """Python %s on %s
 IPython: %s
 App: %s [%s]
-Instance: %s''' % (sys.version, sys.platform, IPython.__version__,
-                   flask_app.import_name, flask_app.env,
-                   flask_app.instance_path)
+Instance: %s""" % (
+        sys.version,
+        sys.platform,
+        IPython.__version__,
+        flask_app.import_name,
+        flask_app.env,
+        flask_app.instance_path,
+    )
 
     flask_app.shell_context_processors.append(shell_context)
 
     with flask_app.app_context():
         IPython.start_ipython(
-            argv=[],
-            user_ns=flask_app.make_shell_context(),
-            config=config,
+            argv=[], user_ns=flask_app.make_shell_context(), config=config,
         )

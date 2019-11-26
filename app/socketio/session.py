@@ -34,20 +34,21 @@ class SessionManager(AMQPStore):
         if self.user_hash:
             self.active = True
             super().__init__(
-                f'session_{self.user_hash}',
-                exchange='session',
+                f"session_{self.user_hash}",
+                exchange="session",
                 expires=3600 * 24,
                 limit=1,
                 max_length=1,
                 routing_key=self.user_hash,
-                auto_delete=True)
+                auto_delete=True,
+            )
 
     def check_token(self, token):
         """检测token是否存在"""
         try:
             decoded_token = decode_token(token)
-            verify_token_not_blacklisted(decoded_token, 'access')
-            email = decoded_token['identity']
+            verify_token_not_blacklisted(decoded_token, "access")
+            email = decoded_token["identity"]
             self.user_hash = encrypt_str(email)
             return True
         except RevokedTokenError:

@@ -29,25 +29,25 @@ from uuid import UUID
 class Tasks(db.Document):
     """任务表"""
 
-    id = db.UUIDField(primary_key=True, verbose_name='任务')
-    name = db.StringField(verbose_name='任务名称')
-    kwargs = db.StringField(verbose_name='额外参数')
-    delivery_info = db.DictField(verbose_name='分发消息')
-    args = db.StringField(verbose_name='参数')
-    task_type = db.StringField(verbose_name='类型')
-    hostname = db.StringField(verbose_name='主机名')
-    time_start = db.ArrowField(verbose_name='开始时间')
+    id = db.UUIDField(primary_key=True, verbose_name="任务")
+    name = db.StringField(verbose_name="任务名称")
+    kwargs = db.StringField(verbose_name="额外参数")
+    delivery_info = db.DictField(verbose_name="分发消息")
+    args = db.StringField(verbose_name="参数")
+    task_type = db.StringField(verbose_name="类型")
+    hostname = db.StringField(verbose_name="主机名")
+    time_start = db.ArrowField(verbose_name="开始时间")
     acknowledged = db.BooleanField()
-    status = db.StringField(verbose_name='状态')
-    state = db.StringField(verbose_name='执行状态')
-    result = db.DynamicField(verbose_name='结果')
-    date_done = db.ArrowField(verbose_name='结束时间')
-    traceback = db.StringField(verbose_name='追踪信息')
-    checked = db.BooleanField(verbose_name='是否已读')
-    parent_id = db.UUIDField(verbose_name='父任务')
-    children = db.DynamicField(verbose_name='子任务')
+    status = db.StringField(verbose_name="状态")
+    state = db.StringField(verbose_name="执行状态")
+    result = db.DynamicField(verbose_name="结果")
+    date_done = db.ArrowField(verbose_name="结束时间")
+    traceback = db.StringField(verbose_name="追踪信息")
+    checked = db.BooleanField(verbose_name="是否已读")
+    parent_id = db.UUIDField(verbose_name="父任务")
+    children = db.DynamicField(verbose_name="子任务")
 
-    meta = {'collection': 'celery_taskmeta'}
+    meta = {"collection": "celery_taskmeta"}
 
     @classmethod
     def get_by_id_str(cls, task_id):

@@ -9,7 +9,7 @@ from dateutil import tz
 
 
 def faketimezone():
-    return 'Asia/Shanghai'
+    return "Asia/Shanghai"
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def Sample(Base, monkeypatch):
     monkeypatch.setattr(flask_babel, "get_timezone", faketimezone)
 
     class Sample(Base):
-        __tablename__ = 'sample'
+        __tablename__ = "sample"
         id = sa.Column(sa.Integer, primary_key=True)
         created_at = sa.Column(ArrowType)
         published_at = sa.Column(ArrowType(timezone=True))
@@ -35,9 +35,9 @@ def init_models(Sample):
 
 
 class TestArrowDateTimeType(object):
-
     def test_python_type(self, session, Sample):
         from app.extensions.sqla.types import ArrowType
+
         assert ArrowType().python_type == datetime
 
     def test_parameter_processing(self, session, Sample):
@@ -55,7 +55,7 @@ class TestArrowDateTimeType(object):
         session.commit()
 
         sample = session.query(Sample).first()
-        assert sample.created_at.format('YYYY-MM-DD') == '1994-09-11'
+        assert sample.created_at.format("YYYY-MM-DD") == "1994-09-11"
 
     def test_none(self, session, Sample):
         sample = Sample(created_at=None)
@@ -66,7 +66,7 @@ class TestArrowDateTimeType(object):
         assert sample.created_at is None
 
     def test_string_coercion(self, session, Sample):
-        sample = Sample(created_at='1367900664')
+        sample = Sample(created_at="1367900664")
         session.add(sample)
         session.commit()
         assert sample.created_at.year == 2013
@@ -90,30 +90,30 @@ class TestArrowDateTimeType(object):
         assert sample.created_at == time
 
     def test_literal_param(self, session, Sample):
-        time = arrow.get('2015-01-01 09:00:00')
-        clause = Sample.created_at > '2015-01-01 09:00:00'
+        time = arrow.get("2015-01-01 09:00:00")
+        clause = Sample.created_at > "2015-01-01 09:00:00"
         compiled = clause.compile(compile_kwargs={"literal_binds": True})
-        assert str(compiled) == 'sample.created_at > 2015-01-01 01:00:00'
+        assert str(compiled) == "sample.created_at > 2015-01-01 01:00:00"
         clause = Sample.created_at > time
         compiled = clause.compile(compile_kwargs={"literal_binds": True})
-        assert str(compiled) == 'sample.created_at > 2015-01-01 01:00:00'
+        assert str(compiled) == "sample.created_at > 2015-01-01 01:00:00"
 
         sample = Sample(created_at=time)
 
         session.add(sample)
         session.commit()
-        time1 = arrow.get('2015-01-01 08:59:59')
+        time1 = arrow.get("2015-01-01 08:59:59")
         items = session.query(Sample).filter(Sample.created_at > time1).all()
         assert len(items) == 1
         assert items[0].id == sample.id
 
-        time2 = arrow.get('2015-01-01 08:59:59+08:00')
+        time2 = arrow.get("2015-01-01 08:59:59+08:00")
         items = session.query(Sample).filter(Sample.created_at > time2).all()
         assert len(items) == 1
         assert items[0].id == sample.id
 
     def test_timezone(self, session, Sample):
-        timezone = tz.gettz('Europe/Stockholm')
+        timezone = tz.gettz("Europe/Stockholm")
         dt = arrow.get(datetime(2015, 1, 1, 15, 30, 45), timezone)
         sample = Sample(published_at=dt, published_at_dt=dt.datetime)
 

@@ -26,26 +26,27 @@ import os
 
 
 class StoragesCRUDMixin(object):
-
     def save(self, commit=True):
         self.save_store()
         return super().save(commit)
 
     def delete(self, commit=True):
         GarbageStorages.create(
-            path=self.path, storetype=self.storetype, storage_id=self.id)
+            path=self.path, storetype=self.storetype, storage_id=self.id
+        )
         self.deleted = True
         return super().save(commit)
 
     def update(self, commit=True, **kwargs):
         GarbageStorages.create(
-            path=self.path, storetype=self.storetype, storage_id=self.id)
+            path=self.path, storetype=self.storetype, storage_id=self.id
+        )
         self.save_store()
         return super().update(commit=commit, **kwargs)
 
 
 class Storages(StoragesCRUDMixin, Model, SurrogatePK):
-    '''
+    """
     文件管理表
 
     :param          name: str(256)                  文件名
@@ -56,30 +57,29 @@ class Storages(StoragesCRUDMixin, Model, SurrogatePK):
     :param          path: str(2000)                 保存路径
     :param          uid: int                        用户ID
     :param          _store: FileStorage             文件
-    '''
+    """
 
-    name = db.Column(db.String(256), nullable=True, doc='文件名')
-    filetype = db.Column(db.String(256), nullable=True, doc='文件类型')
-    storetype = db.Column(db.String(256), nullable=True, doc='存储类型')
-    date = db.Column(db.Date, nullable=True, doc='文件日期', default=local.date)
-    saved = db.Column(db.Boolean, nullable=True, default=False, doc='是否保存')
-    path = db.Column(db.String(2000), nullable=True, doc='文件路径')
-    uid = db.Column(db.Integer, doc='用户ID')
+    name = db.Column(db.String(256), nullable=True, doc="文件名")
+    filetype = db.Column(db.String(256), nullable=True, doc="文件类型")
+    storetype = db.Column(db.String(256), nullable=True, doc="存储类型")
+    date = db.Column(db.Date, nullable=True, doc="文件日期", default=local.date)
+    saved = db.Column(db.Boolean, nullable=True, default=False, doc="是否保存")
+    path = db.Column(db.String(2000), nullable=True, doc="文件路径")
+    uid = db.Column(db.Integer, doc="用户ID")
 
     _store = None
 
     def __init__(self, **kwargs):
-        self.store = kwargs.pop('store', None)
+        self.store = kwargs.pop("store", None)
         db.Model.__init__(self, **kwargs)
 
     def _get_store(self):
-        '''
+        """
         根据文件路径获取文件
-        '''
-        content_type = (
-            mimetypes.guess_type(self.name)[0] or "application/octet-stream")
-        file = open(self.store_path.joinpath(self.path), 'rb')
-        return FileStorage(file, self.name, 'file', content_type)
+        """
+        content_type = mimetypes.guess_type(self.name)[0] or "application/octet-stream"
+        file = open(self.store_path.joinpath(self.path), "rb")
+        return FileStorage(file, self.name, "file", content_type)
 
     @property
     def store(self):
@@ -93,27 +93,26 @@ class Storages(StoragesCRUDMixin, Model, SurrogatePK):
 
     @property
     def store_path(self):
-        '''
+        """
         保存路径
-        '''
-        return Path(current_app.instance_path).parent\
-            .joinpath('uploads',
-                      self.storetype)
+        """
+        return Path(current_app.instance_path).parent.joinpath(
+            "uploads", self.storetype
+        )
 
     def save_store(self):
-        '''
+        """
         存储文件
 
         每一次存储文件都会生成一个新的地址
-        '''
+        """
         self.saved = True if self.path is not None else False
         if self.storetype is None:
             raise ValueError("文件类型不能为空")
         if self.date is None:
             self.date = local.localdate().date()
 
-        date_dir = Path(
-            str(self.date.year), str(self.date.month), str(self.date.day))
+        date_dir = Path(str(self.date.year), str(self.date.month), str(self.date.day))
 
         dirname = self.store_path.joinpath(date_dir)
         if not dirname.exists():
@@ -137,24 +136,26 @@ class GarbageStorages(SurrogatePK, Model):
     :param          storage_id: int                 存储ID
     :param          storage: Storages               关联Storages项
     """
+
     __tablename__ = "garbage_storages"
 
-    path = db.Column(db.String(2000), nullable=True, doc='文件路径')
-    storetype = db.Column(db.String(256), nullable=True, doc='存储类型')
-    storage_id = db.Column(db.Integer, doc='文件ID')
+    path = db.Column(db.String(2000), nullable=True, doc="文件路径")
+    storetype = db.Column(db.String(256), nullable=True, doc="存储类型")
+    storage_id = db.Column(db.Integer, doc="文件ID")
     storage = db.relationship(
         "Storages",
         primaryjoin="GarbageStorages.storage_id == Storages.id",
-        foreign_keys=storage_id)
+        foreign_keys=storage_id,
+    )
 
     def __init__(self, **kwargs):
         db.Model.__init__(self, **kwargs)
 
     def hard_delete(self, commit=True):
-        '''
+        """
         永久删除
-        '''
-        white_lst = ['default/AdminAvator.jpg', 'default/DefaultAvator.jpg']
+        """
+        white_lst = ["default/AdminAvator.jpg", "default/DefaultAvator.jpg"]
         if self.filepath.exists() and self.path not in white_lst:
             logger.warning(f"deleted file: {self.filepath}")
             os.remove(self.filepath)
@@ -168,6 +169,6 @@ class GarbageStorages(SurrogatePK, Model):
 
     @property
     def store_path(self):
-        return Path(current_app.instance_path).parent\
-            .joinpath('uploads',
-                      self.storetype)
+        return Path(current_app.instance_path).parent.joinpath(
+            "uploads", self.storetype
+        )

@@ -11,27 +11,26 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import close_all_sessions
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope="package")
 def db_name():
-    return os.environ.get('APP_TEST_DB', 'flask_test_db')
+    return os.environ.get("APP_TEST_DB", "flask_test_db")
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope="package")
 def postgresql_db_user():
-    return os.environ.get('APP_TEST_DB_USER', 'postgres')
+    return os.environ.get("APP_TEST_DB_USER", "postgres")
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope="package")
 def postgresql_dsn(postgresql_db_user, db_name):
     try:
-        configuration = toml.load('app/config/testing.toml')
-        return configuration['SQLALCHEMY_DATABASE_URI']
+        configuration = toml.load("app/config/testing.toml")
+        return configuration["SQLALCHEMY_DATABASE_URI"]
     except FileNotFoundError:
-        return 'postgresql://{0}@localhost/{1}'.format(postgresql_db_user,
-                                                       db_name)
+        return "postgresql://{0}@localhost/{1}".format(postgresql_db_user, db_name)
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope="package")
 def db():
     from app.extensions.sqla.sqla import SQLAlchemy
 
@@ -40,13 +39,14 @@ def db():
     yield db_module
 
 
-@pytest.fixture(scope='package')
+@pytest.fixture(scope="package")
 def app(postgresql_dsn, db):
     from flask import Flask
     from app.extensions import babel
-    app = Flask('TestSqla')
-    app.config['SQLALCHEMY_DATABASE_URI'] = postgresql_dsn
-    app.config['BABEL_DEFAULT_TIMEZONE'] = 'Asia/Shanghai'
+
+    app = Flask("TestSqla")
+    app.config["SQLALCHEMY_DATABASE_URI"] = postgresql_dsn
+    app.config["BABEL_DEFAULT_TIMEZONE"] = "Asia/Shanghai"
     db.init_app(app)
     babel.init_app(app)
 
@@ -76,9 +76,8 @@ def Base():
 
 @pytest.fixture
 def Sample(Base):
-
     class Sample(Base):
-        __tablename__ = 'sample'
+        __tablename__ = "sample"
         id = sa.Column(sa.Integer, autoincrement=True, primary_key=True)
         name = sa.Column(sa.Unicode(255))
 

@@ -33,7 +33,7 @@ from flask_smorest import abort
 
 
 def doc_login_required(func):
-    '''
+    """
     登录限制装饰器
 
     为API添加登录限制，同时添加OpenAPI注释，使用装饰器后
@@ -44,7 +44,7 @@ def doc_login_required(func):
             @doc_login_required
             def get(self):
                 return {'code': 0}
-    '''
+    """
     # 获取登录函数
     auth_required_func = jwt_required(func)
 
@@ -54,14 +54,14 @@ def doc_login_required(func):
         return auth_required_func(*args, **kwargs)
 
     # 增加验证
-    wrapper._apidoc = getattr(func, '_apidoc', {})
-    wrapper._apidoc.setdefault('security', [{'api_key': []}])
+    wrapper._apidoc = getattr(func, "_apidoc", {})
+    wrapper._apidoc.setdefault("security", [{"api_key": []}])
 
     return wrapper
 
 
 def doc_refresh_required(func):
-    '''
+    """
     刷新Token限制装饰器
 
     Refresh Token:
@@ -75,7 +75,7 @@ def doc_refresh_required(func):
             @doc_refresh_required
             def get(self):
                 return {'code': 0}
-    '''
+    """
 
     # 获取刷新函数
     refresh_required_func = jwt_refresh_token_required(func)
@@ -86,9 +86,9 @@ def doc_refresh_required(func):
         return refresh_required_func(*args, **kwargs)
 
     # 增加swagger信息
-    wrapper._apidoc = getattr(func, '_apidoc', {})
+    wrapper._apidoc = getattr(func, "_apidoc", {})
     # 设置刷新key
-    wrapper._apidoc.setdefault('security', [{'refresh_key': []}])
+    wrapper._apidoc.setdefault("security", [{"refresh_key": []}])
 
     return wrapper
 
@@ -113,12 +113,12 @@ def permission_required(*permissions):
     permissions = list(permissions)
 
     def wrapper(func):
-
         @wraps(func)
         def inner(*args, **kwargs):
-            if all(permission in [p.name
-                                  for p in current_user.permissions]
-                   for permission in permissions):
+            if all(
+                permission in [p.name for p in current_user.permissions]
+                for permission in permissions
+            ):
                 return func(*args, **kwargs)
             #  if all(permission in current_user.permissions
             #         for permission in permissions):
@@ -131,35 +131,33 @@ def permission_required(*permissions):
     return wrapper
 
 
-#  def role_required(*roles):
-#      """
-#      角色验证
-#
-#      :param roles: tuple 角色列
-#
-#      为API添加角色限制，同时添加OpenAPI注释，使用装饰器后
-#      只有带有才能访问。必须在doc_login_required装饰器后。
-#
-#      用法：
-#      >>> class SampleView(MethodView):
-#              @doc_login_required
-#              @role_required('Role')
-#              def get(self):
-#                  return {'code': 0}
-#      """
-#      def wrapper(func):
-#
-#          @wraps(func)
-#          def inner(*args, **kwargs):
-#              if all(role in [p.name
-#                              for p in current_user.roles]
-#                     for role in roles):
-#                  return func(*args, **kwargs)
-#              if all(role in current_user.roles for role in roles):
-#                  return func(*args, **kwargs)
-#              logger.error(f"{current_user.email}不具备{roles}")
-#              abort(403, message="禁止访问")
-#
-#          return inner
-#
-#      return wrapper
+def role_required(*roles):
+    """
+    角色验证
+
+    :param roles: tuple 角色列
+
+    为API添加角色限制，同时添加OpenAPI注释，使用装饰器后
+    只有带有才能访问。必须在doc_login_required装饰器后。
+
+    用法：
+    >>> class SampleView(MethodView):
+            @doc_login_required
+            @role_required('Role')
+            def get(self):
+                return {'code': 0}
+    """
+
+    def wrapper(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if all(role in [p.name for p in current_user.roles] for role in roles):
+                return func(*args, **kwargs)
+            #  if all(role in current_user.roles for role in roles):
+            #      return func(*args, **kwargs)
+            logger.error(f"{current_user.email}不具备{roles}")
+            abort(403, message="禁止访问")
+
+        return inner
+
+    return wrapper

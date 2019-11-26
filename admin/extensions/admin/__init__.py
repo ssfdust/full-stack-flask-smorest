@@ -26,14 +26,15 @@
 from flask_admin import Admin
 
 admin = Admin(
-    name='后台管理模块',
-    template_mode='bootstrap4',
-    base_template='my_master.html',
+    name="后台管理模块",
+    template_mode="bootstrap4",
+    base_template="my_master.html",
     category_icon_classes={
-        '用户管理': "fa fa-user",
-        '客户管理': "fa fa-users",
-        '日志管理': "fa fa-server",
-        '任务管理': "fa fa-tasks",
-        '文件管理': "fa fa-file",
-        '系统设置': "fa fa-cogs"
-    })
+        "用户管理": "fa fa-user",
+        "客户管理": "fa fa-users",
+        "日志管理": "fa fa-server",
+        "任务管理": "fa fa-tasks",
+        "文件管理": "fa fa-file",
+        "系统设置": "fa fa-cogs",
+    },
+)

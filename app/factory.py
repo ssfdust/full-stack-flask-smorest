@@ -32,15 +32,15 @@ from .extensions.flask import Flask
 from .utils.formatters import mongon_opts_str
 
 CONFIG_MAPPGING = {
-    'development': 'app/config/development.toml',
-    'production': 'app/config/production.toml',
-    'testing': 'app/config/testing.toml'
+    "development": "app/config/development.toml",
+    "production": "app/config/production.toml",
+    "testing": "app/config/testing.toml",
 }
 
-ENABLED_MODULES = ['auth', 'users', 'storages', 'menus', 'todolist', 'email_templates']
+ENABLED_MODULES = ["auth", "users", "storages", "menus", "todolist", "email_templates"]
 
 
-def create_app(modules, config_name='development'):
+def create_app(modules, config_name="development"):
     """
     创建app工厂
 
@@ -57,19 +57,19 @@ def create_app(modules, config_name='development'):
     比较好用。
     """
     app = Flask(
-        "Full-Stack Flask",
-        template_folder='app/templates',
-        static_folder='app/static')
+        "Full-Stack Flask", template_folder="app/templates", static_folder="app/static"
+    )
 
-    config_type = os.environ.get('FLASK_ENV', config_name)
+    config_type = os.environ.get("FLASK_ENV", config_name)
 
     app.config.from_toml(CONFIG_MAPPGING[config_type])
 
     logger.info(f"Server Started. Server name: {app.config['SERVER_NAME']}")
 
-    app.config['CELERY_MONGODB_SCHEDULER_URL'] = mongon_opts_str(
-        app.config['MONGODB_SETTINGS'])
-    app.config['ENABLED_MODULES'] = modules
+    app.config["CELERY_MONGODB_SCHEDULER_URL"] = mongon_opts_str(
+        app.config["MONGODB_SETTINGS"]
+    )
+    app.config["ENABLED_MODULES"] = modules
 
     init_app(app)
 

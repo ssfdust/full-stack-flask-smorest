@@ -4,17 +4,16 @@
 from flask import jsonify
 
 
-class TestJwt():
-
+class TestJwt:
     def test_jwt_manager(self, app, db, monkeypatch, jwt):
         from app.extensions.jwt.uitls import add_token_to_database
         from flask_jwt_extended import create_access_token, jwt_required, current_user
         from app.extensions.jwt.models import TokenBlackList
 
-        token = create_access_token('test')
+        token = create_access_token("test")
         add_token_to_database(token, "identity")
 
-        @app.route('/protected', methods=["GET"])
+        @app.route("/protected", methods=["GET"])
         @jwt_required
         def protected():
             assert current_user == {"user": "test"}
@@ -40,7 +39,7 @@ class TestJwt():
         from flask_jwt_extended import create_access_token
         from datetime import timedelta
 
-        token = create_access_token('test', expires_delta=-timedelta(seconds=1))
+        token = create_access_token("test", expires_delta=-timedelta(seconds=1))
         add_token_to_database(token, "identity", allow_expired=True)
 
         headers = {"Authorization": "Bearer {}".format(token)}
@@ -57,7 +56,7 @@ class TestJwt():
         from flask_jwt_extended import create_access_token, decode_token
         from app.extensions.jwt.models import TokenBlackList
 
-        token = create_access_token('test',)
+        token = create_access_token("test",)
         add_token_to_database(token, "identity", allow_expired=True)
 
         _jwt = decode_token(token)

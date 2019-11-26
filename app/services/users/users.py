@@ -16,6 +16,13 @@
 # limitations under the License.
 
 from loguru import logger
+from app.modules.auth.models import Role
+from app.modules.users.models import UserInfo
+from app.modules.auth import ROLES
+from app.modules.storages.models import Storages
+from app.modules.users.models import groups_roles, groups_users
+from app.modules.auth.models import roles_users
+from app.extensions import db
 
 
 def create_user(user, is_admin=False):
@@ -27,37 +34,33 @@ def create_user(user, is_admin=False):
 
     创建头像信息,创建用户基本信息
     """
-    from app.modules.auth.models import Role
-    from app.modules.users.models import UserInfo
-    from app.modules.auth import ROLES
-    from app.modules.storages.models import Storages
 
     if is_admin:
         su_role = Role.get_by_name(ROLES.SuperUser)
         user.roles.append(su_role)
         avator = Storages(
-            name='AdminAvator.jpg',
-            storetype='avator',
+            name="AdminAvator.jpg",
+            storetype="avator",
             saved=True,
-            filetype='image/jpeg',
-            path='default/AdminAvator.jpg',
+            filetype="image/jpeg",
+            path="default/AdminAvator.jpg",
             uid=1,
         )
     else:
         roles = Role.get_by_user_default()
         user.roles = roles
         avator = Storages(
-            name='DefaultAvator.jpg',
-            storetype='avator',
+            name="DefaultAvator.jpg",
+            storetype="avator",
             saved=True,
-            filetype='image/jpeg',
-            path='default/DefaultAvator.jpg',
+            filetype="image/jpeg",
+            path="default/DefaultAvator.jpg",
             uid=1,
         )
     UserInfo(user=user, avator=avator).save(False)
 
 
-class UserFactory(object):
+class UserFactory():
     """
     用户工厂
 
@@ -75,8 +78,6 @@ class UserFactory(object):
         """
         处理组关系
         """
-        from app.extensions import db
-
         state = db.inspect(self.user)
         groups_hist = state.attrs.groups.history
 
@@ -95,9 +96,6 @@ class UserFactory(object):
         """
         删除所有组权限
         """
-        from app.modules.users.models import groups_roles, groups_users
-        from app.modules.auth.models import roles_users, db
-
         if not self.deleted_groups:
             return
 
@@ -115,18 +113,17 @@ class UserFactory(object):
             WHERE ru.role_id = sub.role_id AND ru.user_id = sub.user_id
         """
         db.session.execute(
-            sql, {
-                'group_ids': tuple([g.id for g in self.deleted_groups]),
-                'user_id': self.user.id
-            })
+            sql,
+            {
+                "group_ids": tuple([g.id for g in self.deleted_groups]),
+                "user_id": self.user.id,
+            },
+        )
 
     def add_permissions(self):
         """
         新增组权限
         """
-        from app.modules.users.models import groups_roles
-        from app.modules.auth.models import roles_users, db
-
         if not self.added_groups:
             return
 
@@ -140,11 +137,13 @@ class UserFactory(object):
         """
         try:
             db.session.execute(
-                sql, {
-                    'group_ids': tuple([g.id for g in self.added_groups]),
-                    'user_id': self.user.id
-                })
-            logger.info('创建组uid: %s数据成功' % self.user.id)
+                sql,
+                {
+                    "group_ids": tuple([g.id for g in self.added_groups]),
+                    "user_id": self.user.id,
+                },
+            )
+            logger.info("创建组uid: %s数据成功" % self.user.id)
         except Exception as e:
-            logger.error('add groups error')
+            logger.error("add groups error")
             raise e

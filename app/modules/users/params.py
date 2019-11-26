@@ -13,27 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from marshmallow import post_load
 from . import schemas
 from .schemas import fields
-from marshmallow import post_load
-
-
-class UserInfoParam(schemas.UserInfoSchema):
-    """
-    用户信息参数
-    """
-
-    class Meta(schemas.UserInfoSchema.Meta):
-        exclude = ['id']
-
-
-class GroupInfoParam(schemas.GroupSchema):
-    """
-    组信息参数
-    """
-
-    class Meta(schemas.GroupSchema.Meta):
-        exclude = ['parent', 'users', 'children', 'roles', 'id']
 
 
 class UserListByIdParam(schemas.ma.Schema):
@@ -43,12 +25,12 @@ class UserListByIdParam(schemas.ma.Schema):
     json格式
     """
 
-    users = fields.List(fields.Int, description='用户ID列表')
+    users = fields.List(fields.Int, description="用户ID列表")
 
     @post_load
-    def load_users(self, data, **kw):
+    def load_users(self, data):
         from ..auth.models import User
 
-        users = User.query.filter(User.id.in_(data['users'])).all()
+        users = User.query.filter(User.id.in_(data["users"])).all()
 
         return users

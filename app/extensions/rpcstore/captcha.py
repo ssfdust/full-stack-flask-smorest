@@ -35,11 +35,12 @@ class CaptchaStore(AMQPStore):
     def __init__(self, token):
         self.token = token
         super().__init__(
-            f'captcha_{token}',
-            exchange='captcha',
+            f"captcha_{token}",
+            exchange="captcha",
             expires=300,
             routing_key=token,
-            auto_delete=True)
+            auto_delete=True,
+        )
 
     def get_captcha(self):
         """获取验证码"""
@@ -49,7 +50,7 @@ class CaptchaStore(AMQPStore):
     def _generate_captcha(self, length):
         """生成验证码"""
         passwd_str = string.digits + string.ascii_letters
-        code = ''.join([random.choice(passwd_str) for i in range(length)])
+        code = "".join([random.choice(passwd_str) for i in range(length)])
         self.value = code
 
     def generate_captcha(self, length=4):

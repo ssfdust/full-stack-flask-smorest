@@ -40,13 +40,12 @@ class LocalModelConverter(sqla.form.AdminModelConverter):
     新增ArrowType支持
     """
 
-    def _convert_relation(self, name, prop, property_is_association_proxy,
-                          kwargs):
+    def _convert_relation(self, name, prop, property_is_association_proxy, kwargs):
         """
         从flask-admin中直接复制过来
         """
         # Check if relation is specified
-        form_columns = getattr(self.view, 'form_columns', None)
+        form_columns = getattr(self.view, "form_columns", None)
         if form_columns and name not in form_columns:
             return None
 
@@ -55,31 +54,35 @@ class LocalModelConverter(sqla.form.AdminModelConverter):
 
         # 在本项目中默认不使用foreign_key
 
-        kwargs['label'] = self._get_label(name, kwargs)
-        kwargs['description'] = self._get_description(name, kwargs)
+        kwargs["label"] = self._get_label(name, kwargs)
+        kwargs["description"] = self._get_description(name, kwargs)
 
         # determine optional/required, or respect existing
         requirement_options = (validators.Optional, validators.InputRequired)
         requirement_validator_specified = any(
-            isinstance(v, requirement_options) for v in kwargs['validators'])
-        if property_is_association_proxy or column.nullable or prop.direction.name != 'MANYTOONE':
-            kwargs['allow_blank'] = True
+            isinstance(v, requirement_options) for v in kwargs["validators"]
+        )
+        if (
+            property_is_association_proxy
+            or column.nullable
+            or prop.direction.name != "MANYTOONE"
+        ):
+            kwargs["allow_blank"] = True
             if not requirement_validator_specified:
-                kwargs['validators'].append(validators.Optional())
+                kwargs["validators"].append(validators.Optional())
         else:
-            kwargs['allow_blank'] = False
+            kwargs["allow_blank"] = False
             if not requirement_validator_specified:
-                kwargs['validators'].append(validators.InputRequired())
+                kwargs["validators"].append(validators.InputRequired())
 
         # Override field type if necessary
         override = self._get_field_override(prop.key)
         if override:
             return override(**kwargs)
 
-        multiple = (
-            property_is_association_proxy or
-            (prop.direction.name in ('ONETOMANY', 'MANYTOMANY') and
-             prop.uselist))
+        multiple = property_is_association_proxy or (
+            prop.direction.name in ("ONETOMANY", "MANYTOMANY") and prop.uselist
+        )
         return self._model_select_field(prop, multiple, remote_model, **kwargs)
 
     @converts("app.extensions.sqla.types.ArrowType")
@@ -105,15 +108,15 @@ class CeleryBeatConverter(mongoengine.form.CustomModelConverter):
     def conv_Dynamic(self, model, field, kwargs):
         return fields.JSONField(**kwargs)
 
-    @orm.converts('StringField')
+    @orm.converts("StringField")
     def conv_String(self, model, field, kwargs):
-        kwargs['validators'] = []
+        kwargs["validators"] = []
         field = super().conv_String(model, field, kwargs)
         return field
 
-    @orm.converts('IntField')
+    @orm.converts("IntField")
     def conv_Int(self, model, field, kwargs):
-        kwargs['validators'] = []
+        kwargs["validators"] = []
         field = super().conv_Int(model, field, kwargs)
         return field
 
@@ -131,7 +134,7 @@ class LocalMongoConverter(mongoengine.form.CustomModelConverter):
 
     @orm.converts("ArrowField")
     def conv_Arrow(self, model, field, kwargs):
-        kwargs['widget'] = form.DateTimePickerWidget()
+        kwargs["widget"] = form.DateTimePickerWidget()
         return f.DateTimeField(**kwargs)
 
     @orm.converts("DynamicField")

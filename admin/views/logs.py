@@ -33,11 +33,11 @@ class LogModelView(AuthMongView):
     can_edit = False
     can_delete = True
     can_view_details = True
-    column_exclude_list = ['arguments', 'url']
+    column_exclude_list = ["arguments", "url"]
 
-    column_default_sort = [('created', True)]
-    column_formatters = {'arguments': json_formatter}
-    column_filters = ['created', FilterNotEqual(logm.Log.module, '去除模块')]
+    column_default_sort = [("created", True)]
+    column_formatters = {"arguments": json_formatter}
+    column_filters = ["created", FilterNotEqual(logm.Log.module, "去除模块")]
 
 
 class MsgModelView(AuthMongView):
@@ -47,6 +47,6 @@ class MsgModelView(AuthMongView):
     can_edit = False
     can_delete = True
     can_view_details = True
-    column_formatters = {'message': json_formatter}
-    column_default_sort = [('created', True)]
-    column_filters = ['created']
+    column_formatters = {"message": json_formatter}
+    column_default_sort = [("created", True)]
+    column_filters = ["created"]

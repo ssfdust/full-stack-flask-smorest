@@ -41,6 +41,7 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
     不继承的原因是改动太大，几乎全部改了。索性就复制
     过来了。
     """
+
     impl = types.DateTime
 
     def __init__(self, *args, **kwargs):
@@ -55,11 +56,12 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
         2. 转换非UTC时区的时间为当前时区
         """
         from flask_babel import get_timezone
+
         if value:
             val = self._coerce(value)
             if val.tzinfo == tz.UTC:
                 val = val.replace(tzinfo=str(get_timezone()))
-            utc_val = val.to('UTC')
+            utc_val = val.to("UTC")
             return utc_val.datetime if self.impl.timezone else utc_val.naive
         return value
 
@@ -68,6 +70,7 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
         从数据库中将时间转为arrow类型
         """
         from flask_babel import get_timezone
+
         if value:
             return arrow.get(value).to(str(get_timezone()))
         return value
@@ -82,8 +85,8 @@ class ArrowType(types.TypeDecorator, ScalarCoercible):
         print(val)
         if val.tzinfo == tz.UTC:
             val = val.replace(tzinfo=str(get_timezone()))
-        utc_val = val.to('UTC')
-        return utc_val.format('YYYY-MM-DD HH:mm:ss')
+        utc_val = val.to("UTC")
+        return utc_val.format("YYYY-MM-DD HH:mm:ss")
 
     def _coerce(self, value):
         """ 预处理 """

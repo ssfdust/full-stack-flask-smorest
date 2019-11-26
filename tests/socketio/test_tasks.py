@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class TestTask():
 
+class TestTask:
     def test_task(self, flask_app_client):
         flask_app_client.connect("/tasks")
         flask_app_client.emit("refresh_tasks", namespace="/tasks")

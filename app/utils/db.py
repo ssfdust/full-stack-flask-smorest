@@ -43,11 +43,13 @@ class ClosureTable:
             # 处理pid
             db.session.flush()
             db.session.execute(
-                "select insert_node(:table, :id, :pid)", {
-                    'table': self.table.__tablename__,
-                    'id': self.model.id,
-                    'pid': self.model.pid
-                })
+                "select insert_node(:table, :id, :pid)",
+                {
+                    "table": self.table.__tablename__,
+                    "id": self.model.id,
+                    "pid": self.model.pid,
+                },
+            )
         except Exception:
             db.session.rollback()
             raise Exception
@@ -65,17 +67,18 @@ class ClosureTable:
         :param              id: int                     添加的节点ID
         """
         from app.extensions import db
+
         try:
             if soft_delete:
-                db.session.execute("select soft_delete_subtree(:table, :id)", {
-                    'table': self.table.__tablename__,
-                    'id': self.model.id
-                })
+                db.session.execute(
+                    "select soft_delete_subtree(:table, :id)",
+                    {"table": self.table.__tablename__, "id": self.model.id},
+                )
             else:
-                db.session.execute("select delete_subtree(:table, :id)", {
-                    'table': self.table.__tablename__,
-                    'id': self.model.id
-                })
+                db.session.execute(
+                    "select delete_subtree(:table, :id)",
+                    {"table": self.table.__tablename__, "id": self.model.id},
+                )
         except Exception as e:
             db.session.rollback()
             raise e
@@ -95,15 +98,19 @@ class ClosureTable:
 
         try:
             state = db.inspect(self.model)
-            if state.attrs.pid.history.has_changes(
-            ) or state.attrs.parent.history.has_changes():
+            if (
+                state.attrs.pid.history.has_changes()
+                or state.attrs.parent.history.has_changes()
+            ):
                 db.session.flush()
                 db.session.execute(
-                    "select move_subtree(:table, :id, :pid)", {
-                        'table': self.table.__tablename__,
-                        'id': self.model.id,
-                        'pid': self.model.pid
-                    })
+                    "select move_subtree(:table, :id, :pid)",
+                    {
+                        "table": self.table.__tablename__,
+                        "id": self.model.id,
+                        "pid": self.model.pid,
+                    },
+                )
         except Exception as e:
             db.session.rollback()
             raise e
@@ -116,16 +123,15 @@ class ClosureTable:
         打印树
         """
         from app.extensions import db
+
         cursor = db.session.execute(
-            "select * from get_child_nodes(:table, :id)"
-            " order by breadcrumbs", {
-                'table': self.table.__tablename__,
-                'id': self.model.id
-            })
+            "select * from get_child_nodes(:table, :id)" " order by breadcrumbs",
+            {"table": self.table.__tablename__, "id": self.model.id},
+        )
         items = cursor.fetchall()
         for item in items:
             print(item.name)
-            print('|')
+            print("|")
 
 
 def hierarchy_to_json(items):
@@ -144,12 +150,12 @@ def hierarchy_to_json(items):
     top = []
 
     for record in items:
-        nodes[record['id']] = record
-        record['children'] = []
+        nodes[record["id"]] = record
+        record["children"] = []
 
     for record in items:
-        if record['pid'] in nodes:
-            nodes[record['pid']]['children'].append(record)
+        if record["pid"] in nodes:
+            nodes[record["pid"]]["children"].append(record)
         else:
             top.append(record)
     return top

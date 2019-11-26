@@ -45,11 +45,10 @@ class QueryWithSoftDelete(BaseQuery):
 
     def __new__(cls, *args, **kwargs):
         obj = super(QueryWithSoftDelete, cls).__new__(cls)
-        obj._with_deleted = kwargs.pop('_with_deleted', False)
+        obj._with_deleted = kwargs.pop("_with_deleted", False)
         if len(args) > 0:
             super(QueryWithSoftDelete, obj).__init__(*args, **kwargs)
-            return obj.filter_by(
-                deleted=False) if not obj._with_deleted else obj
+            return obj.filter_by(deleted=False) if not obj._with_deleted else obj
         return obj
 
     def __init__(self, *args, **kwargs):
@@ -59,7 +58,8 @@ class QueryWithSoftDelete(BaseQuery):
         return self.__class__(
             db.class_mapper(self._mapper_zero().class_),
             session=db.session(),
-            _with_deleted=True)
+            _with_deleted=True,
+        )
 
     def _get(self, *args, **kwargs):
         """提供原本的get方法"""
@@ -102,39 +102,29 @@ class SurrogatePK(object):
     """
 
     id = db.Column(
-        db.Integer, primary_key=True, info={'marshmallow': {
-            'dump_only': True
-        }})
+        db.Integer, primary_key=True, info={"marshmallow": {"dump_only": True}}
+    )
     deleted = db.Column(
         db.Boolean,
         nullable=False,
-        doc='已删除',
+        doc="已删除",
         default=False,
-        info={'marshmallow': {
-            'dump_only': True
-        }})
+        info={"marshmallow": {"dump_only": True}},
+    )
     modified = db.Column(
         db.ArrowType(True),
         nullable=False,
-        doc='修改时间',
+        doc="修改时间",
         default=localnow,
-        info={
-            'marshmallow': {
-                'format': '%Y-%m-%d %H:%M:%S',
-                'dump_only': True
-            }
-        })
+        info={"marshmallow": {"format": "%Y-%m-%d %H:%M:%S", "dump_only": True}},
+    )
     created = db.Column(
         db.ArrowType(True),
         nullable=False,
-        doc='创建时间',
+        doc="创建时间",
         default=localnow,
-        info={
-            'marshmallow': {
-                'format': '%Y-%m-%d %H:%M:%S',
-                'dump_only': True
-            }
-        })
+        info={"marshmallow": {"format": "%Y-%m-%d %H:%M:%S", "dump_only": True}},
+    )
 
     @classmethod
     def get_by_id(cls, id):
@@ -143,9 +133,7 @@ class SurrogatePK(object):
         """
         from . import db
 
-        if any(
-            (isinstance(id, str) and id.isdigit(), isinstance(id,
-                                                              (int, float))),):
+        if any((isinstance(id, str) and id.isdigit(), isinstance(id, (int, float))),):
             with db.session.no_autoflush:
                 return cls.query.get_or_404(int(id))
 
@@ -162,7 +150,7 @@ class SurrogatePK(object):
         """
         批量删除
         """
-        kw = [{'id': id, 'deleted': True} for id in ids]
+        kw = [{"id": id, "deleted": True} for id in ids]
         db.session.bulk_update_mappings(cls, kw)
 
         if commit:

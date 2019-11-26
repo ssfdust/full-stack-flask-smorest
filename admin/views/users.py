@@ -35,68 +35,68 @@ class UserModelView(AuthModelView):
     由于权限和用户是viewonly属性，所以权限只能是查看
     """
 
-    column_searchable_list = ['id', 'username', 'email']
+    column_searchable_list = ["id", "username", "email"]
 
-    column_editable_list = ['active', 'deleted']
+    column_editable_list = ["active", "deleted"]
 
-    column_exclude_list = ['password']
+    column_exclude_list = ["password"]
 
-    column_list = ['username', 'email', 'active', 'confirmed_at', 'send_mail']
+    column_list = ["username", "email", "active", "confirmed_at", "send_mail"]
 
-    column_labels = {'send_mail': '邮件验证'}
+    column_labels = {"send_mail": "邮件验证"}
 
     def _send_mail(self, _, model, __):
         """验证邮件栏目"""
 
         if model.confirmed_at:
-            return '已验证'
+            return "已验证"
 
         # render a form with a submit button for student, include a hidden field for the student id
         # note how checkout_view method is exposed as a route below
-        mail_url = url_for('.send_mail_view')
+        mail_url = url_for(".send_mail_view")
 
-        _html = '''
+        _html = """
             <form action="{mail_url}" method="POST">
                 <input id="user_id" name="user_id"  type="hidden" value="{user_id}">
                 <button class="btn btn-info" type='submit'>发送邮件</button>
             </form
-        '''.format(
-            mail_url=mail_url, user_id=model.id)
+        """.format(
+            mail_url=mail_url, user_id=model.id
+        )
 
         return Markup(_html)
 
-    @expose('send_mail', methods=['POST'])
+    @expose("send_mail", methods=["POST"])
     def send_mail_view(self):
         """发送验证邮件"""
         from app.services.auth.confirm import generate_confirm_token
         from app.backtasks.send_mail import send_mail
 
-        return_url = self.get_url('.index_view')
+        return_url = self.get_url(".index_view")
         form = get_form_data()
 
         if not form:
-            flash('无法获取表单', 'error')
+            flash("无法获取表单", "error")
             return redirect(return_url)
 
-        uid = form['user_id']
+        uid = form["user_id"]
 
         user = self.model.get_by_id(uid)
-        token = generate_confirm_token(user, 'confirm')
-        url = url_for('Auth.UserConfirmView', token=token, _external=True)
-        send_mail.delay(user.email, '验证邮箱', {'url': url, 'message': "这是一封验证邮件"},
-                        'confirm')
-        flash('验证邮件已发送')
+        token = generate_confirm_token(user, "confirm")
+        url = url_for("Auth.UserConfirmView", token=token, _external=True)
+        send_mail.delay(
+            user.email, "验证邮箱", {"url": url, "message": "这是一封验证邮件"}, "confirm"
+        )
+        flash("验证邮件已发送")
 
         return redirect(return_url)
 
-    column_formatters = {'send_mail': _send_mail}
+    column_formatters = {"send_mail": _send_mail}
 
-    form_excluded_columns = ['password', 'created', 'modified']
+    form_excluded_columns = ["password", "created", "modified"]
 
     form_widget_args = {
-        'permissions': {
-            'disabled': True
-        },
+        "permissions": {"disabled": True},
     }
 
     def on_model_change(self, form, model, is_created):
@@ -108,7 +108,7 @@ class UserModelView(AuthModelView):
         factory.hanlde_groups_change()
 
         if is_created is True:
-            model.password = encrypt_password('123456')
+            model.password = encrypt_password("123456")
             create_user(model)
 
         super().on_model_change(form, model, is_created)
@@ -119,32 +119,32 @@ class UserInfoModelView(AuthModelView):
     用户信息管理
     """
 
-    column_searchable_list = ['uid']
+    column_searchable_list = ["uid"]
 
-    form_excluded_columns = ['uid', 'avator_id']
+    form_excluded_columns = ["uid", "avator_id"]
 
-    column_exclude_list = ['uid', 'avator_id']
+    column_exclude_list = ["uid", "avator_id"]
 
     def _sex_label(self, __, model, _):
         return model.sex_label
 
-    form_choices = {'sex': [('1', '男'), ('2', '女')]}
+    form_choices = {"sex": [("1", "男"), ("2", "女")]}
 
     def _avatorinfo(self, __, model, _):
         """显示头像信息"""
         return Markup(
             '<img src="%s" style="width: 30px; height: 30px;border-radius: 30px;">'
-            % url_for(
-                'admin.views.storages.storage_file', file_id=model.avator_id))
+            % url_for("admin.views.storages.storage_file", file_id=model.avator_id)
+        )
 
-    column_formatters = {'avator': _avatorinfo, 'sex': _sex_label}
+    column_formatters = {"avator": _avatorinfo, "sex": _sex_label}
 
 
 class RoleModelView(AuthModelView):
     """用户角色管理"""
 
-    column_searchable_list = ['name']
-    column_editable_list = ['user_default', 'group_default']
+    column_searchable_list = ["name"]
+    column_editable_list = ["user_default", "group_default"]
     column_editable_list += AuthModelView.column_editable_list
 
 
@@ -153,12 +153,10 @@ class PermissionModelView(AuthModelView):
     由于权限和用户是viewonly属性，所以用户只能是查看
     """
 
-    column_searchable_list = ['name']
+    column_searchable_list = ["name"]
 
     form_widget_args = {
-        'users': {
-            'disabled': True
-        },
+        "users": {"disabled": True},
     }
 
 
@@ -167,14 +165,12 @@ class GroupModelView(AuthModelView):
     用户组管理
     """
 
-    column_searchable_list = ['name']
-    column_exclude_list = ['pid']
-    form_excluded_columns = ['pid'] + AuthModelView.form_excluded_columns
+    column_searchable_list = ["name"]
+    column_exclude_list = ["pid"]
+    form_excluded_columns = ["pid"] + AuthModelView.form_excluded_columns
 
     form_widget_args = {
-        'children': {
-            'disabled': True
-        },
+        "children": {"disabled": True},
     }
 
     def on_model_change(self, form, model, is_created):

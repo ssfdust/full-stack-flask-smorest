@@ -38,7 +38,7 @@ class CRUDMixin(object):
     @classmethod
     def create(cls, **kwargs):
         """新建一条数据 """
-        commit = kwargs.get('commit', True)
+        commit = kwargs.get("commit", True)
         instance = cls(**kwargs)
         return instance.save(commit)
 
@@ -48,16 +48,16 @@ class CRUDMixin(object):
         更新除系统字段以外的字段，并更新修改时间
         """
         # 过滤id, deleted, modified, created字段
-        kwargs.pop('id', None)
-        kwargs.pop('deleted', None)
-        kwargs.pop('modified', None)
-        kwargs.pop('created', None)
+        kwargs.pop("id", None)
+        kwargs.pop("deleted", None)
+        kwargs.pop("modified", None)
+        kwargs.pop("created", None)
 
         for attr, value in kwargs.items():
             setattr(self, attr, value)
 
         # 更新修改时间
-        setattr(self, 'modified', arrow.now())
+        setattr(self, "modified", arrow.now())
 
         return commit and self.save() or self
 
@@ -66,7 +66,7 @@ class CRUDMixin(object):
 
         保存对象并更新保存时间
         """
-        setattr(self, 'modified', arrow.now())
+        setattr(self, "modified", arrow.now())
         db.session.add(self)
         if commit:
             self.commit()
@@ -112,7 +112,11 @@ class CRUDMixin(object):
 
         在这里需要修改Remote中name以及关系时。
         """
-        from sqlalchemy.orm.attributes import get_attribute, del_attribute, set_attribute
+        from sqlalchemy.orm.attributes import (
+            get_attribute,
+            del_attribute,
+            set_attribute,
+        )
         from marshmallow import Schema
 
         if not isinstance(schema, Schema):
@@ -120,9 +124,7 @@ class CRUDMixin(object):
 
         db.session.add(instance)
 
-        loadable_fields = [
-            k for k, v in schema.fields.items() if not v.dump_only
-        ]
+        loadable_fields = [k for k, v in schema.fields.items() if not v.dump_only]
 
         with db.session.no_autoflush:
             for field in loadable_fields:

@@ -26,11 +26,10 @@ def _include_ext_types(obj):
     """注入新类型"""
     from .fields import ArrowField
 
-    setattr(obj, 'ArrowField', ArrowField)
+    setattr(obj, "ArrowField", ArrowField)
 
 
 class MongoEngine(BaseMongoEngine):
-
     def __init__(self, *args, **kwargs):
         _include_ext_types(self)
         super().__init__(*args, **kwargs)

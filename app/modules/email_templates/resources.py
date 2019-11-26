@@ -35,27 +35,25 @@ from app.extensions.marshal.bases import GeneralLikeArgs
 from . import blp, models, params, schemas
 
 
-@blp.route('/options')
+@blp.route("/options")
 class EmailTemplateListView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.EmailTemplateQuery)
     @blp.response(schemas.EmailTemplateListSchema)
     def get(self, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         获取所有电子邮件模板选项信息
-        '''
+        """
         query = models.EmailTemplate.query
 
         items = query.all()
 
-        return {'data': items}
+        return {"data": items}
 
 
-@blp.route('')
+@blp.route("")
 class EmailTemplateView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.EmailTemplateQuery)
     @blp.arguments(GeneralLikeArgs, location="query")
@@ -63,9 +61,9 @@ class EmailTemplateView(MethodView):
     @paginate()
     def get(self, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         获取所有电子邮件模板信息——分页
-        '''
+        """
         query = models.EmailTemplate.query
         if kwargs:
             query = query.filter_like_by(**kwargs)
@@ -78,13 +76,13 @@ class EmailTemplateView(MethodView):
     @blp.response(schemas.EmailTemplateItemSchema)
     def post(self, email_template, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         新增电子邮件模板信息
-        '''
+        """
         email_template.save()
         logger.info(f"{current_user.username}新增了电子邮件模板{email_template}")
 
-        return {'data': email_template}
+        return {"data": email_template}
 
     @doc_login_required
     @permission_required(PERMISSIONS.EmailTemplateDelete)
@@ -92,47 +90,46 @@ class EmailTemplateView(MethodView):
     @blp.response(BaseMsgSchema)
     def delete(self, lst, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         批量删除电子邮件模板
         -------------------------------
         :param lst: list 包含id列表的字典
-        '''
+        """
 
-        models.EmailTemplate.delete_by_ids(lst['lst'])
+        models.EmailTemplate.delete_by_ids(lst["lst"])
         logger.info(f"{current_user.username}删除了电子邮件模板{lst}")
 
 
-@blp.route('/<int:email_template_id>',
-           parameters=[
-               {'in': 'path', 'name': 'email_template_id', 'description': '电子邮件模板id'}
-           ])
+@blp.route(
+    "/<int:email_template_id>",
+    parameters=[{"in": "path", "name": "email_template_id", "description": "电子邮件模板id"}],
+)
 class EmailTemplateItemView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.EmailTemplateEdit)
     @blp.arguments(params.EmailTemplateParam)
     @blp.response(schemas.EmailTemplateItemSchema)
     def put(self, email_template, email_template_id, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         更新电子邮件模板
-        '''
+        """
 
-        email_template = models.EmailTemplate.update_by_id(email_template_id,
-                                                                        params.EmailTemplateParam,
-                                                                        email_template)
+        email_template = models.EmailTemplate.update_by_id(
+            email_template_id, params.EmailTemplateParam, email_template
+        )
         logger.info(f"{current_user.username}更新了电子邮件模板{email_template.id}")
 
-        return {'data': email_template}
+        return {"data": email_template}
 
     @doc_login_required
     @permission_required(PERMISSIONS.EmailTemplateDelete)
     @blp.response(BaseMsgSchema)
     def delete(self, email_template_id, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         删除电子邮件模板
-        '''
+        """
         models.EmailTemplate.delete_by_id(email_template_id)
         logger.info(f"{current_user.username}删除了电子邮件模板{email_template_id}")
 
@@ -141,9 +138,9 @@ class EmailTemplateItemView(MethodView):
     @blp.response(schemas.EmailTemplateItemSchema)
     def get(self, email_template_id, **kwargs):
         # pylint: disable=unused-argument
-        '''
+        """
         获取单条电子邮件模板
-        '''
+        """
         email_template = models.EmailTemplate.get_by_id(email_template_id)
 
-        return {'data': email_template}
+        return {"data": email_template}

@@ -23,7 +23,7 @@ from marshmallow import fields
 class MenuSchema(ma.ModelSchema):
     """菜单"""
 
-    children = fields.List(fields.Nested('self'))
+    children = fields.List(fields.Nested("self"))
 
     class Meta:
         model = models.Menu

@@ -24,7 +24,7 @@ jwt = JWTManager()
 
 @jwt.unauthorized_loader
 def unauthorized_callback(_):
-    logger.error('未受权的访问')
+    logger.error("未受权的访问")
     response = jsonify({"code": 401, "msg": "未授权的访问"})
     response.status_code = 401
     return response
@@ -33,7 +33,7 @@ def unauthorized_callback(_):
 @jwt.expired_token_loader
 def token_expired():
     response = jsonify({"code": 402, "msg": "登录已过期"})
-    logger.warning('登录过期')
+    logger.warning("登录过期")
     response.status_code = 402
     return response
 
@@ -46,6 +46,7 @@ def check_if_token_in_blacklist(decrypted_token):
 @jwt.user_loader_callback_loader
 def get_user(identity):
     from app.modules.auth.models import User
+
     return User.get_by_email(identity)
 
 

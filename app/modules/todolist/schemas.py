@@ -26,14 +26,14 @@ class TodoItemSchema(ma.ModelSchema):
     ```level``` level用以返回给前端渲染颜色数字
     """
 
-    rest_time = fields.Method('get_rest_time', dump_only=True)
-    level = fields.Method('get_time_level', dump_only=True)
+    rest_time = fields.Method("get_rest_time", dump_only=True)
+    level = fields.Method("get_time_level", dump_only=True)
 
     def get_rest_time(self, obj):
         try:
-            return obj.due.humanize(locale='zh')
+            return obj.due.humanize(locale="zh")
         except ValueError:
-            return obj.due.humanize(locale='en')
+            return obj.due.humanize(locale="en")
 
     def get_time_level(self, obj):
         """
@@ -50,6 +50,7 @@ class TodoItemSchema(ma.ModelSchema):
         Lv7: 过期
         """
         from app.utils.local import localnow
+
         diff = (obj.due - localnow()).total_seconds()
         if diff < 0:
             return 7

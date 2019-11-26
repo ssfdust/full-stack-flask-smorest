@@ -19,18 +19,16 @@ from .bases import AuthModelView
 class MenuModelView(AuthModelView):
     """菜单管理"""
 
-    column_editable_list = AuthModelView.column_editable_list + [
-        'name', 'icon', 'path'
-    ]
-    column_searchable_list = ['name']
-    column_exclude_list = ['pid', 'permission_id']
+    column_editable_list = AuthModelView.column_editable_list + ["name", "icon", "path"]
+    column_searchable_list = ["name"]
+    column_exclude_list = ["pid", "permission_id"]
     form_excluded_columns = AuthModelView.form_excluded_columns + column_exclude_list
-    column_filters = AuthModelView.column_searchable_list + ['parent.name']
+    column_filters = AuthModelView.column_searchable_list + ["parent.name"]
 
-    column_labels = {'parent_name': '父菜单名称', 'parent': '父级菜单'}
+    column_labels = {"parent_name": "父菜单名称", "parent": "父级菜单"}
 
-    form_args = {'parent_name': {'allow_blank': True}}
-    form_widget_args = {'children': {'disabled': True}}
+    form_args = {"parent_name": {"allow_blank": True}}
+    form_widget_args = {"children": {"disabled": True}}
 
     def on_model_change(self, form, model, is_created):
         """

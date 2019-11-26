@@ -15,7 +15,7 @@ def install_python_dependencies(context, force=False):
     安装python依赖
     """
     log.info("安装项目依赖...")
-    context.run("poetry %s" % ('upgrade' if force else 'install'), pty=True)
+    context.run("poetry %s" % ("upgrade" if force else "install"), pty=True)
     log.info("项目依赖安装完毕.")
 
 

@@ -3,8 +3,7 @@
 """测试MongoEngine"""
 
 
-class TestMongoEngine():
-
+class TestMongoEngine:
     def test_ext_fields(self, app, db):
 
         assert hasattr(db, "ArrowField")

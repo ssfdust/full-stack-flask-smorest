@@ -26,37 +26,44 @@ from loguru import logger
 def save_resp(resp):
     """保存Request请求"""
     from .models import Log
-    if request.method == 'GET':
+
+    if request.method == "GET":
         args = request.args.to_dict()
     else:
         args = request.json
-    nginx_remote = 'X-Forwarded-For'
-    ip = request.headers[nginx_remote] if nginx_remote in request.headers \
+    nginx_remote = "X-Forwarded-For"
+    ip = (
+        request.headers[nginx_remote]
+        if nginx_remote in request.headers
         else request.remote_addr
+    )
     try:
-        module = request.endpoint.split('.')[0]
+        module = request.endpoint.split(".")[0]
     except AttributeError:
         module = None
-    Log(url=request.path,
+    Log(
+        url=request.path,
         arguments=args,
         method=request.method,
         ip=ip,
-        module=module if module else 'unknown',
-        level='info',
+        module=module if module else "unknown",
+        level="info",
         status_code=resp.status_code,
-        message="请求发起").save()
+        message="请求发起",
+    ).save()
     return resp
 
 
 def sink(message):
     """处理来自loguru的信息"""
     from .models import Message
+
     try:
         msg = Message()
-        msg.module = message.record['name']
-        msg.line = message.record['line']
-        msg.level = message.record['level']
-        msg.message = str(message.record['message'])
+        msg.module = message.record["name"]
+        msg.line = message.record["line"]
+        msg.level = message.record["level"]
+        msg.message = str(message.record["message"])
         msg.save()
     except RuntimeError:
         pass

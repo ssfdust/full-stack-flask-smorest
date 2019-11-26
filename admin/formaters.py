@@ -26,44 +26,44 @@ from flask import Markup
 
 
 def json_formatter(view, context, model, name):
-    '''
+    """
     格式化flask-admin中表单中的json字段，以美观显示
 
     :param      model: Model                ORM模型
     :param      name: str                   模型属性名
 
     只能用在flask-admin中的formatter中
-    '''
+    """
     value = getattr(model, name)
     json_value = pformat(value, width=50)
     return Markup('<code style="width: 80%;">{}</code>'.format(json_value))
 
 
 def line_formatter(view, context, model, name):
-    '''
+    """
     格式化flask-admin中表格行中的json字段，以美观显示
 
     :param      model: Model                ORM模型
     :param      name: str                   模型属性名
 
     只能用在flask-admin中的formatter中
-    '''
+    """
     value = getattr(model, name)
     if value:
-        text = ''.join([line + '<br>' for line in value.split('\n')])
+        text = "".join([line + "<br>" for line in value.split("\n")])
         return Markup('<pre style="width:80%;">{}</pre>'.format(text))
     else:
         return None
 
 
 def short_formatter(view, context, model, name):
-    '''
+    """
     格式化flask-admin中表单中的长字段，以美观显示
 
     :param      model: Model                ORM模型
     :param      name: str                   模型属性名
 
     只能用在flask-admin中的formatter中
-    '''
+    """
     value = getattr(model, name)
     return str(value)[0:15]

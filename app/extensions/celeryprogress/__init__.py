@@ -25,7 +25,7 @@ from decimal import Decimal
 from collections import OrderedDict
 from app.extensions.rpcstore import AMQPStore
 
-PROGRESS_STATE = 'PROGRESS'
+PROGRESS_STATE = "PROGRESS"
 
 
 class AbtractProgressRecorder(object):
@@ -46,11 +46,12 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
         self.task = task
         self.task_id = task_id if task_id else task.request.id
         super().__init__(
-            key='celery_progress',
+            key="celery_progress",
             value=None,
-            exchange='celery_progress',
+            exchange="celery_progress",
             expires=3600 * 24,
-            routing_key="celery_progress")
+            routing_key="celery_progress",
+        )
 
     def set_progress(self, current, total):
         """设置进度条信息"""
@@ -61,11 +62,8 @@ class ProgressRecorder(AMQPStore, AbtractProgressRecorder):
         self.value = dict(
             task_id=self.task_id,
             state=PROGRESS_STATE,
-            meta={
-                'current': current,
-                'total': total,
-                'percent': percent,
-            })
+            meta={"current": current, "total": total, "percent": percent,},
+        )
         self.save()
 
 
@@ -76,18 +74,19 @@ class Progress(AMQPStore):
 
     def __init__(self):
         super().__init__(
-            key='celery_progress',
+            key="celery_progress",
             value=None,
-            routing_key='celery_progress',
-            exchange='celery_progress',
-            expires=3600 * 24)
+            routing_key="celery_progress",
+            exchange="celery_progress",
+            expires=3600 * 24,
+        )
 
     def _get_info(self):
         self.reload()
         for item in self.values:
             if len(self._results) >= 5:
                 self._results.popitem(False)
-            self._results[item['task_id']] = item['meta']
+            self._results[item["task_id"]] = item["meta"]
 
     def get_info(self, task_id):
         self._get_info()
@@ -96,7 +95,7 @@ class Progress(AMQPStore):
                 ret = self._results[i]
                 break
         else:
-            ret = {'percent': 0}
+            ret = {"percent": 0}
 
         return ret
 

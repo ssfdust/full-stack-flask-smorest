@@ -12,21 +12,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+    app.modules.users.resources
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    用户权限角色管理
+"""
 
 from flask.views import MethodView
 from flask_jwt_extended import current_user
 from loguru import logger
 
 from app.extensions.marshal import BaseMsgSchema
-from app.modules.auth import PERMISSIONS
-from app.modules.auth.decorators import doc_login_required, permission_required
+from app.modules.auth import PERMISSIONS, ROLES
+from app.modules.auth.decorators import (
+    doc_login_required,
+    permission_required,
+    role_required,
+)
 
 from . import blp, models, params, schemas
 
 
-@blp.route('/groups')
+@blp.route("/groups")
 class GroupView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.GroupQuery)
     @blp.response(schemas.GroupResSchema, description="分组信息")
@@ -38,17 +46,18 @@ class GroupView(MethodView):
 
         groups = models.Group.query.all()
         schema = schemas.GroupSchema(
-            many=True, exclude=['created', 'deleted', 'modified'])
+            many=True, exclude=["created", "deleted", "modified"]
+        )
         data = schema.dump(groups)
 
         tree_groups = hierarchy_to_json(data)
 
-        return {'data': tree_groups}
+        return {"data": tree_groups}
 
     @doc_login_required
     @permission_required(PERMISSIONS.GroupAdd)
-    @blp.arguments(params.GroupInfoParam)
-    @blp.response(BaseMsgSchema, description="分组成功")
+    @blp.arguments(schemas.GroupSchema)
+    @blp.response(schemas.GroupItemSchema, description="分组成功")
     def post(self, group):
         """
         新增分组
@@ -62,12 +71,11 @@ class GroupView(MethodView):
 
         logger.info(f"{current_user.email}新建了{group.name}组")
 
-        return {'msg': 'success', 'code': 0}
+        return {"data": group}
 
 
-@blp.route('/groups/<int:gid>')
+@blp.route("/group/<int:gid>")
 class GroupItemView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.GroupQuery)
     @blp.response(schemas.GroupItemSchema, description="分组信息")
@@ -76,19 +84,19 @@ class GroupItemView(MethodView):
         获取单个组信息
         """
 
-        return {'data': models.Group.get_by_id(gid)}
+        return {"data": models.Group.get_by_id(gid)}
 
     @doc_login_required
     @permission_required(PERMISSIONS.GroupEdit)
-    @blp.arguments(params.GroupInfoParam)
-    @blp.response(BaseMsgSchema, description="分组成功")
+    @blp.arguments(schemas.GroupSchema)
+    @blp.response(schemas.GroupItemSchema, description="分组成功")
     def patch(self, group, gid):
         """
         修改分组
         """
         from app.services.users.groups import GroupFactory
 
-        group = models.Group.update_by_id(gid, params.GroupInfoParam, group)
+        group = models.Group.update_by_id(gid, schemas.GroupSchema, group, commit=False)
 
         group_factory = GroupFactory(group)
         group_factory.modify_group()
@@ -97,7 +105,7 @@ class GroupItemView(MethodView):
 
         logger.info(f"{current_user.email}修改了{group.name}组")
 
-        return {'msg': 'success', 'code': 0}
+        return {"data": group}
 
     @doc_login_required
     @permission_required(PERMISSIONS.GroupDelete)
@@ -116,18 +124,12 @@ class GroupItemView(MethodView):
 
         logger.info(f"{current_user.email}删除了{group.name}组")
 
-        return
-
 
 @blp.route(
-    '/groups/<int:id>/members',
-    parameters=[{
-        'in': 'path',
-        'name': 'id',
-        'description': '组ID'
-    }])
+    "/groups/<int:id>/members",
+    parameters=[{"in": "path", "name": "id", "description": "组ID"}],
+)
 class GroupMemberView(MethodView):
-
     @doc_login_required
     @permission_required(PERMISSIONS.GroupEdit)
     @blp.arguments(params.UserListByIdParam)
@@ -147,30 +149,32 @@ class GroupMemberView(MethodView):
 
         models.db.session.commit()
 
-        return {'code': 0, 'msg': 'success'}
+        return {"code": 0, "msg": "success"}
 
 
-@blp.route('/userinfo')
+@blp.route("/userinfo")
 class UserView(MethodView):
-
     @doc_login_required
-    @blp.response(schemas.UserDetailsSchema, description='用户信息')
+    @role_required(ROLES.User)
+    @blp.response(schemas.UserDetailsSchema, description="用户信息")
     def get(self):
         """
         获取用户自己的信息
         """
 
-        return {'data': current_user}
+        return {"data": current_user}
 
     @doc_login_required
-    @blp.arguments(params.UserInfoParam)
-    @blp.response(schemas.UserDetailsSchema, code=200, description='用户信息')
+    @role_required(ROLES.User)
+    @blp.arguments(schemas.UserInfoSchema)
+    @blp.response(schemas.UserDetailsSchema, code=200, description="用户信息")
     def patch(self, userinfo):
         """
         更新用户信息
         """
-        models.UserInfo.update_by_id(current_user.userinfo.id,
-                                     params.UserInfoParam, userinfo)
+        models.UserInfo.update_by_id(
+            current_user.userinfo.id, schemas.UserInfoSchema, userinfo
+        )
         logger.info(f"{current_user.username}更新了个人信息")
 
-        return {'data': current_user}
+        return {"data": current_user}

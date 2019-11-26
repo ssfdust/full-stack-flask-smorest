@@ -26,6 +26,7 @@ class TokenBlackList(SurrogatePK, Model):
     :attr token_type: str(10) token类型
     :attr expires: Arrow 过期时间
     """
+
     __tablename__ = "jwt_token_blacklist"
 
     user_identity = db.Column(db.String(50), nullable=False)

@@ -26,7 +26,7 @@ def _epoch_utc_to_arrow(epoch_utc):
     生成arrow时间
     """
     time = arrow.get(epoch_utc)
-    return arrow.get(time.astimezone(tz.gettz('Asia/Shanghai')))
+    return arrow.get(time.astimezone(tz.gettz("Asia/Shanghai")))
 
 
 def is_token_revoked(decoded_token):
@@ -34,7 +34,8 @@ def is_token_revoked(decoded_token):
     从数据库中寻找token是否被撤销
     """
     from .models import TokenBlackList
-    jti = decoded_token['jti']
+
+    jti = decoded_token["jti"]
     try:
         token = TokenBlackList.query.filter_by(jti=jti).one()
         return token.revoked
@@ -42,8 +43,9 @@ def is_token_revoked(decoded_token):
         return True
 
 
-def add_token_to_database(encoded_token, identity_claim,
-                          custom_token_type=None, allow_expired=False):
+def add_token_to_database(
+    encoded_token, identity_claim, custom_token_type=None, allow_expired=False
+):
     """
     将新的Token解码后加入到数据库
 
@@ -51,36 +53,35 @@ def add_token_to_database(encoded_token, identity_claim,
     :param identity_claim: 指定的认证字段
     """
     from .models import TokenBlackList
+
     decoded_token = decode_token(encoded_token, allow_expired=allow_expired)
-    jti = decoded_token['jti']
-    token_type = decoded_token[
-        'type'] if not custom_token_type else custom_token_type
+    jti = decoded_token["jti"]
+    token_type = decoded_token["type"] if not custom_token_type else custom_token_type
     user_identity = decoded_token[identity_claim]
-    expires = _epoch_utc_to_arrow(decoded_token['exp'])
+    expires = _epoch_utc_to_arrow(decoded_token["exp"])
     revoked = False
     TokenBlackList.create(
         jti=jti,
         token_type=token_type,
         user_identity=user_identity,
         expires=expires,
-        revoked=revoked)
+        revoked=revoked,
+    )
 
 
-def revoke_token(raw_jwt, token_type='refresh'):
+def revoke_token(raw_jwt, token_type="refresh"):
     """
     将指定的jwt撤销
     """
     from .models import TokenBlackList
 
-    user = raw_jwt['identity']
-    jti = raw_jwt['jti']
+    user = raw_jwt["identity"]
+    jti = raw_jwt["jti"]
     try:
         TokenBlackList.query.filter_by(
-            user_identity=user,
-            token_type=token_type,
-        ).update({'revoked': True})
-        token = TokenBlackList.query.filter_by(
-            user_identity=user, jti=jti).one()
+            user_identity=user, token_type=token_type,
+        ).update({"revoked": True})
+        token = TokenBlackList.query.filter_by(user_identity=user, jti=jti).one()
         token.update(revoked=True)
     except NoResultFound:
         pass

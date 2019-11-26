@@ -29,8 +29,7 @@ from flask_smorest import Blueprint
 from app.extensions import api
 
 blp = Blueprint(
-    'EmailTemplate', __name__, url_prefix='/email_templates',
-    description='电子邮件模板'
+    "EmailTemplate", __name__, url_prefix="/email_templates", description="电子邮件模板"
 )
 
 
@@ -41,6 +40,8 @@ def init_app(app):
     """
     from . import models, resources  # noqa
 
-    base_prefix = app.config['MODULE_BASE_PREFIX'] if 'MODULE_BASE_PREFIX' in app.config else ''
+    base_prefix = (
+        app.config["MODULE_BASE_PREFIX"] if "MODULE_BASE_PREFIX" in app.config else ""
+    )
 
     api.register_blueprint(blp, base_prefix=base_prefix)

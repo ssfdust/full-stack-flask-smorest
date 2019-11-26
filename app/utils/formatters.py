@@ -20,13 +20,14 @@ import arrow
 from pprint import pformat
 from loguru import logger
 
+
 def mongon_opts_str(opts):
     url = "mongodb://{username}:{password}@{host}:{port}/{db}".format(**opts)
     return url
 
 
 def celery_worker_formatter(worker_info):
-    '''
+    """
     e.g.
 
 
@@ -54,7 +55,7 @@ def celery_worker_formatter(worker_info):
             ]
         }
     }
-    '''
+    """
     from flask_babel import get_timezone
 
     result = []
@@ -62,12 +63,11 @@ def celery_worker_formatter(worker_info):
         for _, details in task_info.items():
             state, info_dict = details
             tmp = {}
-            tmp['state'] = state
+            tmp["state"] = state
             tmp.update(info_dict)
-            tmp['time_start'] = arrow.get(tmp['time_start'])\
-                .to(str(get_timezone()))
-            _id = uuid.UUID(tmp.pop('id'))
-            tmp['id'] = _id
+            tmp["time_start"] = arrow.get(tmp["time_start"]).to(str(get_timezone()))
+            _id = uuid.UUID(tmp.pop("id"))
+            tmp["id"] = _id
             result.append(tmp)
 
     return result
@@ -75,5 +75,5 @@ def celery_worker_formatter(worker_info):
 
 def pretty_string(text, printer=logger.debug):
     """美化字符串输出"""
-    for line in pformat(text).split('\n'):
+    for line in pformat(text).split("\n"):
         printer(line)

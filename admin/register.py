@@ -42,140 +42,171 @@ def init():
     """初始化admin的注册模块"""
     # 首页
     admin._set_admin_index_view(
-        views.AdminIndexView(
-            menu_icon_type='glyph', menu_icon_value='fa fa-home'))
+        views.AdminIndexView(menu_icon_type="glyph", menu_icon_value="fa fa-home")
+    )
     admin._views.append(
         views.VisitStatisticView(
-            url='/admin/statistic/visit',
-            endpoint='admin.views.statistic.visit'))
+            url="/admin/statistic/visit", endpoint="admin.views.statistic.visit"
+        )
+    )
     admin._views.append(
         views.TasksStatisticView(
-            url='/admin/statistic/tasks',
-            endpoint='admin.views.statistic.tasks'))
+            url="/admin/statistic/tasks", endpoint="admin.views.statistic.tasks"
+        )
+    )
+    admin._views.append(views.IndexRedirectView(url="/", endpoint="admin.views.index"))
     admin._views.append(
-        views.IndexRedirectView(url='/', endpoint='admin.views.index'))
+        views.MailSendView(url="/admin/send-mail", endpoint="admin.views.sendmail")
+    )
     admin._views.append(
-        views.MailSendView(
-            url='/admin/send-mail', endpoint='admin.views.sendmail'))
-    admin._views.append(
-        views.TodoListView(
-            url='/admin/todolist', endpoint='admin.views.todolist'))
+        views.TodoListView(url="/admin/todolist", endpoint="admin.views.todolist")
+    )
     # 用户管理
     admin.add_view(
         views.UserModelView(
             authm.User,
             db.session,
-            name='用户',
-            category='用户管理',
-            url='/admin/users',
-            endpoint='admin.views.users'))
+            name="用户",
+            category="用户管理",
+            url="/admin/users",
+            endpoint="admin.views.users",
+        )
+    )
     admin.add_view(
         views.UserInfoModelView(
             userm.UserInfo,
             db.session,
-            name='用户详情',
-            category='用户管理',
-            url='/admin/userinfo',
-            endpoint='admin.views.userinfo'))
+            name="用户详情",
+            category="用户管理",
+            url="/admin/userinfo",
+            endpoint="admin.views.userinfo",
+        )
+    )
     admin.add_view(
         views.RoleModelView(
             authm.Role,
             db.session,
-            name='角色',
-            category='用户管理',
-            url='/admin/roles',
-            endpoint='admin.views.roles'))
+            name="角色",
+            category="用户管理",
+            url="/admin/roles",
+            endpoint="admin.views.roles",
+        )
+    )
     admin.add_view(
         views.PermissionModelView(
             authm.Permission,
             db.session,
-            name='权限',
-            category='用户管理',
-            url='/admin/permissions',
-            endpoint='admin.views.permissions'))
+            name="权限",
+            category="用户管理",
+            url="/admin/permissions",
+            endpoint="admin.views.permissions",
+        )
+    )
     admin.add_view(
         views.GroupModelView(
             userm.Group,
             db.session,
-            name='组详情',
-            category='用户管理',
-            url='/admin/groups',
-            endpoint='admin.views.groups'))
+            name="组详情",
+            category="用户管理",
+            url="/admin/groups",
+            endpoint="admin.views.groups",
+        )
+    )
     # 日志管理
     admin.add_view(
         views.LogModelView(
             logm.Log,
-            name='访问日志',
-            category='日志管理',
-            url='/admin/logs',
-            endpoint='admin.views.logs'))
+            name="访问日志",
+            category="日志管理",
+            url="/admin/logs",
+            endpoint="admin.views.logs",
+        )
+    )
     admin.add_view(
         views.MsgModelView(
             logm.Message,
-            name='系统日志',
-            category='日志管理',
-            url='/admin/messages',
-            endpoint='admin.views.messages'))
+            name="系统日志",
+            category="日志管理",
+            url="/admin/messages",
+            endpoint="admin.views.messages",
+        )
+    )
     admin.add_view(
         views.CeleryTaskView(
             cbackend.Tasks,
-            name='任务详情',
-            category='任务管理',
-            url='/admin/tasks',
-            endpoint='admin.views.tasks'))
+            name="任务详情",
+            category="任务管理",
+            url="/admin/tasks",
+            endpoint="admin.views.tasks",
+        )
+    )
     admin.add_view(
         views.CeleryScheduleView(
             PeriodicTask,
-            name='调度详情',
-            category='任务管理',
-            url='/admin/schedules',
-            endpoint='admin.views.schedules'))
+            name="调度详情",
+            category="任务管理",
+            url="/admin/schedules",
+            endpoint="admin.views.schedules",
+        )
+    )
     # 系统设置
     admin.add_view(
         views.MenuModelView(
             menum.Menu,
             db.session,
-            name='菜单管理',
-            category='系统设置',
-            url='/admin/menus',
-            endpoint='admin.views.menus'))
+            name="菜单管理",
+            category="系统设置",
+            url="/admin/menus",
+            endpoint="admin.views.menus",
+        )
+    )
     admin.add_view(
         views.EmailTemplateView(
             etemplatesm.EmailTemplate,
             db.session,
-            name='邮件模板管理',
-            category='系统设置',
-            url='/admin/email-templates',
-            endpoint='admin.views.email-template'))
+            name="邮件模板管理",
+            category="系统设置",
+            url="/admin/email-templates",
+            endpoint="admin.views.email-template",
+        )
+    )
     # 文件管理
     admin.add_view(
         views.StorageView(
             storagem.Storages,
             db.session,
-            url='/admin/storages',
-            name='存储详情',
-            category='文件管理',
-            endpoint='admin.views.storages'))
+            url="/admin/storages",
+            name="存储详情",
+            category="文件管理",
+            endpoint="admin.views.storages",
+        )
+    )
     admin.add_view(
         views.GarbageView(
             storagem.GarbageStorages,
             db.session,
-            url='/admin/garbages',
-            name='回收站',
-            category='文件管理',
-            endpoint='admin.views.garbages'))
+            url="/admin/garbages",
+            name="回收站",
+            category="文件管理",
+            endpoint="admin.views.garbages",
+        )
+    )
     admin.add_view(
         FileAdmin(
-            'uploads',
-            url='/admin/uploads',
-            name='文件查看',
-            category='文件管理',
-            endpoint='admin.views.uploads'))
+            "uploads",
+            url="/admin/uploads",
+            name="文件查看",
+            category="文件管理",
+            endpoint="admin.views.uploads",
+        )
+    )
     # 个人详情
     admin.add_view(
         views.ProfileView(
-            name='个人详情',
-            url='/admin/profile',
+            name="个人详情",
+            url="/admin/profile",
             endpoint="admin.views.profile",
-            menu_icon_type='glyph',
-            menu_icon_value='fa fa-id-card'))
+            menu_icon_type="glyph",
+            menu_icon_value="fa fa-id-card",
+        )
+    )

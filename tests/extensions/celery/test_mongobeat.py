@@ -10,7 +10,6 @@ _ids = count(0)
 
 
 class EntryTrackSave(MongoScheduleEntry):
-
     def __init__(self, *args, **kwargs):
         self.save = 0
         super().__init__(*args, **kwargs)
@@ -34,7 +33,6 @@ class TrackingScheduler(MongoScheduler):
 
 
 class SchedulerCase(object):
-
     def create_model_interval(self, scheduler, **kwargs):
         model = self.create_model(type="interval", **kwargs)
         model.interval = scheduler
@@ -57,7 +55,7 @@ class SchedulerCase(object):
             "kwargs": '{"test": "123"}',
             "queue": "xyz",
             "routing_key": "test",
-            "exchange": "foo"
+            "exchange": "foo",
         }
         return PeriodicTask(**entry, **kwargs)
 
@@ -86,9 +84,9 @@ class TestMongoBeat(SchedulerCase):
 
         right_now = e._default_now()
         schedule2 = PeriodicTask.Interval(every=1, period="minutes")
-        m2 = self.create_model(interval=schedule2,
-                               type="interval",
-                               last_run_at=right_now)
+        m2 = self.create_model(
+            interval=schedule2, type="interval", last_run_at=right_now
+        )
         m2.save()
         e2 = self.Entry(m2)
         assert m2.interval.period_singular == "minute"
@@ -102,9 +100,12 @@ class TestMongoBeat(SchedulerCase):
     def test_entry_is_due(self, app, celery_sess_app):
         right_now = datetime.now()
         schedule = PeriodicTask.Crontab(minute="*/10")
-        m = self.create_model_crontab(schedule, last_run_at=right_now,
-                                      start_after=right_now + timedelta(seconds=20),
-                                      max_run_count=1)
+        m = self.create_model_crontab(
+            schedule,
+            last_run_at=right_now,
+            start_after=right_now + timedelta(seconds=20),
+            max_run_count=1,
+        )
         assert str(m) == "{}: */10 * * * * (分/时/周/日/月)".format(m.name)
         e = self.Entry(m)
         is_due, next = e.is_due()
@@ -125,7 +126,11 @@ class TestMongoBeat(SchedulerCase):
         m.max_run_count = 0
         m.run_immediately = True
         m.save()
-        assert str(e) == "<EntryTrackSave (%s celery.ping(*[1, 2, 3], **{'test': '123'}) {5})>" % m.name
+        assert (
+            str(e)
+            == "<EntryTrackSave (%s celery.ping(*[1, 2, 3], **{'test': '123'}) {5})>"
+            % m.name
+        )
         is_due, next = e.is_due()
         assert is_due is True
         assert next != 5
@@ -145,7 +150,8 @@ class TestMongoBeat(SchedulerCase):
 
 
 class TestMongoScheduler(SchedulerCase):
-
     @pytest.fixture(autouse=True)
     def setup_scheduler(self):
-        self.m1 = self.create_model_interval(PeriodicTask.Interval(every=10, period="minutes"))
+        self.m1 = self.create_model_interval(
+            PeriodicTask.Interval(every=10, period="minutes")
+        )

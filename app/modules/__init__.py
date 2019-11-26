@@ -30,8 +30,8 @@ def init_app(app):
     """
     from importlib import import_module
 
-    module_names = app.config['ENABLED_MODULES']
+    module_names = app.config["ENABLED_MODULES"]
 
     for module_name in module_names:
-        module = import_module(f'.modules.{module_name}', 'app')
+        module = import_module(f".modules.{module_name}", "app")
         module.init_app(app)

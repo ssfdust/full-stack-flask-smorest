@@ -35,7 +35,9 @@ class EmailTemplate(Model, SurrogatePK):
 
     __tablename__ = "email_templates"
 
-    name = db.Column(db.String(length=128), nullable=False, unique=True, doc="email_templates的名称")
+    name = db.Column(
+        db.String(length=128), nullable=False, unique=True, doc="email_templates的名称"
+    )
     template = db.Column(db.Text, nullable=False, doc="模板")
 
     @classmethod

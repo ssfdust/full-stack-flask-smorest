@@ -22,6 +22,7 @@ def auth_socket(func):
 
     通过md5加密的连接来连接
     """
+
     @wraps(func)
     def decorated_function(*args, **kwargs):
         user_id = request.args.get("user_id", None)

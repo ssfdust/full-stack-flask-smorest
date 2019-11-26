@@ -19,7 +19,7 @@ def status(context):
     context.run(command)
 
 
-@task(help={'program': 'supervisord.conf中定义的program名'})
+@task(help={"program": "supervisord.conf中定义的program名"})
 def start(context, program):
     """
     运行服务
@@ -28,7 +28,7 @@ def start(context, program):
     context.run(command)
 
 
-@task(help={'program': 'supervisord.conf中定义的program名'})
+@task(help={"program": "supervisord.conf中定义的program名"})
 def stop(context, program):
     """
     停止服务
@@ -37,7 +37,7 @@ def stop(context, program):
     context.run(command)
 
 
-@task(help={'program': 'supervisord.conf中定义的program名'})
+@task(help={"program": "supervisord.conf中定义的program名"})
 def restart(context, program):
     """
     重启服务
@@ -46,8 +46,8 @@ def restart(context, program):
     context.run(command)
 
 
-@task(help={'program': 'supervisord.conf中定义的program名'})
-def logs(context, program='gunicorn'):
+@task(help={"program": "supervisord.conf中定义的program名"})
+def logs(context, program="gunicorn"):
     """
     打印Supervord日志
     默认: gunicorn
@@ -71,7 +71,8 @@ def daemon(context):
     从supervord启动多服务.
     """
     from pathlib import Path
-    log_path = Path('logs')
+
+    log_path = Path("logs")
     if not log_path.exists():
         log_path.mkdir()
     command = "supervisord"

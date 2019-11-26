@@ -17,7 +17,6 @@ from app.services.users.userinfo import handle_avator
 
 
 class ExtraArgsHandler(object):
-
     def __init__(self, storage, args):
         self.storage = storage
         self.args = args
@@ -26,4 +25,4 @@ class ExtraArgsHandler(object):
         func = self.__mapping__.get(self.storage.storetype, None)
         func(self.args)
 
-    __mapping__ = {'avator': handle_avator}
+    __mapping__ = {"avator": handle_avator}

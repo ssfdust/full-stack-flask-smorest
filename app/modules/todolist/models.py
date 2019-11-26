@@ -31,6 +31,7 @@ class TodoItem(SurrogatePK, Model):
     :attr sort: int 序号
     :attr state: bool 完成状态
     """
+
     __tablename__ = "todolist_items"
 
     def set_sort(self):
@@ -43,23 +44,22 @@ class TodoItem(SurrogatePK, Model):
 
     message = db.Column(
         db.String(60),
-        doc='待办内容',
-        info={'marshmallow': {
-            'required': True,
-            'allow_none': False
-        }})
+        doc="待办内容",
+        info={"marshmallow": {"required": True, "allow_none": False}},
+    )
     due = db.Column(
         db.ArrowType,
-        doc='过期时间',
+        doc="过期时间",
         info={
-            'marshmallow': {
-                'required': True,
-                'allow_none': False,
-                'format': '%Y-%m-%d %H:%M:%S'
+            "marshmallow": {
+                "required": True,
+                "allow_none": False,
+                "format": "%Y-%m-%d %H:%M:%S",
             }
-        })
-    sort = db.Column(db.Integer, doc='序号', default=set_sort)
-    state = db.Column(db.Boolean, doc='完成状态', default=False)
+        },
+    )
+    sort = db.Column(db.Integer, doc="序号", default=set_sort)
+    state = db.Column(db.Boolean, doc="完成状态", default=False)
 
     def __repr__(self):  # pragma: nocover
         return self.message

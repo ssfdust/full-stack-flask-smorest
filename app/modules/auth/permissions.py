@@ -28,29 +28,29 @@
 class ROLES:
     """角色字段定义"""
 
-    SuperUser = 'SuperUser'
-    User = 'User'
-    UserManager = 'UserManager'
-    EmailTemplateManager = 'EmailTemplateManager'
+    SuperUser = "SuperUser"
+    User = "User"
+    UserManager = "UserManager"
+    EmailTemplateManager = "EmailTemplateManager"
     # End Of ROLES
 
 
 class PERMISSIONS:
     """权限字段定义"""
 
-    SuperUser = 'SuperPrivilege'
-    User = 'UserPrivilege'
+    SuperUser = "SuperPrivilege"
+    User = "UserPrivilege"
     # UserManager
-    GroupAdd = 'GroupAddPrivilege'
-    GroupDelete = 'GroupDeletePrivilege'
-    GroupEdit = 'GroupEditPrivilege'
-    GroupQuery = 'GroupQueryPrivilege'
-    UserEdit = 'UserEditPrivilege'
+    GroupAdd = "GroupAddPrivilege"
+    GroupDelete = "GroupDeletePrivilege"
+    GroupEdit = "GroupEditPrivilege"
+    GroupQuery = "GroupQueryPrivilege"
+    UserEdit = "UserEditPrivilege"
     # EmailTemplateManager
-    EmailTemplateAdd = 'EmailTemplateAddPrivilege'
-    EmailTemplateEdit = 'EmailTemplateEditPrivilege'
-    EmailTemplateDelete = 'EmailTemplateDeletePrivilege'
-    EmailTemplateQuery = 'EmailTemplateQueryPrivilege'
+    EmailTemplateAdd = "EmailTemplateAddPrivilege"
+    EmailTemplateEdit = "EmailTemplateEditPrivilege"
+    EmailTemplateDelete = "EmailTemplateDeletePrivilege"
+    EmailTemplateQuery = "EmailTemplateQueryPrivilege"
     # End Of PERMISSIONS
 
 
@@ -67,8 +67,10 @@ DEFAULT_ROLES_PERMISSIONS_MAPPING = {
         PERMISSIONS.GroupQuery,
         PERMISSIONS.UserEdit,
         # 电子邮件模板管理
-        PERMISSIONS.EmailTemplateAdd, PERMISSIONS.EmailTemplateDelete,
-        PERMISSIONS.EmailTemplateEdit, PERMISSIONS.EmailTemplateQuery,
+        PERMISSIONS.EmailTemplateAdd,
+        PERMISSIONS.EmailTemplateDelete,
+        PERMISSIONS.EmailTemplateEdit,
+        PERMISSIONS.EmailTemplateQuery,
         # End Of SuperUser
     ],
     ROLES.UserManager: [
@@ -79,8 +81,10 @@ DEFAULT_ROLES_PERMISSIONS_MAPPING = {
         PERMISSIONS.UserEdit,
     ],
     ROLES.EmailTemplateManager: [
-        PERMISSIONS.EmailTemplateAdd, PERMISSIONS.EmailTemplateDelete,
-        PERMISSIONS.EmailTemplateEdit, PERMISSIONS.EmailTemplateQuery
+        PERMISSIONS.EmailTemplateAdd,
+        PERMISSIONS.EmailTemplateDelete,
+        PERMISSIONS.EmailTemplateEdit,
+        PERMISSIONS.EmailTemplateQuery,
     ],
     # End Of Permissions Mapping
 }

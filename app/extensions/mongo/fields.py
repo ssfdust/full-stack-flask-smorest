@@ -39,8 +39,7 @@ class ArrowField(BaseField):
     def validate(self, value):
         new_value = self.to_mongo(value)
         if not isinstance(new_value, datetime):
-            self.error(u'cannot parse date "%s" type: %s' %
-                       (value, type(value)))
+            self.error(u'cannot parse date "%s" type: %s' % (value, type(value)))
 
     def to_mongo(self, data):
         """
@@ -50,11 +49,12 @@ class ArrowField(BaseField):
         2. 转换非UTC时区的时间为当前时区
         """
         from flask_babel import get_timezone as gttz
+
         if data:
             value = self._preload(data)
             if value.tzinfo == tz.UTC:
                 value = value.replace(tzinfo=gttz())
-            utc_value = value.to('UTC')
+            utc_value = value.to("UTC")
             return utc_value.datetime
         return data
 
@@ -73,10 +73,10 @@ class ArrowField(BaseField):
         从数据库中将时间转为arrow类型
         """
         from flask_babel import get_timezone
+
         if value:
             return arrow.get(value).to(str(get_timezone()))
         return value
 
     def prepare_query_value(self, op, value):
-        return super(ArrowField,
-                     self).prepare_query_value(op, self.to_mongo(value))
+        return super(ArrowField, self).prepare_query_value(op, self.to_mongo(value))

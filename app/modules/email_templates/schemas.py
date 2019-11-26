@@ -54,7 +54,7 @@ class EmailTemplateOptsSchema(ma.Schema):
     """电子邮件模板的选项"""
 
     class Meta:
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class EmailTemplateListSchema(ma.Schema):

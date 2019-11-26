@@ -47,8 +47,7 @@ def register_serializer():
 # https://github.com/getsentry/zeus/blob/97528038a0abfd6f0e300d8d3f276e1b0818c328/zeus/utils/celery.py#L10
 
 
-class Celery():
-
+class Celery:
     def __init__(self, app=None):
         # we create the celery immediately as otherwise NOTHING WORKS
         self.app = None
@@ -69,11 +68,12 @@ class Celery():
             broker=app.config["CELERY_BROKER_URL"],
             backend=app.config["CELERY_RESULT_BACKEND"],
             enable_utc=True,
-            timezone=app.config['BABEL_DEFAULT_TIMEZONE'])
+            timezone=app.config["BABEL_DEFAULT_TIMEZONE"],
+        )
 
         self.celery.__dict__.update(vars(new_celery))
         self.celery.conf.update(app.config)
-        self.celery.conf['BROKER_HEARTBEAT'] = 0
+        self.celery.conf["BROKER_HEARTBEAT"] = 0
 
         celeryd_init.connect(self._worker_process_init)
 
@@ -89,10 +89,7 @@ class Celery():
         )
         host = adapter.get_host("")
         return str(
-            "%s//%s"
-            % (
-                adapter.url_scheme + ":" if adapter.url_scheme else "", host
-            )
+            "%s//%s" % (adapter.url_scheme + ":" if adapter.url_scheme else "", host)
         )
 
     def task(self, *args, **kwargs):

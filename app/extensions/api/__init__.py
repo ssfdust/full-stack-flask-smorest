@@ -18,7 +18,6 @@ from app.extensions.marshal import UploadField
 
 
 class Api(BaseApi):
-
     def register_blueprint(self, blp, base_prefix=None, **options):
         """注册蓝图
 
@@ -30,34 +29,26 @@ class Api(BaseApi):
 
         app初始化后调用
         """
-        url_prefix = options.get('url_prefix', blp.url_prefix)
+        url_prefix = options.get("url_prefix", blp.url_prefix)
         if base_prefix is not None:
-            options['url_prefix'] = base_prefix + url_prefix
+            options["url_prefix"] = base_prefix + url_prefix
 
         self._app.register_blueprint(blp, **options)
 
         blp.register_views_in_doc(self._app, self.spec)
 
-        self.spec.tag({'name': blp.name, 'description': blp.description})
+        self.spec.tag({"name": blp.name, "description": blp.description})
 
 
 spec_kwargs = {
-    'components': {
-        'securitySchemes': {
-            'api_key': {
-                'type': 'http',
-                'scheme': 'bearer',
-                'bearerFormat': 'JWT'
-            },
-            'refresh_key': {
-                'type': 'http',
-                'scheme': 'bearer',
-                'bearerFormat': 'JWT'
-            }
+    "components": {
+        "securitySchemes": {
+            "api_key": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"},
+            "refresh_key": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"},
         }
     }
 }
 
 api = Api(spec_kwargs=spec_kwargs)
 
-api.register_field(UploadField, 'string', 'binary')
+api.register_field(UploadField, "string", "binary")

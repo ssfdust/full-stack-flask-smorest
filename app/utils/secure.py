@@ -34,6 +34,6 @@ def encrypt_str(text):
     :param text: str 输入字符串
     :return str sha256加密的字符串
     """
-    obj = sha256(text.encode(encoding='utf-8'))
+    obj = sha256(text.encode(encoding="utf-8"))
 
     return obj.hexdigest()

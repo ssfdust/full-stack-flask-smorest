@@ -24,47 +24,46 @@ from flask_security.utils import encrypt_password
 
 
 class ProfileView(BaseView):
-
-    @expose('/', methods=['GET', 'POST'])
+    @expose("/", methods=["GET", "POST"])
     def index(self):
         """
         后台个人详情页
         """
-        if request.method == 'GET':
-            return self.render('admin/profile.html')
+        if request.method == "GET":
+            return self.render("admin/profile.html")
         else:
             data = request.form
-            if data['sex']:
-                current_user.userinfo.sex = int(data['sex'])
-            if data['age']:
-                current_user.userinfo.age = int(data['age'])
-            if data['first_name']:
-                current_user.userinfo.first_name = data['first_name']
-            if data['last_name']:
-                current_user.userinfo.last_name = data['last_name']
+            if data["sex"]:
+                current_user.userinfo.sex = int(data["sex"])
+            if data["age"]:
+                current_user.userinfo.age = int(data["age"])
+            if data["first_name"]:
+                current_user.userinfo.first_name = data["first_name"]
+            if data["last_name"]:
+                current_user.userinfo.last_name = data["last_name"]
 
             current_user.save()
-            return self.render('admin/profile.html')
+            return self.render("admin/profile.html")
 
-    @expose('/set-passwd', methods=['PATCH'])
+    @expose("/set-passwd", methods=["PATCH"])
     def setpwd(self):
         """
         修改密码
         """
         data = request.get_json()
-        if current_user.verify_and_update_password(data['oldpasswd']):
-            current_user.password = encrypt_password(data['passwd'])
+        if current_user.verify_and_update_password(data["oldpasswd"]):
+            current_user.password = encrypt_password(data["passwd"])
             current_user.save()
-            return {'code': 0, 'msg': 'success'}
+            return {"code": 0, "msg": "success"}
         else:
-            return {'code': 1, 'msg': 'wrong old password'}
+            return {"code": 1, "msg": "wrong old password"}
 
-    @expose('/upload-avator', methods=['POST'])
+    @expose("/upload-avator", methods=["POST"])
     def set_avator(self):
         """
         上传头像
         """
-        avator = request.files['file']
+        avator = request.files["file"]
         current_user.userinfo.avator.update(_store=avator)
 
-        return {'code': 0}
+        return {"code": 0}

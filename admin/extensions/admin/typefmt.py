@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask_admin.contrib.mongoengine.typefmt import DEFAULT_FORMATTERS as MONG_FORMATTERS
+from flask_admin.contrib.mongoengine.typefmt import (
+    DEFAULT_FORMATTERS as MONG_FORMATTERS,
+)
 from flask_admin.contrib.sqla.typefmt import DEFAULT_FORMATTERS as SQLA_FORMATTERS
 
 try:
@@ -23,6 +25,7 @@ try:
         """
         """
         from flask_babel import get_locale
+
         locale = get_locale()
         try:
             return arrow_time.humanize(locale=locale.language)

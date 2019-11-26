@@ -26,8 +26,7 @@ from flask_admin.contrib import mongoengine as mong
 from flask_admin.contrib import sqla
 from flask_security import current_user
 
-from admin.extensions.admin.converter import (LocalModelConverter,
-                                              LocalMongoConverter)
+from admin.extensions.admin.converter import LocalModelConverter, LocalMongoConverter
 from admin.extensions.admin.filters import MongoFilterConverter
 from admin.extensions.admin.typefmt import MONG_FORMATTERS, SQLA_FORMATTERS
 from app.extensions.mongo import fields
@@ -36,12 +35,19 @@ from app.extensions.mongo import fields
 # 以支持Mongodb的Arrow类型
 # 排序
 SORTABLE_FIELDS = {
-    mongoengine.StringField, mongoengine.IntField, mongoengine.FloatField,
-    mongoengine.BooleanField, mongoengine.DateTimeField,
-    mongoengine.ComplexDateTimeField, mongoengine.ObjectIdField,
-    mongoengine.DecimalField, mongoengine.ReferenceField,
-    mongoengine.EmailField, mongoengine.UUIDField, mongoengine.URLField,
-    fields.ArrowField
+    mongoengine.StringField,
+    mongoengine.IntField,
+    mongoengine.FloatField,
+    mongoengine.BooleanField,
+    mongoengine.DateTimeField,
+    mongoengine.ComplexDateTimeField,
+    mongoengine.ObjectIdField,
+    mongoengine.DecimalField,
+    mongoengine.ReferenceField,
+    mongoengine.EmailField,
+    mongoengine.UUIDField,
+    mongoengine.URLField,
+    fields.ArrowField,
 }
 
 
@@ -58,7 +64,7 @@ class AuthMongView(mong.ModelView):
 
     column_type_formatters = MONG_FORMATTERS
 
-    form_excluded_columns = ['created']
+    form_excluded_columns = ["created"]
 
     edit_modal = True
 
@@ -75,7 +81,8 @@ class AuthMongView(mong.ModelView):
         for n, f in self._get_model_fields():
             if f.__class__ in SORTABLE_FIELDS:
                 if self.column_display_pk or not isinstance(
-                        f, mongoengine.ObjectIdField):
+                    f, mongoengine.ObjectIdField
+                ):
                     columns[n] = f
 
         return columns
@@ -85,8 +92,7 @@ class AuthMongView(mong.ModelView):
         自定义获取栏目名称
         """
         model_labels = {
-            k: c.__dict__.get('verbose_name', '')
-            for k, c in self.model._fields.items()
+            k: c.__dict__.get("verbose_name", "") for k, c in self.model._fields.items()
         }
         if self.column_labels and field in self.column_labels:
             return self.column_labels[field]
@@ -100,9 +106,8 @@ class AuthMongView(mong.ModelView):
             Create form from the model.
         """
         model_args = {
-            k: {
-                'label': c.__dict__.get('verbose_name', '')
-            } for k, c in self.model._fields.items()
+            k: {"label": c.__dict__.get("verbose_name", "")}
+            for k, c in self.model._fields.items()
         }
         model_args.update(self.form_args if self.form_args else {})
         form_class = mong.form.get_form(
@@ -112,14 +117,18 @@ class AuthMongView(mong.ModelView):
             only=self.form_columns,
             exclude=self.form_excluded_columns,
             field_args=model_args,
-            extra_fields=self.form_extra_fields)
+            extra_fields=self.form_extra_fields,
+        )
 
         return form_class
 
     def is_accessible(self):
         """只有SuperUser角色可以访问"""
-        return (current_user.is_active and current_user.is_authenticated and
-                current_user.has_role('SuperUser'))
+        return (
+            current_user.is_active
+            and current_user.is_authenticated
+            and current_user.has_role("SuperUser")
+        )
 
     def _handle_view(self, name, **kwargs):
         """
@@ -131,7 +140,7 @@ class AuthMongView(mong.ModelView):
                 abort(403)
             else:
                 # login
-                return redirect(url_for('security.login', next=request.url))
+                return redirect(url_for("security.login", next=request.url))
 
 
 class AuthModelView(sqla.ModelView):
@@ -143,13 +152,13 @@ class AuthModelView(sqla.ModelView):
 
     model_form_converter = LocalModelConverter
 
-    column_filters = ['created', 'modified', 'deleted']
+    column_filters = ["created", "modified", "deleted"]
 
-    form_excluded_columns = ['created', 'modified', 'deleted']
+    form_excluded_columns = ["created", "modified", "deleted"]
 
-    column_editable_list = ['deleted']
+    column_editable_list = ["deleted"]
 
-    column_searchable_list = ['id', 'name']
+    column_searchable_list = ["id", "name"]
 
     column_type_formatters = SQLA_FORMATTERS
 
@@ -162,7 +171,7 @@ class AuthModelView(sqla.ModelView):
         将modified, deleted, created移到最后
         """
         columns = super().scaffold_list_columns()
-        extra_cols = ['deleted', 'created', 'modified']
+        extra_cols = ["deleted", "created", "modified"]
         for col in extra_cols:
             try:
                 columns.append(columns.pop(columns.index(col)))
@@ -177,9 +186,11 @@ class AuthModelView(sqla.ModelView):
         """
         model_labels = {
             str(k): c.doc
-            for k, c in chain(self.model.__mapper__.columns.items(),
-                              self.model.__mapper__.relationships.items())
-            if hasattr(c, 'doc') and c.doc is not None
+            for k, c in chain(
+                self.model.__mapper__.columns.items(),
+                self.model.__mapper__.relationships.items(),
+            )
+            if hasattr(c, "doc") and c.doc is not None
         }
         if self.column_labels and field in self.column_labels:
             return self.column_labels[field]
@@ -193,12 +204,12 @@ class AuthModelView(sqla.ModelView):
         根据doc自动自动定义栏目名称
         """
         model_args = {
-            str(k): {
-                'label': c.doc
-            }
-            for k, c in chain(self.model.__mapper__.columns.items(),
-                              self.model.__mapper__.relationships.items())
-            if hasattr(c, 'doc') and c.doc is not None
+            str(k): {"label": c.doc}
+            for k, c in chain(
+                self.model.__mapper__.columns.items(),
+                self.model.__mapper__.relationships.items(),
+            )
+            if hasattr(c, "doc") and c.doc is not None
         }
         model_args.update(self.form_args if self.form_args else {})
         converter = self.model_form_converter(self.session, self)
@@ -210,7 +221,8 @@ class AuthModelView(sqla.ModelView):
             exclude=self.form_excluded_columns,
             field_args=model_args,
             ignore_hidden=self.ignore_hidden,
-            extra_fields=self.form_extra_fields)
+            extra_fields=self.form_extra_fields,
+        )
 
         if self.inline_models:
             form_class = self.scaffold_inline_form_models(form_class)
@@ -219,8 +231,11 @@ class AuthModelView(sqla.ModelView):
 
     def is_accessible(self):
         """只有SuperUser角色可以访问"""
-        return (current_user.is_active and current_user.is_authenticated and
-                current_user.has_role('SuperUser'))
+        return (
+            current_user.is_active
+            and current_user.is_authenticated
+            and current_user.has_role("SuperUser")
+        )
 
     def _handle_view(self, name, **kwargs):
         """
@@ -232,12 +247,13 @@ class AuthModelView(sqla.ModelView):
                 abort(403)
             else:
                 # login
-                return redirect(url_for('security.login', next=request.url))
+                return redirect(url_for("security.login", next=request.url))
 
     def on_model_change(self, form, model, is_created):
         """
         更新修改时间
         """
         from app.utils.local import localnow
+
         if not is_created:
             model.modified = localnow()

@@ -28,7 +28,6 @@ from loguru import logger
 
 
 class AdminIndexView(BaseAdminIndexView):
-
     @expose()
     def index(self):
         """
@@ -50,12 +49,12 @@ class AdminIndexView(BaseAdminIndexView):
             todoform=form,
             task_success=task_success,
             task_run=task_run,
-            task_fail=task_fail)
+            task_fail=task_fail,
+        )
 
 
 class VisitStatisticView(BaseView):
-
-    @expose('/')
+    @expose("/")
     def index(self):
         """
         API访问统计图表API
@@ -65,84 +64,79 @@ class VisitStatisticView(BaseView):
         daily_stat = stat.count_last_week_dayli_requests()
         method_stat = stat.count_last_week_method_requests()
 
-        return jsonify({'daily_stat': daily_stat, 'method_stat': method_stat})
+        return jsonify({"daily_stat": daily_stat, "method_stat": method_stat})
 
 
 class TasksStatisticView(BaseView):
-
-    @expose('/')
+    @expose("/")
     def index(self):
         """上周任务状态统计API"""
         from admin.services.admin import statistics as stat
 
         task_stat = stat.count_last_week_dayli_tasks()
 
-        return jsonify({'task_stat': task_stat})
+        return jsonify({"task_stat": task_stat})
 
 
 class IndexRedirectView(BaseView):
-
     @expose()
     def index(self):
-        return redirect(url_for('admin.index'))
+        return redirect(url_for("admin.index"))
 
 
 class MailSendView(BaseView):
-
-    @expose(methods=['POST'])
+    @expose(methods=["POST"])
     def index(self):
         """发送邮件API"""
         from flask import request
         from app.backtasks.send_mail import send_mail
-        send_mail.delay(request.form['emailto'], request.form['subject'],
-                        {'message': request.form['content'], 'url': '#'})
 
-        return jsonify({'code': 0, 'msg': 'success'})
+        send_mail.delay(
+            request.form["emailto"],
+            request.form["subject"],
+            {"message": request.form["content"], "url": "#"},
+        )
+
+        return jsonify({"code": 0, "msg": "success"})
 
 
 class TodoListView(BaseView):
-
-    @expose('/', methods=['PATCH'])
+    @expose("/", methods=["PATCH"])
     def index(self):
         from flask import request
         from app.modules.todolist.schemas import TodoItemSchema
         from app.modules.todolist.models import TodoItem, db
+
         data = request.get_json()
-        if 'data' in data and isinstance(data['data'], list):
-            db.session.bulk_update_mappings(TodoItem, data['data'])
+        if "data" in data and isinstance(data["data"], list):
+            db.session.bulk_update_mappings(TodoItem, data["data"])
             db.session.commit()
         else:
-            item = TodoItemSchema(only=['id', 'state']).load(data)
+            item = TodoItemSchema(only=["id", "state"]).load(data)
             item.save()
-        return {'code': 0, 'msg': 'success'}
+        return {"code": 0, "msg": "success"}
 
-    @expose('/items', methods=['GET', 'POST', 'DELETE'])
+    @expose("/items", methods=["GET", "POST", "DELETE"])
     def todoitems(self):
         """待办列表"""
         from flask import request
         from app.modules.todolist.models import TodoItem
         from app.modules.todolist.schemas import TodoItemSchema
-        if request.method == 'GET':
-            pagination = TodoItem.query.order_by(
-                TodoItem.sort.desc()).paginate()
+
+        if request.method == "GET":
+            pagination = TodoItem.query.order_by(TodoItem.sort.desc()).paginate()
             data = TodoItemSchema(many=True).dump(pagination.items)
 
-            return {
-                'code': 0,
-                'data': data,
-                'meta': {
-                    'total': pagination.total
-                }
-            }
-        elif request.method == 'POST':
+            return {"code": 0, "data": data, "meta": {"total": pagination.total}}
+        elif request.method == "POST":
             data = request.get_json()
             item = TodoItemSchema().load(data)
             item.save()
 
-            return {'code': 0, 'msg': 'success'}
-        elif request.method == 'DELETE':
+            return {"code": 0, "msg": "success"}
+        elif request.method == "DELETE":
             data = request.get_json()
-            item = TodoItem.get_by_id(data['id'])
+            item = TodoItem.get_by_id(data["id"])
             item.delete()
 
-            return {'code': 0, 'msg': 'success'}
+            return {"code": 0, "msg": "success"}

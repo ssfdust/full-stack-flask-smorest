@@ -4,6 +4,7 @@ Invoke中App相关工具
 """
 import functools
 import platform
+
 try:
     import readline
 except ImportError:
@@ -21,7 +22,7 @@ class Task(BaseTask):
         """
         详情： https://github.com/pyinvoke/invoke/pull/399.
         """
-        if hasattr(body, '__wrapped__'):
+        if hasattr(body, "__wrapped__"):
             return self.argspec(body.__wrapped__)
         return super(Task, self).argspec(body)
 
@@ -52,7 +53,7 @@ def app_context_task(*args, **kwargs):
             new ``app`` otherwise, and actives the application context, so the
             decorated function is run inside the application context.
             """
-            app = kwargs.pop('app', None)
+            app = kwargs.pop("app", None)
             if app is None:
                 from app.app import app
 
@@ -61,15 +62,15 @@ def app_context_task(*args, **kwargs):
 
         # This is the default in Python 3, so we just make it backwards
         # compatible with Python 2
-        if not hasattr(wrapper, '__wrapped__'):
+        if not hasattr(wrapper, "__wrapped__"):
             wrapper.__wrapped__ = func
         return Task(wrapper, **kwargs)
 
     return lambda func: app_context_task(func, **kwargs)
 
 
-def rlinput(prompt, prefill=''):
-    if platform.system() == 'Windows':
+def rlinput(prompt, prefill=""):
+    if platform.system() == "Windows":
         from .winpress import sendkeys
 
         sendkeys(prefill)

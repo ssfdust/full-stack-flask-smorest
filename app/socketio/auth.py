@@ -34,25 +34,25 @@ class AuthNamespace(Namespace):
 
     def on_connect(self):
         """连接时"""
-        print('connected')
+        print("connected")
 
     def on_authenticate(self, data):
         """验证"""
-        token = data['token']
+        token = data["token"]
         session = SessionManager()
         if session.check_token(token):
             session.start_session()
         else:
-            print('unauthenticated')
+            print("unauthenticated")
             disconnect(request.sid)
 
     @auth_socket
     def on_test(self):
-        emit({'data': 'Hello, World'})
+        emit({"data": "Hello, World"})
 
     def on_disconnect(self):
         """连接丢失时"""
-        user_id = request.args.get('user_id', None)
+        user_id = request.args.get("user_id", None)
         if user_id:
             session = SessionManager(user_id)
             session.end_session()

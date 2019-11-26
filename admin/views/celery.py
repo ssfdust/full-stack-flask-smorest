@@ -31,6 +31,7 @@ class CeleryScheduleView(AuthMongView):
     用以创建调度任务，支持两种格式一是Crontab，
     二是Interval，两种方式只能选择一种。
     """
+
     from app.extensions.mongobeat.models import PeriodicTask
 
     can_create = True
@@ -38,20 +39,20 @@ class CeleryScheduleView(AuthMongView):
     can_delete = True
     can_view_details = True
 
-    extra_js = ['/static/js/pages/celerybeat.js']  # 拓展表单的js
-    column_list = ['name', 'task', 'enabled', 'schedule', 'last_run_at']
-    column_labels = {'schedule': '周期'}
-    column_editable_list = ['enabled', 'run_immediately']
+    extra_js = ["/static/js/pages/celerybeat.js"]  # 拓展表单的js
+    column_list = ["name", "task", "enabled", "schedule", "last_run_at"]
+    column_labels = {"schedule": "周期"}
+    column_editable_list = ["enabled", "run_immediately"]
     column_default_sort = []
-    column_filters = ['name']
+    column_filters = ["name"]
     can_view_details = True
-    form_overrides = {'task': TaskSelect2Field}
+    form_overrides = {"task": TaskSelect2Field}
 
     def _scheduleinfo(view, context, model, name):
         """调度信息展示"""
-        return str(model).split(':')[1]
+        return str(model).split(":")[1]
 
-    column_formatters = {'schedule': _scheduleinfo}
+    column_formatters = {"schedule": _scheduleinfo}
 
 
 class CeleryTaskView(AuthMongView):
@@ -62,26 +63,36 @@ class CeleryTaskView(AuthMongView):
     can_delete = True
     can_view_details = True
     details_modal = False
-    column_default_sort = [('time_start', True)]
-    column_filters = ['time_start', 'date_done']
+    column_default_sort = [("time_start", True)]
+    column_filters = ["time_start", "date_done"]
     column_exclude_list = [
-        'id', 'delivery_info', 'result', 'children', 'args', 'acknowledged',
-        'traceback', 'kwargs', 'parent_id', 'type'
+        "id",
+        "delivery_info",
+        "result",
+        "children",
+        "args",
+        "acknowledged",
+        "traceback",
+        "kwargs",
+        "parent_id",
+        "type",
     ]
     column_formatters = {
-        'delivery_info': json_formatter,
-        'result': json_formatter,
-        'traceback': line_formatter
+        "delivery_info": json_formatter,
+        "result": json_formatter,
+        "traceback": line_formatter,
     }
 
-    def get_list(self,
-                 page,
-                 sort_column,
-                 sort_desc,
-                 search,
-                 filters,
-                 execute=True,
-                 page_size=None):
+    def get_list(
+        self,
+        page,
+        sort_column,
+        sort_desc,
+        search,
+        filters,
+        execute=True,
+        page_size=None,
+    ):
         """将所有任务置为已读"""
         count, query = super().get_list(
             page=page,
@@ -90,7 +101,8 @@ class CeleryTaskView(AuthMongView):
             search=search,
             filters=filters,
             execute=execute,
-            page_size=page_size)
+            page_size=page_size,
+        )
         for item in query:
             if item.checked is False:
                 item.checked = True

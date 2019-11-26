@@ -16,7 +16,7 @@
 # limitations under the License.
 
 
-class GroupFactory():
+class GroupFactory:
     """
     组操作工厂，实现对组的递归操作
 
@@ -38,6 +38,7 @@ class GroupFactory():
         检查是否被软删除，并执行软删除
         """
         from app.extensions import db
+
         state = db.inspect(self.group)
         if state.attrs.deleted.history.has_changes() and self.group.deleted:
             self.delete_group()
@@ -52,6 +53,7 @@ class GroupFactory():
         做处理
         """
         from app.extensions import db
+
         state = db.inspect(self.group)
         user_hist = state.attrs.users.history
         self.added_users = user_hist.added if user_hist.added else []
@@ -71,15 +73,16 @@ class GroupFactory():
             deleted_sql = db.delete(roles_users).where(
                 db.and_(
                     roles_users.c.role_id.in_([r.id for r in self.group.roles]),
-                    roles_users.c.user_id.in_(
-                        [u.id for u in self.deleted_users])))
+                    roles_users.c.user_id.in_([u.id for u in self.deleted_users]),
+                )
+            )
             db.session.execute(deleted_sql)
 
         if self.added_users:
-            producted_added_rv = [{
-                'role_id': r.id,
-                'user_id': u.id
-            } for r, u in product(self.group.roles, self.added_users)]
+            producted_added_rv = [
+                {"role_id": r.id, "user_id": u.id}
+                for r, u in product(self.group.roles, self.added_users)
+            ]
             added_sql = db.insert(roles_users, producted_added_rv)
             db.session.execute(added_sql)
 
@@ -168,13 +171,14 @@ class GroupFactory():
             ) sub
             WHERE ru.role_id = sub.role_id AND ru.user_id = sub.user_id
         """
-        db.session.execute(sql, {'id': self.group.id})
+        db.session.execute(sql, {"id": self.group.id})
 
     def delete_subgroup_members(self, soft_delete=True):
         """
         解除所有子组成员关系
         """
         from app.modules.users.models import Group, groups_users, db
+
         if not soft_delete:
             soft_delete_arg = " AND distance > 0"
         else:
@@ -189,4 +193,4 @@ class GroupFactory():
         """
         # ORM删除时自动处理连接关系
         # 只有当手动处理时取消所有节点连接
-        db.session.execute(sql, {'id': self.group.id})
+        db.session.execute(sql, {"id": self.group.id})

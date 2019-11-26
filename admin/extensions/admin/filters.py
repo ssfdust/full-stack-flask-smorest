@@ -13,16 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask_admin.contrib.mongoengine.filters import FilterConverter as BaseFilterConverter
+from flask_admin.contrib.mongoengine.filters import (
+    FilterConverter as BaseFilterConverter,
+)
 from flask_admin.model import filters
 
 
 class MongoFilterConverter(BaseFilterConverter):
-
-    @filters.convert('ArrowField')
+    @filters.convert("ArrowField")
     def conv_arrow(self, column, name):
         return [f(column, name) for f in self.datetime_filters]
 
-    @filters.convert('DateTimeField')
+    @filters.convert("DateTimeField")
     def conv_datetime(self, column, name):
         return [f(column, name) for f in self.datetime_filters]

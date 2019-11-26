@@ -34,4 +34,4 @@ class EmailTemplateView(AuthModelView):
     can_view_details = True
     details_modal = True
 
-    column_searchable_list = ['name']
+    column_searchable_list = ["name"]

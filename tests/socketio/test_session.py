@@ -7,12 +7,11 @@ from flask_jwt_extended import create_access_token
 from app.socketio.session import SessionManager
 
 
-class TestSession():
-
+class TestSession:
     @staticmethod
     def create_token(db, regular_user):
         access_token = create_access_token(identity=regular_user.email)
-        add_token_to_database(access_token, current_app.config['JWT_IDENTITY_CLAIM'])
+        add_token_to_database(access_token, current_app.config["JWT_IDENTITY_CLAIM"])
 
         db.session.commit()
 
@@ -33,6 +32,6 @@ class TestSession():
 
     def test_raise(self, flask_app, db):
         session = SessionManager()
-        assert session.check_token('12121212') is False
-        fake_sess = SessionManager('121212')
+        assert session.check_token("12121212") is False
+        fake_sess = SessionManager("121212")
         assert fake_sess.check_session() is False
