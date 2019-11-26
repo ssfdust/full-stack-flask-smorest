@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ssfdust/full-stack-flask-smorest/badge.svg?branch=master)](https://coveralls.io/github/ssfdust/full-stack-flask-smorest?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/aa3d7d986faf4e22969c56be5ea3d54d)](https://www.codacy.com/manual/ssfdust/full-stack-flask-smorest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ssfdust/full-stack-flask-smorest&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Python Versions](https://img.shields.io/badge/python-3.7%20|%203.8-0366d6)](https://www.python.org)
+[![Python Versions](https://img.shields.io/badge/python-3.7%20|%203.8-0366d6)](https://www.python.org)
 
 full-stack-flask-smorest
 ========================
