@@ -5,7 +5,6 @@ import queue
 
 import pytest
 from app.backtasks.send_mail import send_mail
-from app.extensions.celerybackend.models import Tasks
 
 SENDED = queue.Queue()
 

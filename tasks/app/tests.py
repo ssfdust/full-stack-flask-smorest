@@ -23,7 +23,7 @@ def tests(context, directory='tests', with_cov=False, cov='', with_pdb=False):
     对项目进行单元测试
     """
     import pytest
-    command = [directory, '-v']
+    command = [directory]
     if with_cov and not cov:
         log.critical("pytest-cov已开启但是缺少cov参数")
         return
