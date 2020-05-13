@@ -8,6 +8,7 @@ full-stack-flask-smorest
 ========================
 
 已迁移到新版[Smorest Sync Full Stack(https://github.com/ssfdust/smorest-sfs)],没错 如果有时间将会有Smorest Async Full Stack,Flask即将支持Asyncio.
+
 特性
 -----------------------
 
