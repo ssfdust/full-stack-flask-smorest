@@ -13,7 +13,7 @@ flask-marshmallow = "^0.10.1"
 flask-admin = { git = "https://github.com/flask-admin/flask-admin.git", branch = "bootstrap4" }
 sqlalchemy-utils = "^0.34.1"
 arrow = "^0.14.4"
-loguru = "^0.3.2"
+loguru = "^0.5.3"
 marshmallow-sqlalchemy = "^0.17.0"
 flask-migrate = "^2.5"
 flask-jwt-extended = "^3.21"
